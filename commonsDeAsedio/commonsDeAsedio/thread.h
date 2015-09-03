@@ -3,7 +3,7 @@
 #define THREAD_H_
 
 	#include <pthread.h>
-	int crearThread(pthread_t*,void*,void*);//Retorna 0 si el thread se creo correctamente.
+	int crearThread(pthread_t* thread,void* funcionAEjecutar,void* parametros);//Retorna 0 si el thread se creo correctamente.
 	void destruirThread(pthread_t thread);
 
 
