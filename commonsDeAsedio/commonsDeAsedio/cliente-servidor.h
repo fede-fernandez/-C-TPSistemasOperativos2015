@@ -55,7 +55,7 @@ void liberarSocket(int socket);
 
 /**
 * @NAME: obviarErrorDeIpEnUso
-* @DESC: No toma en cuenta el error que sale cuando se uso un socket anteriormente
+* @DESC: No toma en cuenta el error que sale cuando se ha usado un socket anteriormente
 * @PARAMS:
 * 	socket en uso
 */
