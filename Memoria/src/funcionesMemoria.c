@@ -6,22 +6,41 @@
  */
 #include "funcionesMemoria.h"
 
-tipoConfigMemoria crearConfigMemoria(){
+
+tipoConfigMemoria* crearConfigMemoria(){
 	tipoConfigMemoria* cfg = malloc(sizeof(tipoConfigMemoria));
-	cfg->ipPlanificador = string_new();
-	cfg->ipMemoria = string_new();
+	cfg->ipSWAP = string_new();
+	cfg->TLBHabilitada = string_new();
 
 	return cfg;
 }
 
 void destruirConfigMemoria(tipoConfigMemoria* cfg){
-	free(cfg->ipPlanificador);
-	free(cfg->ipMemoria);
+	free(cfg->ipSWAP);
+	free(cfg->TLBHabilitada);
 	free(cfg);
 }
 
 void cargarArchivoDeConfiguracionDeMemoria(t_config* archivoCfg,tipoConfigMemoria* cfg){
-	if () {
+	if (config_has_property(archivoCfg,PUERTO_ESCUCHA)
+			&& config_has_property(archivoCfg,IP_SWAP)
+			&& config_has_property(archivoCfg,PUERTO_SWAP)
+			&& config_has_property(archivoCfg,MAXIMO_MARCOS_POR_PROCESO)
+			&& config_has_property(archivoCfg,CANTIDAD_MARCOS)
+			&& config_has_property(archivoCfg,TAMANIO_MARCO)
+			&& config_has_property(archivoCfg,ENTRADAS_TLB)
+			&& config_has_property(archivoCfg,TLB_HABILITADA)
+			&& config_has_property(archivoCfg,RETARDO_MEMORIA)) {
+
+		cfg->puertoDeEscucha = config_get_int_value(archivoCfg,PUERTO_ESCUCHA);
+		cfg->ipSWAP = string_duplicate(config_get_string_value(archivoCfg,IP_SWAP));
+		cfg->puertoSWAP = config_get_int_value(archivoCfg,PUERTO_SWAP);
+		cfg->maximoDeMarcosPorProceso = config_get_int_value(archivoCfg,MAXIMO_MARCOS_POR_PROCESO);
+		cfg->cantidadDeMarcos = config_get_int_value(archivoCfg,CANTIDAD_MARCOS);
+		cfg->tamanioDeMarco = config_get_int_value(archivoCfg,TAMANIO_MARCO);
+		cfg->entradasDeTLB = config_get_int_value(archivoCfg,ENTRADAS_TLB);
+		cfg->TLBHabilitada = string_duplicate(config_get_string_value(archivoCfg,TLB_HABILITADA));
+		cfg->retardoDeMemoria = config_get_int_value(archivoCfg,RETARDO_MEMORIA);
 
 	}
 }

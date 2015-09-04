@@ -4,6 +4,8 @@
 
 #include <commons/string.h>
 #include <commons/config.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define IP_PLANIFICADOR "IP_PLANIFICADOR"
 #define PUERTO_PLANIFICADOR "PUERTO_PLANIFICADOR"

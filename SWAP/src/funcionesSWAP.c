@@ -7,6 +7,7 @@
 
 #include "funcionesSWAP.h"
 
+
 tipoConfigSWAP* crearConfigSWAP(){
 	tipoConfigSWAP* cfg = malloc(sizeof(tipoConfigSWAP));
 	cfg->nombreDeSWAP = string_new();

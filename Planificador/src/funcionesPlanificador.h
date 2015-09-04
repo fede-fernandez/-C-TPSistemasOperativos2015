@@ -10,7 +10,8 @@
 
 #include <commons/string.h>
 #include <commons/config.h>
-
+#include <stdio.h>
+#include <stdlib.h>
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
 #define ALGORITMO_PLANIFICACION "ALGORITMO_PLANIFICACION"

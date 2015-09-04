@@ -10,6 +10,9 @@
 
 #include <commons/string.h>
 #include <commons/config.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
 #define IP_SWAP "IP_SWAP"
@@ -22,15 +25,18 @@
 #define RETARDO_MEMORIA "RETARDO_MEMORIA"
 
 typedef struct{
-	char* ipPlanificador;
-	int puertoPlanificador;
-	char* ipMemoria;
-	int puertoMemoria;
-	int cantidadDeHilos;
-	int retardo;
+	int puertoDeEscucha;
+	char* ipSWAP;
+	int puertoSWAP;
+	int maximoDeMarcosPorProceso;
+	int cantidadDeMarcos;
+	int tamanioDeMarco;
+	int entradasDeTLB;
+	char* TLBHabilitada;
+	int retardoDeMemoria;
 }tipoConfigMemoria;
 
-tipoConfigMemoria crearConfigMemoria();
+tipoConfigMemoria* crearConfigMemoria();
 
 void destruirConfigMemoria(tipoConfigMemoria* estructuraDeConfiguracion);
 

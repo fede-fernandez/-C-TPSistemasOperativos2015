@@ -10,6 +10,8 @@
 
 #include <commons/string.h>
 #include <commons/config.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
 #define NOMBRE_SWAP "NOMBRE_SWAP"
@@ -24,6 +26,7 @@ typedef struct{
 	int tamanioDePagina;
 	int retardoDeCompactacion;
 }tipoConfigSWAP;
+
 
 tipoConfigSWAP* crearConfigSWAP();
 
