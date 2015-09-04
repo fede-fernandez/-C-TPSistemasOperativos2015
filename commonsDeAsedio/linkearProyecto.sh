@@ -3,7 +3,7 @@
 
 cd
 
-cd workspace/commonsDeAsedio/Debug
+cd  git/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug
 
 make clean
 
@@ -11,13 +11,13 @@ make
 
 cd
 
-cd workspace/$1/Debug/
+cd tp-2015-2c-los-javimancos/$1/Debug/
 
 make clean
 
 make
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/workspace/commonsDeAsedio/Debug/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug/
 
 clear
 

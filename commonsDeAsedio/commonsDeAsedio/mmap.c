@@ -48,7 +48,7 @@ void liberarMemoriaDeArchivoCompletoMapeado(FILE* archivoAMapear, void* resultad
 	int tamanio, descriptorDeArchivoAMapear;
 
 	descriptorDeArchivoAMapear = fileno(archivoAMapear);
-	tamanio = tamanioDeArchivo(fileno(archivoAMapear));
+	tamanio = tamanioDeArchivo(descriptorDeArchivoAMapear);
 
 	munmap(resultadoDeMapeo,tamanio);
 }

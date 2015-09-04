@@ -3,6 +3,8 @@
 	<name>SWAP</name>
 	<comment></comment>
 	<projects>
+		<project>commons</project>
+		<project>commonsDeAsedio</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
