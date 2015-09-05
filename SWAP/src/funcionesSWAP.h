@@ -12,6 +12,7 @@
 #include <commons/config.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <commonsDeAsedio/error.h>
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
 #define NOMBRE_SWAP "NOMBRE_SWAP"
@@ -32,7 +33,7 @@ tipoConfigSWAP* crearConfigSWAP();
 
 void destruirConfigSWAP (tipoConfigSWAP* estructuraDeConfiguracion);
 
-void cargarArchivoDeConfiguracionDeSWAP(t_config* archivoDeConfiguracion,tipoConfigSWAP* estructuraDeConfiguracion);
+tipoConfigSWAP* cargarArchivoDeConfiguracionDeSWAP(char* rutaDelArchivoDeConfiguracion);
 
 
 

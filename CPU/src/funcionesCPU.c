@@ -1,6 +1,7 @@
 
 #include "funcionesCPU.h"
 
+
 tipoConfigCPU* crearConfigCPU(){
 	tipoConfigCPU* cfg = malloc(sizeof(tipoConfigCPU));
 	cfg->ipPlanificador = string_new();
@@ -15,14 +16,28 @@ void destruirConfigCPU(tipoConfigCPU* cfg){
 	free(cfg);
 }
 
-void cargarArchivoDeConfiguracionDeCPU(t_config* archivoCfg,tipoConfigCPU* cfg){
-	if (config_has_property(archivoCfg,IP_PLANIFICADOR) && config_has_property(archivoCfg,PUERTO_PLANIFICADOR) && config_has_property(archivoCfg,IP_MEMORIA) && config_has_property(archivoCfg,PUERTO_MEMORIA) && config_has_property(archivoCfg,CANTIDAD_HILOS) && config_has_property(archivoCfg,RETARDO)) {
+tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfiguracionDelCPU){
 
-		cfg->ipPlanificador = string_duplicate(config_get_string_value(archivoCfg,IP_PLANIFICADOR));
-		cfg->puertoPlanificador = config_get_int_value(archivoCfg,PUERTO_PLANIFICADOR);
-		cfg->ipMemoria = string_duplicate(config_get_string_value(archivoCfg,IP_MEMORIA));
-		cfg->puertoMemoria = config_get_int_value(archivoCfg,PUERTO_MEMORIA);
-		cfg->cantidadDeHilos = config_get_int_value(archivoCfg,CANTIDAD_HILOS);
-		cfg->retardo = config_get_int_value(archivoCfg,RETARDO);
-	}
+	t_config* archivoCfg = config_create(rutaDelArchivoDeConfiguracionDelCPU);
+	tipoConfigCPU* cfg = crearConfigCPU();
+
+	validar(config_has_property(archivoCfg,IP_PLANIFICADOR)
+			&& config_has_property(archivoCfg,PUERTO_PLANIFICADOR)
+			&& config_has_property(archivoCfg,IP_MEMORIA)
+			&& config_has_property(archivoCfg,PUERTO_MEMORIA)
+			&& config_has_property(archivoCfg,CANTIDAD_HILOS)
+			&& config_has_property(archivoCfg,RETARDO),
+			"Las claves del archivo de configuracion no coinciden con las que requiere el CPU");
+
+
+	cfg->ipPlanificador = string_duplicate(config_get_string_value(archivoCfg,IP_PLANIFICADOR));
+	cfg->puertoPlanificador = config_get_int_value(archivoCfg,PUERTO_PLANIFICADOR);
+	cfg->ipMemoria = string_duplicate(config_get_string_value(archivoCfg,IP_MEMORIA));
+	cfg->puertoMemoria = config_get_int_value(archivoCfg,PUERTO_MEMORIA);
+	cfg->cantidadDeHilos = config_get_int_value(archivoCfg,CANTIDAD_HILOS);
+	cfg->retardo = config_get_int_value(archivoCfg,RETARDO);
+
+	config_destroy(archivoCfg);
+
+	return cfg;
 }

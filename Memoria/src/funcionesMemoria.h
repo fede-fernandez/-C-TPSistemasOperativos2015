@@ -12,6 +12,7 @@
 #include <commons/config.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <commonsDeAsedio/error.h>
 
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
@@ -40,7 +41,7 @@ tipoConfigMemoria* crearConfigMemoria();
 
 void destruirConfigMemoria(tipoConfigMemoria* estructuraDeConfiguracion);
 
-void cargarArchivoDeConfiguracionDeMemoria(t_config* archivoDeConfiguracion,tipoConfigMemoria* estructuraDeConfiguracion);
+tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeConfiguracion);
 
 
 

@@ -4,7 +4,6 @@
 	<comment></comment>
 	<projects>
 		<project>commonsDeAsedio</project>
-		<project>commons</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -6,6 +6,7 @@
 #include <commons/config.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <commonsDeAsedio/error.h>
 
 #define IP_PLANIFICADOR "IP_PLANIFICADOR"
 #define PUERTO_PLANIFICADOR "PUERTO_PLANIFICADOR"
@@ -23,11 +24,14 @@ typedef struct{
 	int retardo;
 }tipoConfigCPU;
 
+
+tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfiguracionDelCPU);
+
 tipoConfigCPU* crearConfigCPU();
 
 void destruirConfigCPU(tipoConfigCPU* estructuraDeConfiguracion);
 
-void cargarArchivoDeConfiguracionDeCPU(t_config* archivoDeConfiguracion,tipoConfigCPU* estructuraDeConfiguracion);
+
 
 
 

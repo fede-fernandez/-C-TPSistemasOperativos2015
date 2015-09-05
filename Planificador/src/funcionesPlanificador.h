@@ -12,6 +12,8 @@
 #include <commons/config.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <commonsDeAsedio/error.h>
+
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
 #define ALGORITMO_PLANIFICACION "ALGORITMO_PLANIFICACION"
@@ -29,7 +31,7 @@ tipoConfigPlanificador* crearConfigPlanificador();
 
 void destruirConfigPlanificador(tipoConfigPlanificador* estructuraDeConfiguracion);
 
-void cargarArchivoDeConfiguracionDelPlanificador(t_config* archivoDeConfiguracion, tipoConfigPlanificador* estructuraDeConfiguracion);
+tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDeArchivoDeConfiguracion);
 
 
 #endif /* FUNCIONESPLANIFICADOR_H_ */
