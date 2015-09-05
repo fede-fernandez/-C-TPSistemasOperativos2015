@@ -1,7 +1,7 @@
 
 #include "funcionesCPU.h"
 
-tipoConfigCPU crearConfigCPU(){
+tipoConfigCPU* crearConfigCPU(){
 	tipoConfigCPU* cfg = malloc(sizeof(tipoConfigCPU));
 	cfg->ipPlanificador = string_new();
 	cfg->ipMemoria = string_new();

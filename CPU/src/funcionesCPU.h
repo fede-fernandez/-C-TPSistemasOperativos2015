@@ -23,7 +23,7 @@ typedef struct{
 	int retardo;
 }tipoConfigCPU;
 
-tipoConfigCPU crearConfigCPU();
+tipoConfigCPU* crearConfigCPU();
 
 void destruirConfigCPU(tipoConfigCPU* estructuraDeConfiguracion);
 
