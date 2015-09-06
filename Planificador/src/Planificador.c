@@ -7,7 +7,7 @@ int main(void) {
 	tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
 
 
-
+//
 
 	destruirConfigPlanificador(configuracion);
 
