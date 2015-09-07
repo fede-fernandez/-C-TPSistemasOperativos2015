@@ -78,7 +78,7 @@ int main(void) {
 	procesos_en_ready = list_create(); //Crea la lista de pocesos en ready
 
 	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
-	pthread_t ejecucion; //Hilo que va a a ejecutar "procesos listos" a CPUs
+	pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
 
 	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso
 	pthread_create(&escucha, NULL, conecciones_a_CPUs, NULL) // falta implementar la funcion "conecciones_a_CPUs"
