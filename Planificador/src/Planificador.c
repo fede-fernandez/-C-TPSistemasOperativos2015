@@ -18,7 +18,8 @@ struct estructura_PCB{
 
 struct estructura_CPU{
 	int id_cpu;
-	int disponibilidad; // "0" NO Esta disponible y, "1" Esta disponible
+	int disponibilidad;// "0" NO Esta disponible y, "1" Esta disponible
+	int puerto;
 };
 
 // variables globales
@@ -35,6 +36,7 @@ int menu(void) {
 	while(1) // el menu tiene que estar presente siempre
 
 	{
+		 //limpiar pantalla
 
 		 int opcion = 0;
 
@@ -72,22 +74,20 @@ int main(void) {
 
 
 //
+	lista_de_PCB = list_create(); //Crea la lista_de_PCB
+	procesos_en_ready = list_create(); //Crea la lista de pocesos en ready
 
+	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
+	pthread_t ejecucion; //Hilo que va a a ejecutar "procesos listos" a CPUs
 
-	 lista_de_PCB = list_create(); //Crea la lista_de_PCB
-	 procesos_en_ready = list_create(); //Crea la lista de pocesos en ready
-
-	 pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
-
-
-	//Este hilo va a escuchar las conexiones con las CPU de forma paralela a la ejecucion de este proceso
-	pthread_create(&escucha, NULL, conecciones_a_CPUs, NULL)
-
-	 // aca despues voy a poner mas hilos
+	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso
+	pthread_create(&escucha, NULL, conecciones_a_CPUs, NULL) // falta implementar la funcion "conecciones_a_CPUs"
+	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL) // falta implementar la funcion "ejecutar_proceso"
+	// aca despues voy a poner mas hilos
 
 
 
-	  menu();
+	menu();
 
 
 	destruirConfigPlanificador(configuracion);
@@ -121,7 +121,7 @@ int correr_path(void){
   printf("Proceso %s en ejecucion....\n", parametro);
   sleep(2);
 
-  //limpiar pantalla
+
 
   return 0;
 }
