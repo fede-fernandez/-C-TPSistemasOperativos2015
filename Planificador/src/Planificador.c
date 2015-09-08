@@ -19,7 +19,9 @@ static t_estructura_PCB *PCB_create(int id, int pc, char estado[20], char path[3
 	t_estructura_PCB *new = malloc(sizeof(t_estructura_PCB));
     new->id = id;
     new->pc = pc;
+    memset(new->estado, '\0', 20);
     strcpy(new->estado,estado);
+    memset(new->path, '\0', 30);
     strcpy(new->path,path);
     return new;
 }
