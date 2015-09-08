@@ -6,21 +6,40 @@
 #include <commons/collections/list.h>
 #include "funcionesPlanificador.h"
 
+//--------------- -------estructuras, esto va en un t_estructuras_PCB------------------------------------------
 
-// estructuras
-
-struct estructura_PCB{
+typedef struct{
 	int id;
 	int pc;
 	char estado[20];
 	char path[30];
+} t_estructura_PCB;
+
+static t_estructura_PCB *PCB_create(int id, int pc, char estado[20], char path[30]) { // esta funcion crea la estructura
+	t_estructura_PCB *new = malloc(sizeof(t_estructura_PCB));
+    new->id = id;
+    new->pc = pc;
+    strcpy(new->estado,estado);
+    strcpy(new->path,path);
+    return new;
+}
+
+
+struct estructura_CPU{
+	int id_cpu;
+	int disponibilidad; // "0" NO Esta disponible y, "1" Esta disponible
 };
+
+
 
 struct estructura_CPU{
 	int id_cpu;
 	int disponibilidad;// "0" NO Esta disponible y, "1" Esta disponible
 	int puerto;
 };
+
+// -------------------------------------------------------------------------------------------------------
+
 
 // variables globales
 
@@ -97,31 +116,23 @@ int main(void) {
 
 
 int correr_path(void){
-  char comando[30];
-  char parametro[30];
-  struct estructura_PCB PCB;
+	char comando[30];
+	char path[30];
+	t_estructura_PCB *PCB;
 
   //limpiar pantalla
+	printf("Ingresar Comando: \n");
+	scanf("%s %s", comando, path); // supongo que siempre es un comando valido y path tambien
+	contador_de_id_procesos++;
+	// Agrego el elemento al final de la lista (para que quede ordenada por ID)
+	list_add(lista_de_PCB, PCB_create(contador_de_id_procesos, 1, "nuevo", path));
+	// agrego la id a lo ultimo de la lista
+	list_add(procesos_en_ready,&contador_de_id_procesos);
 
-  printf("Ingresar Comando: \n");
-  scanf("%s %s", comando, parametro); // supongo que siempre es un comando valido y path tambien
+	printf("Proceso %s en ejecucion....\n", parametro);
 
-  contador_de_id_procesos++;
-  PCB.id = contador_de_id_procesos;
-  PCB.pc = 1;
-  strcpy(PCB.estado,"nuevo");
-  strcpy(PCB.path,parametro);
+	sleep(2);
 
-  list_add(lista_de_PCB,&PCB); // Agrego el elemento al final de la lista (para que quede ordenada por ID)
-  list_add(procesos_en_ready,&contador_de_id_procesos); // agrego la id a lo ultimo de la lista
+	return 0;
 
-
-
-
-  printf("Proceso %s en ejecucion....\n", parametro);
-  sleep(2);
-
-
-
-  return 0;
-}
+	}
