@@ -121,7 +121,7 @@ int crearSocketParaAceptarSolicitudes(int socketServidor);
 
 /**
 * @NAME: recibirBloque
-* @DESC: recibe un bloque completo de datos de tamaño tamanioBloque
+* @DESC: recibe un bloque completo de datos y retorna el tamaño del bloque
 * @PARAMS:
 * 	tamaño del bloque que se recibira
 * 	socket del enviador del bloque
