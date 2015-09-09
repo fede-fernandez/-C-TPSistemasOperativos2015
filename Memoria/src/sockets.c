@@ -8,13 +8,13 @@
 
 void administrarSockets(int puerto){
 
-	fd_set* socketsLectura,socketsEscritura,socketsExcepciones;
+	fd_set socketsLectura,socketsEscritura,socketsExcepciones;
 
-	FD_ZERO(socketsEscritura);
+	FD_ZERO(&socketsEscritura);
 
-	FD_ZERO(socketsExcepciones);
+	FD_ZERO(&socketsExcepciones);
 
-	FD_ZERO(socketsLectura);
+	FD_ZERO(&socketsLectura);
 
 	bool administraSockets = true;
 
@@ -22,11 +22,11 @@ void administrarSockets(int puerto){
 
 	asociarAPuerto(socketAdministrador,puerto);
 
-	FD_SET(socketAdministrador,socketsEscritura);
+	FD_SET(socketAdministrador,&socketsEscritura);
 
-	FD_SET(socketAdministrador,socketsExcepciones);
+	FD_SET(socketAdministrador,&socketsExcepciones);
 
-	FD_SET(socketAdministrador,socketsLectura);
+	FD_SET(socketAdministrador,&socketsLectura);
 
 	ultimoSocketLlegado = socketAdministrador;
 
@@ -34,7 +34,7 @@ void administrarSockets(int puerto){
 
 		maximoSocket = maximoEntre(ultimoSocketLlegado,maximoSocket);
 
-		resultado = select(maximoSocket,socketsLectura,socketsEscritura,socketsExcepciones,NULL);
+		resultado = select(maximoSocket,&socketsLectura,&socketsEscritura,&socketsExcepciones,NULL);
 
 
 	}
