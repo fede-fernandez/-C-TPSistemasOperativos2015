@@ -25,4 +25,10 @@ int mayorDeLista(t_list* lista);
 
 int maximoEntre(int x, int y);
 
+void limpiarLista(t_list* lista);
+
+void quitarElementoDeLista(t_list* lista,void* elemento);
+
+
+
 #endif /* COMMONSDEASEDIO_SELECT_H_ */

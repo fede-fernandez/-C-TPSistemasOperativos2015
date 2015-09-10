@@ -84,6 +84,12 @@ void filtrarListas(t_list* listaPrincipal,t_list* listaLectura,t_list* listaEscr
 
 	fd_set* estructuraExcepciones;
 
+	limpiarLista(listaEscritura);
+
+	limpiarLista(listaLectura);
+
+	limpiarLista(listaExcepciones);
+
 	int resultado,maximoSocket = mayorDeLista(listaPrincipal);
 
 	do{
@@ -104,3 +110,26 @@ void filtrarListas(t_list* listaPrincipal,t_list* listaLectura,t_list* listaEscr
 	listaExcepciones = crearListaDesdeEstructura(estructuraExcepciones,maximoSocket);
 }
 
+void limpiarLista(t_list* lista){
+
+int var;
+
+for (var = 0; var < list_size(lista); ++var) {
+	list_remove(lista,0);
+}
+
+}
+
+void quitarElementoDeLista(t_list* lista,void* elemento){
+
+	int var;
+
+	for (var = 0; var < list_size(lista); ++var) {
+
+		if(elemento==list_get(lista,var))
+			break;
+	}
+
+	list_remove(lista,var);
+
+}
