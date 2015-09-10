@@ -5,6 +5,8 @@
 #include <pthread.h>
 #include <commons/collections/list.h>
 #include "funcionesPlanificador.h"
+#include <sys/socket.h>
+#include <sys/types.h>
 
 //--------------- -------estructuras, esto va en un t_estructuras_PCB------------------------------------------
 
@@ -34,6 +36,91 @@ struct estructura_CPU{
 };
 
 // -------------------------------------------------------------------------------------------------------
+
+
+//-------------------------------------FUNCIONES HILOS--------------------------------------------------------------------
+
+//---------------Hilo encargado de mandar a ejecutar procesos a la CPUs-------------------------
+
+void* ejecutar_proceso(void){
+
+	while(1){
+
+		// wait(cant_procesos_listos);
+		// wait(cant_CPUs_libres);
+		//sacar_ultimo_elemento_de_la_lista(procesos_en_ready,id);
+		//PCB=buscar_id_de_proceso(lista_de_PCB,id);
+		//actualizar_PCB(PCB)
+		//buscar_CPU_disponible(cpu_disponibles,cpu_puerto)
+		//send(cpu_puerto, PCB, strlen(PCB) + 1, 0);
+
+	}
+
+	return 0;
+}
+////..............................................................................................
+
+//-------------- Hilo encargado de recibir las rafagas de las CPU que vienen de: quantun/entrada_salida---------
+
+void* recibir_rafagas(void){
+
+	while(1){
+		// select se bloque hasta que le llegan "mensajitos"
+		// preguntar a todos los puertos de "lista_de_PCB" si recibieron mensajes
+		//una vez que encontramos el puerto, lo saco ese puerto de la lista
+		// CPU = list_get(cpu_disponibles,cpu_puerto);
+		// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
+		// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
+
+	    /*llegada = recv(cpu_puerto, (void*) package, PACKAGESIZE, 0); // la CPU me mando un chart: Quantum / E_S / Fin
+
+	      PCB = recv(cpu_puerto, (void*) package, PACKAGESIZE, 0); // recibe la estructura de PCB que le manda la CPU
+
+			    switch (llegada) {
+
+				  case   'Q':
+				      quantum(PCB);	            break; // va a meter ese proceso a la cola de redy y actualizar PCB
+				  case   'B':
+				      entrada_salida(PCB);      break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
+				  case   'F':
+				      fin(PCB);	                break; // unicamente actualiza el PCB del proceso llegante
+			 }
+
+		// agregar esa CPU como disponible(); */
+
+	}
+
+
+	return 0;
+}
+//-------------------------------------------------------------------------------------------------------------
+
+
+
+//---------------Hilo encargado de recibir conexiones de CPUs   -------------------------
+
+void* recibir_conexion(void){
+
+	// socketEscucha = socket(serverInfo->ai_family, serverInfo->ai_socktype, serverInfo->ai_protocol);
+	// bind(socketEscucha,serverInfo->ai_addr, serverInfo->ai_addrlen);
+	// listen(socketEscucha, BACKLOG);
+
+	while(1){
+
+		//socketCPU = accept(socketEscucha, (struct sockaddr *) &addr, &addrlen);
+		//idCPU = recv(socketCPU, (void*) package, PACKAGESIZE, 0); // recibe la id del CPU
+		//armar nodo y meterla en la lista de CPUs , ordenado por id de cpu
+		// chequear en el archivo de configuracion si el algoritmos es con quantum
+		// le emando mensaje para indicar si el algortmo es con quantum / o no
+		//send(socketCPU, quantum, strlen(message) + 1, 0)
+
+	}
+
+	return 0;
+}
+////..............................................................................................
+
+//-----------------------------------------------------------------------------------------------------------
 
 
 // variables globales
@@ -95,10 +182,10 @@ int main(void) {
 	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
 	pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
 
-	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso
-	//pthread_create(&escucha, NULL, conecciones_a_CPUs, NULL) // falta implementar la funcion "conecciones_a_CPUs"
-	//pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL) // falta implementar la funcion "ejecutar_proceso"
-	// aca despues voy a poner mas hilos
+	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso "main"
+	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta implementar la funcion "recibir_conexion"
+	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta implementar la funcion "ejecutar_proceso"
+	pthread_create(&ejecucion, NULL, recibir_rafagas, NULL); // Hilo encargado de mandar proces a ejetar a las CPUs
 
 
 
