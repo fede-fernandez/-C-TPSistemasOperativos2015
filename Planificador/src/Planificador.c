@@ -41,7 +41,8 @@ struct estructura_CPU{
 int contador_de_id_procesos = 0; // para saber cuantos procesos hay en el sistema
 t_list* lista_de_PCB;
 t_list* procesos_en_ready; // lista de procesos "listos para ejecutar"
-
+t_list* cpu_disponibles; // lista de cpu disponibles
+int socketEscucha; // socket que escuche las conecciones entrantes
 
 int correr_path(void);
 
