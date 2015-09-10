@@ -72,7 +72,7 @@ void* recibir_rafagas(void){
 		// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
 		// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
 
-	    /*llegada = recv(cpu_puerto, (void*) package, PACKAGESIZE, 0); // la CPU me mando un chart: Quantum / E_S / Fin
+	    /*llegada = recv(cpu_puerto, (void*) package, PACKAGESIZE, 0); // la CPU me manda un chart: Quantum / E_S / Fin
 
 	      PCB = recv(cpu_puerto, (void*) package, PACKAGESIZE, 0); // recibe la estructura de PCB que le manda la CPU
 
