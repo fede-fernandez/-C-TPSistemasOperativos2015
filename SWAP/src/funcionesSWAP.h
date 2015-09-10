@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <commonsDeAsedio/error.h>
+#include <string.h>
+#include <commonsDeAsedio/mmap.h>
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
 #define NOMBRE_SWAP "NOMBRE_SWAP"
@@ -29,11 +31,19 @@ typedef struct{
 }tipoConfigSWAP;
 
 
+////////////////////FUNCIONES PARA EL MANEJO DE ARCHIVO DE CONFIGURACION///////////////////////
+
 tipoConfigSWAP* crearConfigSWAP();
 
 void destruirConfigSWAP (tipoConfigSWAP* estructuraDeConfiguracion);
 
 tipoConfigSWAP* cargarArchivoDeConfiguracionDeSWAP(char* rutaDelArchivoDeConfiguracion);
+
+
+
+//////////////FUNCIONES PARA EL ARCHIVO DE PARTICION///////////////////////
+
+FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas);
 
 
 

@@ -7,6 +7,7 @@
 
 #include "funcionesSWAP.h"
 
+////////////////////FUNCIONES PARA EL MANEJO DE ARCHIVO DE CONFIGURACION///////////////////////
 
 tipoConfigSWAP* crearConfigSWAP(){
 	tipoConfigSWAP* cfg = malloc(sizeof(tipoConfigSWAP));
@@ -45,3 +46,25 @@ tipoConfigSWAP* cargarArchivoDeConfiguracionDeSWAP(char* rutaDelArchivoDeConfigu
 	return cfg;
 }
 
+
+//////////////FUNCIONES PARA EL ARCHIVO DE PARTICION///////////////////////
+
+
+FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas){
+
+	int tamanioDeArchivo = tamanioDePagina*cantidadDePaginas;
+	char* instruccion = string_new();
+	void* mapeo;
+	FILE* particion;
+
+	sprintf(instruccion,"truncate -s %d %s",tamanioDeArchivo,nombreDeParticion);
+	system(instruccion);
+
+	particion = fopen(nombreDeParticion,"a");
+
+	mapeo = mapearArchivoCompleto(particion);
+	sprintf(mapeo,string_repeat('\0',tamanioDeArchivo));
+	liberarMemoriaDeArchivoCompletoMapeado(particion,mapeo);
+
+	return particion;
+}
