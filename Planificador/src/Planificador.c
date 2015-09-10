@@ -174,23 +174,21 @@ int main(void) {
 
 	tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
 
-
-//
 	lista_de_PCB = list_create(); //Crea la lista_de_PCB
 	procesos_en_ready = list_create(); //Crea la lista de pocesos en ready
+	cpu_disponibles = list_create(); // crea lista de CPUs conectadas
 
 	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
 	pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
+	pthread_t recibir;
 
 	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso "main"
 	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta implementar la funcion "recibir_conexion"
 	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta implementar la funcion "ejecutar_proceso"
-	pthread_create(&ejecucion, NULL, recibir_rafagas, NULL); // Hilo encargado de mandar proces a ejetar a las CPUs
-
+	pthread_create(&recibir, NULL, recibir_rafagas, NULL); // Hilo encargado de mandar proces a ejetar a las CPUs
 
 
 	menu();
-
 
 	destruirConfigPlanificador(configuracion);
 
