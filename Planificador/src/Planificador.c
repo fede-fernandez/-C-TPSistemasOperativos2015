@@ -79,7 +79,7 @@ void* recibir_rafagas(void){
 			    switch (llegada) {
 
 				  case   'Q':
-				      quantum(PCB);	            break; // va a meter ese proceso a la cola de redy y actualizar PCB
+				      quantum(PCB);	        break; // va a meter ese proceso a la cola de redy y actualizar PCB
 				  case   'B':
 				      entrada_salida(PCB);      break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
 				  case   'F':
@@ -185,7 +185,7 @@ int main(void) {
 	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso "main"
 	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta implementar la funcion "recibir_conexion"
 	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta implementar la funcion "ejecutar_proceso"
-	pthread_create(&recibir, NULL, recibir_rafagas, NULL); // Hilo encargado de mandar proces a ejetar a las CPUs
+	pthread_create(&recibir, NULL, recibir_rafagas, NULL); // falta implementar la funcion
 
 
 	menu();
