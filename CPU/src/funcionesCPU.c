@@ -21,7 +21,7 @@ tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfigura
 	t_config* archivoCfg = config_create(rutaDelArchivoDeConfiguracionDelCPU);
 	tipoConfigCPU* cfg = crearConfigCPU();
 
-	validar(config_has_property(archivoCfg,IP_PLANIFICADOR)
+	validarErrorYAbortar(config_has_property(archivoCfg,IP_PLANIFICADOR)
 			&& config_has_property(archivoCfg,PUERTO_PLANIFICADOR)
 			&& config_has_property(archivoCfg,IP_MEMORIA)
 			&& config_has_property(archivoCfg,PUERTO_MEMORIA)

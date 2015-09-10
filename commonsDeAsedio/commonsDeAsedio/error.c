@@ -7,10 +7,10 @@
 
 #include "error.h"
 
-void validar(int condicionAValidar,char* mensajeEnCasoDeError){
+void validarErrorYAbortar(int condicionAValidar,char* mensajeEnCasoDeError){
 
 	if(!condicionAValidar){
 		perror(mensajeEnCasoDeError);
-		exit(-1);
+		abort();
 	}
 }

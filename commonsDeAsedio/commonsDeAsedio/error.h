@@ -9,10 +9,11 @@
 #define COMMONSDEASEDIO_ERROR_H_
 
 #include <stdio.h>
+#include <stdlib.h>
 
 
 
-void validar(int condicionAValidar,char* mensajeEnCasoDeError);
+void validarErrorYAbortar(int condicionAValidar,char* mensajeEnCasoDeError);
 
 
 #endif /* COMMONSDEASEDIO_ERROR_H_ */

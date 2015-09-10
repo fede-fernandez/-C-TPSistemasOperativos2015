@@ -26,7 +26,7 @@ tipoConfigSWAP* cargarArchivoDeConfiguracionDeSWAP(char* rutaDelArchivoDeConfigu
 
 	tipoConfigSWAP* cfg = crearConfigSWAP();
 
-	validar(config_has_property(archivoCfg,PUERTO_ESCUCHA)
+	validarErrorYAbortar(config_has_property(archivoCfg,PUERTO_ESCUCHA)
 			&& config_has_property(archivoCfg,NOMBRE_SWAP)
 			&& config_has_property(archivoCfg,CANTIDAD_PAGINAS)
 			&& config_has_property(archivoCfg,TAMANIO_PAGINA)

@@ -26,7 +26,7 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeC
 	t_config* archivoCfg = config_create(rutaDelArchivoDeConfiguracion);
 	tipoConfigMemoria* cfg = crearConfigMemoria();
 
-	validar(config_has_property(archivoCfg,PUERTO_ESCUCHA)
+	validarErrorYAbortar(config_has_property(archivoCfg,PUERTO_ESCUCHA)
 			&& config_has_property(archivoCfg,IP_SWAP)
 			&& config_has_property(archivoCfg,PUERTO_SWAP)
 			&& config_has_property(archivoCfg,MAXIMO_MARCOS_POR_PROCESO)

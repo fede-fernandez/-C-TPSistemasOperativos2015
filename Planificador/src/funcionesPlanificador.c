@@ -29,7 +29,7 @@ tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDe
 
 	tipoConfigPlanificador* cfg = crearConfigPlanificador();
 
-	validar(config_has_property(archivoConfig,PUERTO_ESCUCHA)
+	validarErrorYAbortar(config_has_property(archivoConfig,PUERTO_ESCUCHA)
 			&& config_has_property(archivoConfig,ALGORITMO_PLANIFICACION)
 			&& config_has_property(archivoConfig,QUANTUM),
 			"Las claves del archivo de configuracion no coinciden con las que requiere el Planificador.");
