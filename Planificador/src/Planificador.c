@@ -29,11 +29,12 @@ static t_estructura_PCB *PCB_create(int id, int pc, char estado[20], char path[3
 }
 
 
-struct estructura_CPU{
+typedef struct{
 	int id_cpu;
 	int disponibilidad;// "0" NO Esta disponible y, "1" Esta disponible
 	int puerto;
-};
+} t_estructura_CPU;
+
 
 // -------------------------------------------------------------------------------------------------------
 
