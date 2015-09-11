@@ -35,6 +35,11 @@ typedef struct{
 	int puerto;
 } t_estructura_CPU;
 
+typedef struct{
+	int id;
+	int tiempo;// tiempo que se va a dormir el procesos
+} t_estructura_bloqueados;
+
 
 // -------------------------------------------------------------------------------------------------------
 
@@ -49,10 +54,10 @@ void* ejecutar_proceso(void){
 
 		// wait(cant_procesos_listos);
 		// wait(cant_CPUs_libres);
-		//sacar_ultimo_elemento_de_la_lista(procesos_en_ready,id);
-		//PCB=buscar_id_de_proceso(lista_de_PCB,id);
-		//actualizar_PCB(PCB)
-		//buscar_CPU_disponible(cpu_disponibles,cpu_puerto)
+		//sacar_ultimo_elemento_de_la_lista( procesos_en_ready, id );
+		//PCB=buscar_id_de_proceso(lista_de_PCB , id);
+		//actualizar_PCB(PCB) ----[de listo a--> ejecucion]
+		//buscar_CPU_disponible(cpu_disponibles , cpu_puerto)
 		//send(cpu_puerto, PCB, strlen(PCB) + 1, 0);
 
 	}
@@ -80,11 +85,11 @@ void* recibir_rafagas(void){
 			    switch (llegada) {
 
 				  case   'Q':
-				      quantum(PCB);	        break; // va a meter ese proceso a la cola de redy y actualizar PCB
+				      quantum(PCB);	         break; // va a meter ese proceso a la cola de redy y actualizar PCB
 				  case   'B':
-				      entrada_salida(PCB);      break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
+				      entrada_salida(PCB);   break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
 				  case   'F':
-				      fin(PCB);	                break; // unicamente actualiza el PCB del proceso llegante
+				      fin(PCB);	             break; // unicamente actualiza el PCB del proceso llegante
 			 }
 
 		// agregar esa CPU como disponible(); */
@@ -122,14 +127,37 @@ void* recibir_conexion(void){
 ////..............................................................................................
 
 //-----------------------------------------------------------------------------------------------------------
+//---------------Hilo encargado de dormir procesesos durante un cierto tiempo "T"--------------------------
+//---------------tambien los pasa a la cola de "listos" una vez pasado ese tiempo-------------------------
 
 
-// variables globales
+void* bloquear_procesos(void){
+
+	while(1){
+
+		// sacar un proceso de la cola de "procesos_bloqueados" (modificando la lista)
+		// dormirlo segun indique su campo "tiempo"
+		// una vez transcurrido ese tiempo buscar con la id en "lista_de_PCB" y sacar su PCB (sin modificar la lista)
+		// modificar su estado de: bloqueado a--> listo y meter de nuevo en "lista_de_PCB"
+		// meter id de proceso en cola: "procesos_en_ready"
+
+	}
+
+	return 0;
+}
+
+//---------------------------------------------------------------------------------------------------------
+
+
+
+
+// Variables Globales
 
 int contador_de_id_procesos = 0; // para saber cuantos procesos hay en el sistema
 t_list* lista_de_PCB;
 t_list* procesos_en_ready; // lista de procesos "listos para ejecutar"
 t_list* cpu_disponibles; // lista de cpu disponibles
+t_list* procesos_bloqueados; // lista donde se encolan los procesos para luego mandarlos a dormir
 int socketEscucha; // socket que escuche las conecciones entrantes
 
 int correr_path(void);
@@ -139,7 +167,7 @@ int menu(void) {
 	while(1) // el menu tiene que estar presente siempre
 
 	{
-		 //limpiar pantalla
+		 // limpiar pantalla
 
 		 int opcion = 0;
 
@@ -182,11 +210,13 @@ int main(void) {
 	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
 	pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
 	pthread_t recibir;
+	pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de "procesos_bloqueados"
 
 	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso "main"
 	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta implementar la funcion "recibir_conexion"
 	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta implementar la funcion "ejecutar_proceso"
 	pthread_create(&recibir, NULL, recibir_rafagas, NULL); // falta implementar la funcion
+	pthread_create(&bloquear, NULL, bloquear_procesos, NULL); //falta implementar la funcion
 
 
 	menu();
