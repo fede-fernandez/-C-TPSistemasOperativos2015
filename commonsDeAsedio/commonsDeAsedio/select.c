@@ -15,7 +15,7 @@ t_list* crearListaDesdeEstructura(fd_set* estructura,int socketMayor){
 
 	for (var = socketMayor; var >0 ; var--) {
 
-		if(FD_ISSET(var,estructura))
+		if(FD_ISSET(var,estructura)!=0)
 			cargarEnLista(lista,var);
 	}
 
@@ -132,4 +132,20 @@ void quitarElementoDeLista(t_list* lista,void* elemento){
 
 	list_remove(lista,var);
 
+}
+
+void agregarElementoALista(t_list* lista,void* elemento){
+
+	void* buffer = malloc(sizeof(elemento));
+
+	buffer = elemento;
+
+	list_add(lista,buffer);
+}
+
+bool perteneceALista(t_list* lista,int elemento){
+
+	fd_set* estructura = crearEstructuraDesdeLista(lista);
+
+	return (FD_ISSET(elemento,estructura)!=0);
 }

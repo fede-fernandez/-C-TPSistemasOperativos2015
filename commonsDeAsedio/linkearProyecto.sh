@@ -17,7 +17,7 @@ make clean
 
 make
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/git/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug/
 
 clear
 

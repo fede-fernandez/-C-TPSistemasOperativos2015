@@ -9,6 +9,7 @@
 #define COMMONSDEASEDIO_SELECT_H_
 
 #include <commons/collections/list.h>
+#include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -29,6 +30,8 @@ void limpiarLista(t_list* lista);
 
 void quitarElementoDeLista(t_list* lista,void* elemento);
 
+void agregarElementoALista(t_list* lista,void* elemento);
 
+bool perteneceALista(t_list* lista,int elemento);
 
 #endif /* COMMONSDEASEDIO_SELECT_H_ */

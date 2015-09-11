@@ -7,24 +7,24 @@ C_SRCS += \
 ../commonsDeAsedio/cliente-servidor.c \
 ../commonsDeAsedio/configuracion.c \
 ../commonsDeAsedio/error.c \
-../commonsDeAsedio/estructuras.c \
 ../commonsDeAsedio/mmap.c \
+../commonsDeAsedio/select.c \
 ../commonsDeAsedio/thread.c 
 
 OBJS += \
 ./commonsDeAsedio/cliente-servidor.o \
 ./commonsDeAsedio/configuracion.o \
 ./commonsDeAsedio/error.o \
-./commonsDeAsedio/estructuras.o \
 ./commonsDeAsedio/mmap.o \
+./commonsDeAsedio/select.o \
 ./commonsDeAsedio/thread.o 
 
 C_DEPS += \
 ./commonsDeAsedio/cliente-servidor.d \
 ./commonsDeAsedio/configuracion.d \
 ./commonsDeAsedio/error.d \
-./commonsDeAsedio/estructuras.d \
 ./commonsDeAsedio/mmap.d \
+./commonsDeAsedio/select.d \
 ./commonsDeAsedio/thread.d 
 
 

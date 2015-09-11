@@ -53,7 +53,7 @@ void liberarSocket(int socket){
 
 void obviarErrorDeIpEnUso(int socket){
 	static int valorDeOpcion = 1;
-	//libero el puerto cuando se cierra el socket
+
 	setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &valorDeOpcion, sizeof(valorDeOpcion));
 
 }
