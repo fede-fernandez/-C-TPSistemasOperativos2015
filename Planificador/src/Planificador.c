@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-//--------------- -------estructuras, esto va en un t_estructuras_PCB------------------------------------------
+//--------------- -------estructuras, esto va en el .h------------------------------------------
 
 typedef struct{
 	int id;
