@@ -5,12 +5,20 @@
 int main(void) {
 
 	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("/home/utnso/Escritorio/cfgSWAP");
-	FILE* particion = inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
+
+	//FILE* particion = inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
+
+	t_list* listaDeHuecosLibres = inicializarListaDeHuecosLibres(configuracion->cantidadDePaginas);
+
+
+
+
+
 
 
 
 	destruirConfigSWAP(configuracion);
-	fclose(particion);
+	//fclose(particion);
 
 	return EXIT_SUCCESS;
 }

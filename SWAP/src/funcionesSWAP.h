@@ -15,6 +15,7 @@
 #include <commonsDeAsedio/error.h>
 #include <string.h>
 #include <commonsDeAsedio/mmap.h>
+#include <commons/collections/list.h>
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
 #define NOMBRE_SWAP "NOMBRE_SWAP"
@@ -30,6 +31,16 @@ typedef struct{
 	int retardoDeCompactacion;
 }tipoConfigSWAP;
 
+typedef struct{
+	int pid;
+	int baseDeMProc;
+	int cantidadDePaginasQueOcupa;
+}tipoHuecoUtilizado;
+
+typedef struct{
+	int baseDeMProc;
+	int cantidadDePaginasQueOcupa;
+}tipoHuecoLibre;
 
 ////////////////////FUNCIONES PARA EL MANEJO DE ARCHIVO DE CONFIGURACION///////////////////////
 
@@ -43,8 +54,21 @@ tipoConfigSWAP* cargarArchivoDeConfiguracionDeSWAP(char* rutaDelArchivoDeConfigu
 
 //////////////FUNCIONES PARA EL ARCHIVO DE PARTICION///////////////////////
 
-FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas);
+//FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas);
 
+
+
+
+////////////////////////////////////////////////
+
+
+
+
+
+tipoHuecoLibre* crearHuecoLibre(int inicio,int cantidadDePaginas);
+void destruirHuecoLibre(tipoHuecoLibre* huecoLibre);
+t_list* inicializarListaDeHuecosLibres(int cantidadDePaginas);
+int espacioDisponible(t_list* listaDeHuecosLibres,int tamanioDePagina);
 
 
 #endif /* FUNCIONESSWAP_H_ */

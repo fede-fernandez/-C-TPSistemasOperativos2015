@@ -50,21 +50,76 @@ tipoConfigSWAP* cargarArchivoDeConfiguracionDeSWAP(char* rutaDelArchivoDeConfigu
 //////////////FUNCIONES PARA EL ARCHIVO DE PARTICION///////////////////////
 
 
-FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas){
+//FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas){
+//
+//
+//	int tamanioDeArchivo = 50;//tamanioDePagina*cantidadDePaginas;
+//	char* instruccion = string_new();
+//	void* mapeo;
+//	FILE* particion;
+//
+//
+//	//sprintf(instruccion,"truncate -s %d %s",tamanioDeArchivo,nombreDeParticion);
+//	//system(instruccion);
+//
+//	particion = fopen(nombreDeParticion,"w+");
+//
+//	fprintf(particion,"%s",string_repeat('\0',20000000));
+//
+//	//mapeo = mapearArchivoCompleto(particion);
+//	//sprintf((char*)mapeo,"%s",string_repeat('a',tamanioDeArchivo));
+//	//liberarMemoriaDeArchivoCompletoMapeado(particion,mapeo);
+//
+//	return particion;
+//}
 
-	int tamanioDeArchivo = tamanioDePagina*cantidadDePaginas;
-	char* instruccion = string_new();
-	void* mapeo;
-	FILE* particion;
 
-	sprintf(instruccion,"truncate -s %d %s",tamanioDeArchivo,nombreDeParticion);
-	system(instruccion);
+/////////////////////LISTAS DE HUECOS///////////////////////
 
-	particion = fopen(nombreDeParticion,"a");
 
-	mapeo = mapearArchivoCompleto(particion);
-	sprintf(mapeo,string_repeat('\0',tamanioDeArchivo));
-	liberarMemoriaDeArchivoCompletoMapeado(particion,mapeo);
 
-	return particion;
+
+
+
+
+tipoHuecoLibre* crearHuecoLibre(int inicio,int cantidadDePaginas){
+
+	tipoHuecoLibre* aux = malloc(sizeof(tipoHuecoLibre));
+	aux->baseDeMProc = inicio;
+	aux->cantidadDePaginasQueOcupa = cantidadDePaginas;
+
+	return aux;
 }
+
+void destruirHuecoLibre(tipoHuecoLibre* huecoLibre){
+	free(huecoLibre);
+}
+
+
+
+t_list* inicializarListaDeHuecosLibres(int cantidadDePaginas){
+
+	t_list*	listaDeHuecosLibres = list_create();
+	list_add(listaDeHuecosLibres,crearHuecoLibre(0,cantidadDePaginas));
+	return listaDeHuecosLibres;
+}
+
+
+int espacioDisponible(t_list* listaDeHuecosLibres,int tamanioDePagina){
+	int espacioDisponible = 0;
+	int i;
+	tipoHuecoLibre* aux = malloc(sizeof(tipoHuecoLibre));
+
+	for (i = 0; i < list_size(listaDeHuecosLibres); i++) {
+		aux = list_get(listaDeHuecosLibres,i);
+		espacioDisponible+= (tamanioDePagina*(aux->cantidadDePaginasQueOcupa));
+
+	}
+
+	destruirHuecoLibre(aux);
+	return espacioDisponible;
+}
+
+
+
+
