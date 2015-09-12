@@ -7,39 +7,11 @@
 #include "funcionesPlanificador.h"
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <commonsDeAsedio/cliente-servidor.h>
 
 //--------------- -------estructuras, esto va en el .h------------------------------------------
 
-typedef struct{
-	int id;
-	int pc;
-	char estado[20];
-	char path[30];
-} t_estructura_PCB;
-
-static t_estructura_PCB *PCB_create(int id, int pc, char estado[20], char path[30]) { // esta funcion crea la estructura
-	t_estructura_PCB *new = malloc(sizeof(t_estructura_PCB));
-    new->id = id;
-    new->pc = pc;
-    memset(new->estado, '\0', 20);
-    strcpy(new->estado,estado);
-    memset(new->path, '\0', 30);
-    strcpy(new->path,path);
-    return new;
-}
-
-
-typedef struct{
-	int id_cpu;
-	int disponibilidad;// "0" NO Esta disponible y, "1" Esta disponible
-	int puerto;
-} t_estructura_CPU;
-
-typedef struct{
-	int id;
-	int tiempo;// tiempo que se va a dormir el procesos
-} t_estructura_bloqueados;
-
+//Las movi al header pero dejo los comentarios momentaneamente
 
 // -------------------------------------------------------------------------------------------------------
 
@@ -50,7 +22,7 @@ typedef struct{
 
 void* ejecutar_proceso(void){
 
-	while(1){
+	/*while(1){
 
 		// wait(cant_procesos_listos);
 		// wait(cant_CPUs_libres);
@@ -60,7 +32,29 @@ void* ejecutar_proceso(void){
 		//buscar_CPU_disponible(cpu_disponibles , cpu_puerto)
 		//send(cpu_puerto, PCB, strlen(PCB) + 1, 0);
 
-	}
+	}*///Lo comento momentaneamente para hacer el checkpoint 1
+
+	int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
+
+	int socket = crearSocket();
+
+	asociarAPuerto(socket,puerto);
+
+	escucharConexiones(socket,1);
+
+	int socketCpu = crearSocketParaAceptarSolicitudes(socket);
+
+	char mensaje[30] = "correr programa";
+
+	enviarMensaje(socket,&mensaje,sizeof(mensaje));
+
+	printf("Enviado comando 'correr programa'\n");
+
+	liberarSocket(socketCpu);
+
+	liberarSocket(socket);
+
+	getchar();
 
 	return 0;
 }

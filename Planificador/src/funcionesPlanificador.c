@@ -43,4 +43,32 @@ tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDe
 	return cfg;
 }
 
+t_estructura_PCB* PCB_create(int id, int pc, char estado[20], char path[30]) { // esta funcion crea la estructura
+	t_estructura_PCB *new = malloc(sizeof(t_estructura_PCB));
+    new->id = id;
+    new->pc = pc;
+    memset(new->estado, '\0', 20);
+    strcpy(new->estado,estado);
+    memset(new->path, '\0', 30);
+    strcpy(new->path,path);
+    return new;
+}
+
+t_estructura_PCB* recibirPCB(int socketPlanificador){
+
+	size_t tamanioBloque = sizeof(t_estructura_PCB);
+
+	void* bloque = malloc(tamanioBloque);
+
+	recibirMensajeCompleto(socketPlanificador,bloque,tamanioBloque);
+
+	t_estructura_PCB* pcbRecibido;
+
+	memcpy(bloque,pcbRecibido->id,sizeof(int));
+	memcpy(bloque+sizeof(int),pcbRecibido->pc,sizeof(int));
+	memcpy(bloque+2*sizeof(int),pcbRecibido->estado,20*sizeof(char));
+	memcpy(bloque+2*sizeof(int)+20*sizeof(char),pcbRecibido->path,30*sizeof(char));
+
+	return pcbRecibido;
+}
 
