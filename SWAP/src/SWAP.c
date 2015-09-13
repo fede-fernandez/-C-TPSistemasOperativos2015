@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include "funcionesSWAP.h"
 #include <commonsDeAsedio/cliente-servidor.h>
+#include "estructurasSWAP.h"
+
+#define MAXIMAS_CONEXIONES_ENTRANTES 1
 
 int main(void) {
 
@@ -11,29 +14,25 @@ int main(void) {
 
 	t_list* listaDeHuecosLibres = inicializarListaDeHuecosLibres(configuracion->cantidadDePaginas);
 
-	int socketParaAdministrador = crearSocket();
+//	int socketParaAdministrador = crearSocket();
+//	asociarAPuerto(socketParaAdministrador,configuracion->puertoDeEscucha);
+//	escucharConexiones(socketParaAdministrador,MAXIMAS_CONEXIONES_ENTRANTES);
+//	int administradorMemoria = crearSocketParaAceptarSolicitudes(socketParaAdministrador);
+//
+//
+//	char mensaje[30];
+//	recibirMensaje(administradorMemoria,&mensaje,sizeof(mensaje));
+//	printf("El comando recibido del Administrador de Memoria es: %s\n",mensaje);
+//
+//	liberarSocket(administradorMemoria);
+//	liberarSocket(socketParaAdministrador);
 
-	asociarAPuerto(socketParaAdministrador,configuracion->puertoDeEscucha);
 
-	escucharConexiones(socketParaAdministrador,1);
-
-	int administradorMemoria = crearSocketParaAceptarSolicitudes(socketParaAdministrador);
-
-	char mensaje[30];
-
-	recibirMensaje(administradorMemoria,&mensaje,sizeof(mensaje));
-
-	printf("El comando recibido del Administrador de Memoria es: %s\n",mensaje);
-
-	liberarSocket(administradorMemoria);
-
-	liberarSocket(socketParaAdministrador);
 
 	destruirConfigSWAP(configuracion);
 
 	//fclose(particion);
 
-	getchar();
 
 	return EXIT_SUCCESS;
 }

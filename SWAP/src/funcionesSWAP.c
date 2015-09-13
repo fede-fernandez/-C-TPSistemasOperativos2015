@@ -74,51 +74,9 @@ tipoConfigSWAP* cargarArchivoDeConfiguracionDeSWAP(char* rutaDelArchivoDeConfigu
 //}
 
 
-/////////////////////LISTAS DE HUECOS///////////////////////
 
 
 
-
-
-
-
-tipoHuecoLibre* crearHuecoLibre(int inicio,int cantidadDePaginas){
-
-	tipoHuecoLibre* aux = malloc(sizeof(tipoHuecoLibre));
-	aux->baseDeMProc = inicio;
-	aux->cantidadDePaginasQueOcupa = cantidadDePaginas;
-
-	return aux;
-}
-
-void destruirHuecoLibre(tipoHuecoLibre* huecoLibre){
-	free(huecoLibre);
-}
-
-
-
-t_list* inicializarListaDeHuecosLibres(int cantidadDePaginas){
-
-	t_list*	listaDeHuecosLibres = list_create();
-	list_add(listaDeHuecosLibres,crearHuecoLibre(0,cantidadDePaginas));
-	return listaDeHuecosLibres;
-}
-
-
-int espacioDisponible(t_list* listaDeHuecosLibres,int tamanioDePagina){
-	int espacioDisponible = 0;
-	int i;
-	tipoHuecoLibre* aux = malloc(sizeof(tipoHuecoLibre));
-
-	for (i = 0; i < list_size(listaDeHuecosLibres); i++) {
-		aux = list_get(listaDeHuecosLibres,i);
-		espacioDisponible+= (tamanioDePagina*(aux->cantidadDePaginasQueOcupa));
-
-	}
-
-	destruirHuecoLibre(aux);
-	return espacioDisponible;
-}
 
 
 
