@@ -75,20 +75,20 @@ int paginasDisponibles(t_list* listaDeHuecosUtilizados,int cantDePaginasTotal){
 	destruirHuecoUtilizado(aux2);
 
 	return pagDisponibles;
-}
+}//OK
 
 int espacioDisponible(t_list* listaDeHuecosLibres,int tamanioDePagina){
 	int espacioDisponible = 0;
 	int i;
-	tipoHuecoLibre* aux = malloc(sizeof(tipoHuecoLibre));
+	tipoHuecoLibre* aux;
 
 	for (i = 0; i < list_size(listaDeHuecosLibres); i++) {
 		aux = list_get(listaDeHuecosLibres,i);
 		espacioDisponible+= (tamanioDePagina*(aux->cantidadDePaginasQueOcupa));
 	}
-	destruirHuecoLibre(aux);
+
 	return espacioDisponible;
-}
+}//OK
 
 int reservarEspacio(t_list* listaDeHuecosLibres,t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas,tipoConfigSWAP* configuracion){
 	//if(tengoEspacioDisponible)
@@ -106,26 +106,45 @@ int reservarEspacio(t_list* listaDeHuecosLibres,t_list* listaDeHuecosUtilizados,
 
 int tengoEspacioDisponible(t_list* listaDeHuecosUtilizados,int cantDePaginasTotal){
 	if (paginasDisponibles(listaDeHuecosUtilizados,cantDePaginasTotal) > 0) {
-		return 1;
+		return SI;
 	} else {
-		return 0;
+		return NO;
 	}
 }//OK
 
-int tengoEspacioContiguoDisponible(t_list* listaDeHuecosLibres,int cantDePaginasSolicitadas){
-	//buscar elemento
-	//retornar indice en lista
-	return 0;
+int tengoEspacioContiguoDisponible(t_list* listaDeHuecosUtilizados,int cantDePaginasSolicitadas){
+
+	int resultado = 0;
+	tipoHuecoUtilizado* aux1;
+	tipoHuecoUtilizado* aux2;
+
+	int i=0;
+	while(i<list_size(listaDeHuecosUtilizados) && resultado==0){
+
+		aux1 = list_get(listaDeHuecosUtilizados,i);
+		aux2 = list_get(listaDeHuecosUtilizados,i+1);
+
+		if (cantDePaginasSolicitadas <= espacioEntreDosHuecosUtilizados(aux1,aux2)) {
+			resultado = i;
+		}
+
+		i++;
+	}
+
+	return resultado;
 }
 
 void compactar(){
 }
 
-void asignarEspacio(t_list* listaDeHuecosLibres,t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas, int indiceDeHuecoLibre){
+void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas,int indiceHuecoPrevio){
 	//crearEstructuraOcupado
+	tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,indiceHuecoPrevio);
+	tipoHuecoUtilizado* huecoNuevo = crearHuecoUtilizado(pidProceso,paginaMaxima(aux),cantDePaginasSolicitadas);
 
 	//agregarAListaOcupados
-	//actualizarListaLibresPorAsignacion
+	list_add_in_index(listaDeHuecosUtilizados,indiceHuecoPrevio+1,huecoNuevo);
+
 	//actualizarParticionPorAsignacion
 }
 
@@ -134,4 +153,9 @@ void asignarEspacio(t_list* listaDeHuecosLibres,t_list* listaDeHuecosUtilizados,
 int espacioEntreDosHuecosUtilizados(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2){
 	return (h2->baseDeMProc - (h1->baseDeMProc + h1->cantidadDePaginasQueOcupa));
 }
+
+int paginaMaxima(tipoHuecoUtilizado* hueco){
+	return (hueco->baseDeMProc + hueco->cantidadDePaginasQueOcupa);
+}
+
 

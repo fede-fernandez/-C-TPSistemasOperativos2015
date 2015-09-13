@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "funcionesSWAP.h"
+
+#include <commons/collections/list.h>
+
 #include <commonsDeAsedio/cliente-servidor.h>
+
 #include "estructurasSWAP.h"
+#include "funcionesSWAP.h"
+#include "huecosSWAP.h"
 
 #define MAXIMAS_CONEXIONES_ENTRANTES 1
 
