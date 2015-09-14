@@ -14,10 +14,8 @@
 int main(void) {
 
 	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("/home/utnso/Escritorio/cfgSWAP");
-
-	//FILE* particion = inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
-
-	t_list* listaDeHuecosLibres = inicializarListaDeHuecosLibres(configuracion->cantidadDePaginas);
+	FILE* particion = inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
+	//t_list* listaDeHuecosUtilizados = inicializarListaDeHuecosUtilizados();
 
 //	int socketParaAdministrador = crearSocket();
 //	asociarAPuerto(socketParaAdministrador,configuracion->puertoDeEscucha);
@@ -34,9 +32,9 @@ int main(void) {
 
 
 
-	destruirConfigSWAP(configuracion);
 
-	//fclose(particion);
+	destruirConfigSWAP(configuracion);
+	fclose(particion);
 
 
 	return EXIT_SUCCESS;

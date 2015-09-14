@@ -31,11 +31,14 @@ int espacioDisponible(t_list* listaDeHuecosLibres,int tamanioDePagina);
 int paginasDisponibles(t_list* listaDeHuecosUtilizados,int cantDePaginasTotal);
 
 
-int reservarEspacio(t_list* listaDeHuecosLibres,t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas,tipoConfigSWAP* configuracion);
 int tengoEspacioDisponible(t_list* listaDeHuecosUtilizados,int cantDePaginasTotal);//OK
 int tengoEspacioContiguoDisponible(t_list* listaDeHuecosUtilizados,int cantDePaginasSolicitadas);//OK
 void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas, int indiceDeHuecoPrevio);
 
+int reservarEspacio(t_list* listaDeHuecosLibres,t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas,tipoConfigSWAP* configuracion);
+void liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso);
+char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina);
+void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina);
 
 void compactar();
 
@@ -44,5 +47,7 @@ void compactar();
 ////////FUNCIONES AUXILIARES///////////
 int espacioEntreDosHuecosUtilizados(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);
 int paginaMaxima(tipoHuecoUtilizado* hueco);
+tipoHuecoUtilizado* buscarHuecoDePID(t_list* listaDeHuecosUtilizados,int pidProcesoBuscado);
+int traducirDireccionLogicaAFisica(tipoHuecoUtilizado* hueco,int dirLogicaDePagina,int tamanioDePagina);
 
 #endif /* HUECOSSWAP_H_ */

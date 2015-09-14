@@ -148,6 +148,47 @@ void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePag
 	//actualizarParticionPorAsignacion
 }
 
+void liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
+	//buscarHuecoDePIDyBorrarHuecoDeLista
+	tipoHuecoUtilizado* aux;
+	int i;
+
+	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
+		aux = list_get(listaDeHuecosUtilizados,i);
+		if (aux->pid == pidProceso) {
+			list_remove(listaDeHuecosUtilizados,i);
+		}
+	}
+
+	//actualizarArchivoDeParticion
+}
+
+char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina){
+	char* contenidoDePagina;
+
+	//buscarPIDEnListaDeHuecos
+	tipoHuecoUtilizado* huecoDelProceso = buscarHuecoDePID(listaDeHuecosUtilizados,pidProceso);
+
+	//traducirDireccionLogicaEnFisica
+	int direccionFisicaEnParticion = traducirDireccionLogicaAFisica(huecoDelProceso,dirLogicaDePagina,tamanioDePagina);
+		//direccionFisicaEnParticion es la posicion donde comienza la pagina en el archivo de particion
+
+	//buscarEnContenidoEnParticion
+
+	//retornarContenidoDePagina
+	return contenidoDePagina;
+}
+
+void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina){
+	//buscarPIDEnListaDeHuecos
+	tipoHuecoUtilizado* huecoDelProceso = buscarHuecoDePID(listaDeHuecosUtilizados,pidProceso);
+
+	//traducirDireccionLogicaAFisica
+	int direccionFisicaEnParticion = traducirDireccionLogicaAFisica(huecoDelProceso,dirLogicaDePagina,tamanioDePagina);
+
+	//escribirEnParticion
+}
+
 
 ///////FUNCIONES AUXILIARES/////
 int espacioEntreDosHuecosUtilizados(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2){
@@ -158,4 +199,22 @@ int paginaMaxima(tipoHuecoUtilizado* hueco){
 	return (hueco->baseDeMProc + hueco->cantidadDePaginasQueOcupa);
 }
 
+tipoHuecoUtilizado* buscarHuecoDePID(t_list* listaDeHuecosUtilizados,int pidProcesoBuscado){
+	tipoHuecoUtilizado* aux;
+	int i;
 
+	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
+		aux = list_get(listaDeHuecosUtilizados,i);
+		if(aux->pid == pidProcesoBuscado)
+			break;
+	}
+	return aux;
+}
+
+int traducirDireccionLogicaAFisica(tipoHuecoUtilizado* hueco,int dirLogicaDePagina,int tamanioDePagina){
+	int direccionFisica;
+
+	direccionFisica = hueco->baseDeMProc + dirLogicaDePagina*tamanioDePagina;
+
+	return direccionFisica;
+}
