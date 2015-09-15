@@ -11,9 +11,6 @@
 #include <commons/collections/list.h>
 
 /////////////////////LISTAS DE HUECOS///////////////////////
-
-
-
 tipoHuecoLibre* crearHuecoLibre(int inicio,int cantidadDePaginas){
 
 	tipoHuecoLibre* aux = malloc(sizeof(tipoHuecoLibre));
@@ -33,6 +30,8 @@ t_list* inicializarListaDeHuecosLibres(int cantidadDePaginas){
 	list_add(listaDeHuecosLibres,crearHuecoLibre(0,cantidadDePaginas));
 	return listaDeHuecosLibres;
 }
+
+
 
 tipoHuecoUtilizado* crearHuecoUtilizado(int pidProceso,int inicio,int cantidadDePaginas){
 
@@ -55,55 +54,75 @@ t_list* inicializarListaDeHuecosUtilizados(){
 }
 
 
-int paginasDisponibles(t_list* listaDeHuecosUtilizados,int cantDePaginasTotal){
-	int pagDisponibles = 0;
-	int i;
-	tipoHuecoUtilizado* aux1 = malloc(sizeof(tipoHuecoUtilizado));
-	tipoHuecoUtilizado* aux2 = malloc(sizeof(tipoHuecoUtilizado));
+/////////////////////FUNCIONES PRINCIPALES//////////////
+int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas,tipoConfigSWAP* configuracion){
+	int indiceDeHuecoPrevio;
 
-	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
-		if (!cantDePaginasTotal == i) {
-
-			aux1 = list_get(listaDeHuecosUtilizados,i);
-			aux2 = list_get(listaDeHuecosUtilizados,i+1);
-
-			pagDisponibles += espacioEntreDosHuecosUtilizados(aux1,aux2);
-		}
-	}
-
-	destruirHuecoUtilizado(aux1);
-	destruirHuecoUtilizado(aux2);
-
-	return pagDisponibles;
-}//OK
-
-int espacioDisponible(t_list* listaDeHuecosLibres,int tamanioDePagina){
-	int espacioDisponible = 0;
-	int i;
-	tipoHuecoLibre* aux;
-
-	for (i = 0; i < list_size(listaDeHuecosLibres); i++) {
-		aux = list_get(listaDeHuecosLibres,i);
-		espacioDisponible+= (tamanioDePagina*(aux->cantidadDePaginasQueOcupa));
-	}
-
-	return espacioDisponible;
-}//OK
-
-int reservarEspacio(t_list* listaDeHuecosLibres,t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas,tipoConfigSWAP* configuracion){
 	//if(tengoEspacioDisponible)
-	//	if(!tengoEspacioContiguo)
-	//		compactar
-	//	asignarEspacio
+	if (tengoEspacioDisponible(listaDeHuecosUtilizados,configuracion->cantidadDePaginas)) {
+		//	if(tengoEspacioContiguo)
+		if ((indiceDeHuecoPrevio = tengoEspacioContiguoDisponible(listaDeHuecosUtilizados,cantDePaginasSolicitadas)) == 0) {
+			//compactar
+			compactar();
+
+		}
+		//	asignarEspacio
+		asignarEspacio(listaDeHuecosUtilizados,pidProceso,cantDePaginasSolicitadas,indiceDeHuecoPrevio);
+		return 1;
+	}
 	//else
+
 	//	error
 
 	return 0;
 }
 
-/////////////////FUNCIONES PRIVADAS//////////////
+void liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
+	//buscarHuecoDePIDyBorrarHuecoDeLista
+	tipoHuecoUtilizado* aux;
+	int i;
+
+	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
+		aux = list_get(listaDeHuecosUtilizados,i);
+		if (aux->pid == pidProceso) {
+			list_remove(listaDeHuecosUtilizados,i);
+		}
+	}
+
+}
+
+char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,FILE* particion){
+	char* contenidoDePagina;
+
+	//buscarPIDEnListaDeHuecos
+	tipoHuecoUtilizado* huecoDelProceso = buscarHuecoDePID(listaDeHuecosUtilizados,pidProceso);
+
+	//traducirDireccionLogicaEnFisica
+	int direccionFisicaEnParticion = traducirDireccionLogicaAFisica(huecoDelProceso,dirLogicaDePagina);
+		//direccionFisicaEnParticion es la posicion donde comienza la pagina en el archivo de particion
+
+	//buscarEnContenidoEnParticion
+	contenidoDePagina = string_duplicate(leerBloqueMapeado(particion,direccionFisicaEnParticion,tamanioDePagina));
+
+	//retornarContenidoDePagina
+	return contenidoDePagina;
+}
+
+void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, FILE* particion){
+	//buscarPIDEnListaDeHuecos
+	tipoHuecoUtilizado* huecoDelProceso = buscarHuecoDePID(listaDeHuecosUtilizados,pidProceso);
+
+	//traducirDireccionLogicaAFisica
+	int direccionFisicaEnParticion = traducirDireccionLogicaAFisica(huecoDelProceso,dirLogicaDePagina);
+
+	//escribirEnParticion
+	escribirBloqueMapeado(particion,contenidoAEscribir,direccionFisicaEnParticion,tamanioDePagina);
+}
 
 
+
+
+/////////////////FUNCIONES SECUNDARIAS//////////////
 int tengoEspacioDisponible(t_list* listaDeHuecosUtilizados,int cantDePaginasTotal){
 	if (paginasDisponibles(listaDeHuecosUtilizados,cantDePaginasTotal) > 0) {
 		return SI;
@@ -134,6 +153,39 @@ int tengoEspacioContiguoDisponible(t_list* listaDeHuecosUtilizados,int cantDePag
 	return resultado;
 }
 
+int paginasDisponibles(t_list* listaDeHuecosUtilizados,int cantDePaginasTotal){
+	int pagDisponibles = 0;
+	int i;
+	tipoHuecoUtilizado* aux1;
+	tipoHuecoUtilizado* aux2;
+	if (list_is_empty(listaDeHuecosUtilizados))
+		return cantDePaginasTotal;
+
+	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
+		if (cantDePaginasTotal != i) {
+
+			aux1 = list_get(listaDeHuecosUtilizados,i);
+			aux2 = list_get(listaDeHuecosUtilizados,i+1);
+
+			pagDisponibles += espacioEntreDosHuecosUtilizados(aux1,aux2);
+		}
+	}
+	return pagDisponibles;
+}//OK
+
+int espacioDisponible(t_list* listaDeHuecosLibres,int tamanioDePagina){
+	int espacioDisponible = 0;
+	int i;
+	tipoHuecoLibre* aux;
+
+	for (i = 0; i < list_size(listaDeHuecosLibres); i++) {
+		aux = list_get(listaDeHuecosLibres,i);
+		espacioDisponible+= (tamanioDePagina*(aux->cantidadDePaginasQueOcupa));
+	}
+
+	return espacioDisponible;
+}//OK
+
 void compactar(){
 }
 
@@ -145,49 +197,8 @@ void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePag
 	//agregarAListaOcupados
 	list_add_in_index(listaDeHuecosUtilizados,indiceHuecoPrevio+1,huecoNuevo);
 
-	//actualizarParticionPorAsignacion
 }
 
-void liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
-	//buscarHuecoDePIDyBorrarHuecoDeLista
-	tipoHuecoUtilizado* aux;
-	int i;
-
-	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
-		aux = list_get(listaDeHuecosUtilizados,i);
-		if (aux->pid == pidProceso) {
-			list_remove(listaDeHuecosUtilizados,i);
-		}
-	}
-
-	//actualizarArchivoDeParticion
-}
-
-char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina){
-	char* contenidoDePagina;
-
-	//buscarPIDEnListaDeHuecos
-	tipoHuecoUtilizado* huecoDelProceso = buscarHuecoDePID(listaDeHuecosUtilizados,pidProceso);
-
-	//traducirDireccionLogicaEnFisica
-	int direccionFisicaEnParticion = traducirDireccionLogicaAFisica(huecoDelProceso,dirLogicaDePagina,tamanioDePagina);
-		//direccionFisicaEnParticion es la posicion donde comienza la pagina en el archivo de particion
-
-	//buscarEnContenidoEnParticion
-
-	//retornarContenidoDePagina
-	return contenidoDePagina;
-}
-
-void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina){
-	//buscarPIDEnListaDeHuecos
-	tipoHuecoUtilizado* huecoDelProceso = buscarHuecoDePID(listaDeHuecosUtilizados,pidProceso);
-
-	//traducirDireccionLogicaAFisica
-	int direccionFisicaEnParticion = traducirDireccionLogicaAFisica(huecoDelProceso,dirLogicaDePagina,tamanioDePagina);
-
-	//escribirEnParticion
-}
 
 
 ///////FUNCIONES AUXILIARES/////
@@ -211,10 +222,26 @@ tipoHuecoUtilizado* buscarHuecoDePID(t_list* listaDeHuecosUtilizados,int pidProc
 	return aux;
 }
 
-int traducirDireccionLogicaAFisica(tipoHuecoUtilizado* hueco,int dirLogicaDePagina,int tamanioDePagina){
+int traducirDireccionLogicaAFisica(tipoHuecoUtilizado* hueco,int dirLogicaDePagina){
 	int direccionFisica;
 
-	direccionFisica = hueco->baseDeMProc + dirLogicaDePagina*tamanioDePagina;
+	direccionFisica = hueco->baseDeMProc + dirLogicaDePagina;
 
 	return direccionFisica;
+}
+
+
+
+void imprimirListaDeHuecos(t_list* lista){
+	int i;
+
+	for (i = 0; i < list_size(lista); ++i) {
+		imprimirHueco(list_get(lista,i));
+	}
+}
+
+void imprimirHueco(tipoHuecoUtilizado* hueco){
+
+	printf("PID: %d   paginaInicial: %d cantidadDePaginas: %d\n",hueco->pid,hueco->baseDeMProc,hueco->cantidadDePaginasQueOcupa);
+
 }
