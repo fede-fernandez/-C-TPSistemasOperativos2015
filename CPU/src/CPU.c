@@ -58,8 +58,10 @@ int main(void) {
 		instruccionBloqueante = ejecutarInstruccion(instruccionActual, pID);
 		//pID me lo envia el planificador por socket
 		if(instruccionBloqueante == 1)
+		{
 			sleep(2);
 			break;
+		}
 		sleep(2);
 	}
 /******Fin de Actividad de CPU cuando Planificador envia mensaje*******/

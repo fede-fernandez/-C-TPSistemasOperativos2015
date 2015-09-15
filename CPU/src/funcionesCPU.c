@@ -42,25 +42,27 @@ tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfigura
 	return cfg;
 }
 
-ejecutarInstruccion(char* instruccion, int idDeProceso)
+int ejecutarInstruccion(char* instruccion, int idDeProceso)
 {
 	char** instruccionSeparadaPorEspacios = string_split(instruccion, " ");
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "iniciar"))
-		instruccionIniciar(instruccionSeparadaPorEspacios[1], idDeProceso);
+		return instruccionIniciar(instruccionSeparadaPorEspacios[1], idDeProceso);
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "leer"))
-		instruccionLeer(instruccionSeparadaPorEspacios[1], idDeProceso);
+		return instruccionLeer(instruccionSeparadaPorEspacios[1], idDeProceso);
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "escribir"))
-		instruccionEscribir(instruccionSeparadaPorEspacios[1],
+		return instruccionEscribir(instruccionSeparadaPorEspacios[1],
 				instruccionSeparadaPorEspacios[2], idDeProceso);
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "entrada-salida"))
-		instruccionEntradaSalida(instruccionSeparadaPorEspacios[1], idDeProceso);
+		return instruccionEntradaSalida(instruccionSeparadaPorEspacios[1], idDeProceso);
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "finalizar"))
-		instruccionFinalizar(idDeProceso);
+		return instruccionFinalizar(idDeProceso);
+
+	return 0;
 }
 
 //Por ahora envio a Memoria solo idDelProceso para que lo asigne a la pagina, si necesita
