@@ -37,9 +37,6 @@ tipoConfigSWAP* cargarArchivoDeConfiguracionDeSWAP(char* rutaDelArchivoDeConfigu
 
 
 
-//////////////FUNCIONES PARA EL ARCHIVO DE PARTICION///////////////////////
-
-FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas);
 
 
 

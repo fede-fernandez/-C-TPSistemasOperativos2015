@@ -47,21 +47,6 @@ tipoConfigSWAP* cargarArchivoDeConfiguracionDeSWAP(char* rutaDelArchivoDeConfigu
 }
 
 
-//////////////FUNCIONES PARA EL ARCHIVO DE PARTICION///////////////////////
-
-
-FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas){
-
-	char* instruccion = string_new();
-	FILE* particion;
-
-	sprintf(instruccion,"dd if=/dev/zero of=%s bs=%d count=%d",nombreDeParticion,tamanioDePagina,cantidadDePaginas);
-	system(instruccion);
-
-	particion = fopen(nombreDeParticion,"r+");//modo actualizacion, el archivo debe existir
-
-	return particion;
-}
 
 
 
