@@ -7,7 +7,7 @@
 
 #include "select.h"
 
-t_list* crearListaDesdeEstructura(fd_set* estructura,int socketMayor){
+t_list* crearListaDesdeEstructura(fd_set estructura,int socketMayor){
 
 	t_list* lista = list_create();
 
@@ -15,28 +15,30 @@ t_list* crearListaDesdeEstructura(fd_set* estructura,int socketMayor){
 
 	for (var = socketMayor; var >0 ; var--) {
 
-		if(FD_ISSET(var,estructura)!=0)
+		if(FD_ISSET(var,&estructura)!=0)
 			cargarEnLista(lista,var);
 	}
 
 	return lista;
 }
 
-fd_set* crearEstructuraDesdeLista(t_list* lista){
+fd_set crearEstructuraDesdeLista(t_list* lista){
 
-	fd_set* estructura;
+	fd_set estructura;
 
-	FD_ZERO(estructura);
+	FD_ZERO(&estructura);
 
 	int var;
 
 	int* actual;
 
-	for (var = 1; var < mayorDeLista(lista) ; ++var) {
+	for (var = 0; var < list_size(lista); ++var) {
+
 
 		actual = list_get(lista,var);
 
-		FD_SET(*actual,estructura);
+
+		FD_SET(*actual,&estructura);
 
 	}
 	return estructura;
@@ -76,38 +78,38 @@ int mayorDeLista(t_list* lista){
 	return maximo;
 }
 
-void filtrarListas(t_list* listaPrincipal,t_list* listaLectura,t_list* listaEscritura,t_list* listaExcepciones){
+bool filtrarListas(t_list* listaPrincipal,t_list* listaLectura,t_list* listaEscritura){
 
-	fd_set* estructuraLectura;
+	fd_set estructuraLectura;
 
-	fd_set* estructuraEscritura;
-
-	fd_set* estructuraExcepciones;
+	fd_set estructuraEscritura;
 
 	limpiarLista(listaEscritura);
 
 	limpiarLista(listaLectura);
 
-	limpiarLista(listaExcepciones);
-
 	int resultado,maximoSocket = mayorDeLista(listaPrincipal);
 
 	do{
+		FD_ZERO(&estructuraEscritura);
+		FD_ZERO(&estructuraLectura);
+
 		estructuraLectura = crearEstructuraDesdeLista(listaPrincipal);
 
 		estructuraEscritura =  crearEstructuraDesdeLista(listaPrincipal);
 
-		estructuraExcepciones = crearEstructuraDesdeLista(listaPrincipal);
+		resultado = select(maximoSocket+1,&estructuraLectura,&estructuraEscritura,NULL,NULL);
 
-		resultado = select(maximoSocket+1,estructuraLectura,estructuraEscritura,estructuraExcepciones,NULL);
-
-	}while(resultado==-1);
+	}while(resultado<=0);
 
 	listaLectura = crearListaDesdeEstructura(estructuraLectura,maximoSocket);
 
 	listaEscritura = crearListaDesdeEstructura(estructuraEscritura,maximoSocket);
 
-	listaExcepciones = crearListaDesdeEstructura(estructuraExcepciones,maximoSocket);
+	int* socketServidor = list_get(listaPrincipal,0);
+
+	return perteneceALista(listaLectura,*socketServidor);
+
 }
 
 void limpiarLista(t_list* lista){
@@ -136,7 +138,7 @@ void quitarElementoDeLista(t_list* lista,void* elemento){
 
 void agregarElementoALista(t_list* lista,void* elemento){
 
-	void* buffer = malloc(sizeof(elemento));
+	void* buffer = malloc(sizeof(*elemento));
 
 	buffer = elemento;
 
@@ -145,7 +147,22 @@ void agregarElementoALista(t_list* lista,void* elemento){
 
 bool perteneceALista(t_list* lista,int elemento){
 
-	fd_set* estructura = crearEstructuraDesdeLista(lista);
+	fd_set estructura = crearEstructuraDesdeLista(lista);
 
-	return (FD_ISSET(elemento,estructura)!=0);
+	return (FD_ISSET(elemento,&estructura)!=0);
+}
+
+void mostrarLista(t_list* lista){
+
+	int var;
+
+	int* actual;
+
+	for (var = 0; var < list_size(lista); ++var) {
+
+		actual = list_get(lista,var);
+
+		printf("%d\n",*actual);
+	}
+
 }

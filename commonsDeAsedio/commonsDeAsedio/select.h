@@ -14,11 +14,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-t_list* crearListaDesdeEstructura(fd_set* estructura,int maximoSocket);
+t_list* crearListaDesdeEstructura(fd_set estructura,int maximoSocket);
 
-fd_set* crearEstructuraDesdeLista(t_list* lista);
+fd_set crearEstructuraDesdeLista(t_list* lista);
 
-void filtrarListas(t_list* listaPrincipal,t_list* listaLectura,t_list* listaEscritura,t_list* listaExcepciones);
+//Solo pido que el socket del servidor lo pongan primero en la lista
+bool filtrarListas(t_list* listaPrincipal,t_list* listaLectura,t_list* listaEscritura);
 
 void cargarEnLista(t_list* lista,int socket);
 
@@ -33,5 +34,7 @@ void quitarElementoDeLista(t_list* lista,void* elemento);
 void agregarElementoALista(t_list* lista,void* elemento);
 
 bool perteneceALista(t_list* lista,int elemento);
+
+void mostrarLista(t_list* lista);
 
 #endif /* COMMONSDEASEDIO_SELECT_H_ */
