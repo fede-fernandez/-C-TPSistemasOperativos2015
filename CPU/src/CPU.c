@@ -59,10 +59,10 @@ int main(void) {
 		//pID me lo envia el planificador por socket
 		if(instruccionBloqueante == 1)
 		{
-			sleep(2);
+			sleep(configuracion->retardo);
 			break;
 		}
-		sleep(2);
+		sleep(configuracion->retardo);
 	}
 /******Fin de Actividad de CPU cuando Planificador envia mensaje*******/
 	return EXIT_SUCCESS;
