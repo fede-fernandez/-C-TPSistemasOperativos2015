@@ -2,11 +2,15 @@
 #include <stdlib.h>
 #include "funcionesMemoria.h"
 #include <commonsDeAsedio/cliente-servidor.h>
+#include <commons/collections/list.h>
+#include <commonsDeAsedio/select.h>
 
-#define puertoCpus 7203
+#define maxConexionesEntrantes 10
 #define puertoSwap 7204
 
 int main(void) {
+
+//////////////////////////INICIALIZACION DE VARIABLES////////////////////////////////
 
 	tipoConfigMemoria* configuracion = cargarArchivoDeConfiguracionDeMemoria("/home/utnso/Escritorio/cfgMemoria");
 
@@ -14,33 +18,36 @@ int main(void) {
 
 	int socketParaSwap = crearSocket();
 
-	asociarAPuerto(socketParaCpus,puertoCpus);
+	int socketCpuEntrante;
 
-	asociarAPuerto(socketParaSwap,puertoSwap);
+	bool memoriaActiva = true,hayCpuParaConexion = false;
 
-	escucharConexiones(socketParaCpus,1);
+	t_list* listaPrincipal = list_create();
+	t_list* listaLectura = list_create();
+	t_list* listaEscritura = list_create();
+/////////////////////////////////////////////////////////////////////////////////////
 
-	int cpu = crearSocketParaAceptarSolicitudes(socketParaCpus);
+	asociarAPuerto(socketParaCpus,configuracion->puertoDeEscucha);
 
-	char mensaje[30];
+	asociarAPuerto(socketParaSwap,puertoSwap);//para mi en el archivo de configuracion deberia de
+											 //estar el puerto de memoria para cnectarse a swap
 
-	recibirMensaje(cpu,&mensaje,sizeof(mensaje));
 
-	printf("El comando recibido de la cpu es: %s\n",mensaje);
+	while(memoriaActiva){
 
-	liberarSocket(cpu);
+		hayCpuParaConexion = filtrarListas(listaPrincipal,listaLectura,listaEscritura);
 
-	liberarSocket(socketParaCpus);
+		if(hayCpuParaConexion){
+			socketCpuEntrante = crearSocketParaAceptarSolicitudes(socketParaCpus);
+			cargarEnLista(listaPrincipal,socketCpuEntrante);
+		}
 
-	conectarAServidor(socketParaSwap,configuracion->ipSWAP,configuracion->puertoSWAP);
+		tratarLecturas(socketParaCpus,socketParaSwap,listaLectura);
 
-	enviarMensaje(socketParaSwap,&mensaje,sizeof(mensaje));
-
-	liberarSocket(socketParaSwap);
+		tratarEscrituras(socketParaCpus,socketParaSwap,listaEscritura);
+	}
 
 	destruirConfigMemoria(configuracion);
-
-	getchar();
 
 	return EXIT_SUCCESS;
 }

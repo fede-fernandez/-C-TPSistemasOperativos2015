@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <commonsDeAsedio/error.h>
+#include <commonsDeAsedio/cliente-servidor.h>
 
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
@@ -37,12 +38,42 @@ typedef struct{
 	int retardoDeMemoria;
 }tipoConfigMemoria;
 
+typedef struct{
+	char instruccion;
+
+	int pid;
+
+	int nroPagina;
+
+	char* texto;
+}tipoInstruccionCpu;
+
+typedef struct{
+
+	char respuesta;
+
+	char* informacion;
+}tipoRespuestaCpu;
+
 tipoConfigMemoria* crearConfigMemoria();
 
 void destruirConfigMemoria(tipoConfigMemoria* estructuraDeConfiguracion);
 
 tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeConfiguracion);
 
+tipoInstruccionCpu recibirInstruccionCpu(int socketCpu);
+
+tipoInstruccionCpu deserializarInstruccionCpu(size_t tamanioBloque,void* buffer);
+
+void* serializarRespuestaCpu(tipoRespuestaCpu respuesta);
+
+void tratarEscritura(int socketParaCpus,int socketParaSwap,int socketParaEscribir);
+
+void tratarLectura(int socketParaCpus,int socketParaSwap,int socketParaLeer);
+
+void tratarLecturas(int socketParaCpus,int socketParaSwap,t_list* listaLectura);
+
+void tratarEscrituras(int socketParaCpus,int socketParaSwap,t_list* listaEscritura);
 
 
 #endif /* FUNCIONESMEMORIA_H_ */
