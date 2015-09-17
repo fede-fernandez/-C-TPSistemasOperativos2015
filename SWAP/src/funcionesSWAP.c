@@ -39,6 +39,7 @@ tipoConfigSWAP* cargarArchivoDeConfiguracionDeSWAP(char* rutaDelArchivoDeConfigu
 	cfg->nombreDeSWAP = string_duplicate(config_get_string_value(archivoCfg,NOMBRE_SWAP));
 	cfg->cantidadDePaginas = config_get_int_value(archivoCfg,CANTIDAD_PAGINAS);
 	cfg->retardoDeCompactacion = config_get_int_value(archivoCfg,RETARDO_COMPACTACION);
+	cfg->tamanioDePagina = config_get_int_value(archivoCfg,TAMANIO_PAGINA);
 
 
 	config_destroy(archivoCfg);
