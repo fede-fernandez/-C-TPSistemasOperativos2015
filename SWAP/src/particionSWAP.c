@@ -7,24 +7,20 @@
 
 
 #include "particionSWAP.h"
-#define SCRIPT "crearParticion.sh"
 
 //////////////FUNCIONES PARA EL ARCHIVO DE PARTICION///////////////////////
 
 
 FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas){
 
-	char* instruccion = string_new();
+	char* instruccion=string_new();
 	FILE* particion;
 
 	printf("Inicializando particion...\n\n");
 
-	sprintf(instruccion,"chmod +x %s",SCRIPT);
-	system(instruccion);
-	//sprintf(instruccion,"dd if=/dev/zero of=%s bs=%d count=%d",nombreDeParticion,tamanioDePagina,cantidadDePaginas);
-	//sprintf(instruccion,"truncate -s %d %s",tamanioDePagina*cantidadDePaginas,nombreDeParticion);
 
-	sprintf(instruccion,"./%s %s %d %d",SCRIPT,nombreDeParticion,tamanioDePagina,cantidadDePaginas);
+	sprintf(instruccion,"dd if=/dev/zero of=%s bs=%d count=%d",nombreDeParticion,tamanioDePagina,cantidadDePaginas);
+	//sprintf(instruccion,"truncate -s %d %s",tamanioDeParticion,nombreDeParticion);
 	system(instruccion);
 
 	printf("Particion inicializada. \n");
