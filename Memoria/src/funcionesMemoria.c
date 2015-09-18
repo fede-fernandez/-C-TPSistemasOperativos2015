@@ -52,7 +52,7 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeC
 	return cfg;
 }
 
-tipoInstruccionCpu recibirInstruccionCpu(int socketCpu){
+tipoInstruccion recibirInstruccionCpu(int socketCpu){
 
 	size_t tamanioBloque;
 
@@ -62,14 +62,14 @@ tipoInstruccionCpu recibirInstruccionCpu(int socketCpu){
 
 	recibirMensajeCompleto(socketCpu,buffer,tamanioBloque);
 	
-	tipoInstruccionCpu instruccionRecibida = deserializarInstruccionCpu(tamanioBloque, buffer);
+	tipoInstruccion instruccionRecibida = deserializarInstruccion(tamanioBloque, buffer);
 
 	return instruccionRecibida;
 }
 
-tipoInstruccionCpu deserializarInstruccionCpu(size_t tamanioBloque,void* buffer){
+tipoInstruccion deserializarInstruccion(size_t tamanioBloque,void* buffer){
 
-	tipoInstruccionCpu* instruccion;
+	tipoInstruccion* instruccion;
 
 	memcpy(buffer,instruccion->instruccion,sizeof(char));tamanioBloque-=sizeof(char);
 	memcpy(buffer+sizeof(char),(int*)instruccion->pid,sizeof(int));tamanioBloque-=sizeof(int);
@@ -78,7 +78,7 @@ tipoInstruccionCpu deserializarInstruccionCpu(size_t tamanioBloque,void* buffer)
 	return *instruccion;
 }
 
-void* serializarRespuestaCpu(tipoRespuestaCpu respuesta){
+void* serializarRespuestaCpu(tipoRespuesta respuesta){
 
 	size_t tamanioInformacion = strlen(respuesta.informacion);
 
@@ -125,7 +125,7 @@ void tratarEscrituras(int socketParaCpus,int socketParaSwap,t_list* listaEscritu
 
 /*************instrucciones*******************/
 
-void ejecutarInstrunccion (tipoInstruccionCpu instruccionCPU){
+void ejecutarInstrunccion (tipoInstruccion instruccionCPU){
 	switch (instruccionCPU.instruccion) {
 		case 'i'://inciar
 			break;

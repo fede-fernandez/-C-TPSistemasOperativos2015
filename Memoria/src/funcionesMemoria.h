@@ -56,7 +56,7 @@ void tratarEscrituras(int socketParaCpus,int socketParaSwap,t_list* listaEscritu
 
 
 /***************instrucciones*******************/
-void ejecutarInstrunccion (tipoInstruccionCpu instruccionCPU);
+void ejecutarInstrunccion (tipoInstruccion instruccionCPU);
 
 /****iniciar N*****/
 bool reservarMemoriaEnSwap(int cantidadDePaginas, int procesoID);

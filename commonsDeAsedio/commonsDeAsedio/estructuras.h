@@ -13,6 +13,16 @@
 #include <stdlib.h>
 #include "cliente-servidor.h"
 
+//resultado de ejecucion
+#define MANQUEADO 'm'
+#define PERFECTO 'p'
+
+//instrucciones
+#define INICIAR 'i'
+#define ESCRIBIR 'e'
+#define LECTURA 'l'
+#define FINALIZAR 'f'
+#define ENTRADA-SALIDA 's'
 
 typedef struct{
 	int pid;
