@@ -14,10 +14,6 @@ int main(void) {
 
 	int socketParaAdministrador = crearSocket();
 
-	asociarAPuerto(socketParaPlanificador,puertoParaPlanificador);
-
-	asociarAPuerto(socketParaAdministrador,puertoParaAdministrador);
-
 	conectarAServidor(socketParaPlanificador,configuracion->ipPlanificador,configuracion->puertoPlanificador);
 
 	char mensaje[30];
@@ -40,20 +36,20 @@ int main(void) {
 
 
 /******Comienzo de Actividad de CPU cuando Planificador envia mensaje*******/
-	int programCounterActual = 0, instruccionBloqueante;
-	char* instruccionActual;
-	FILE* programa = fopen(PATH, "r"); //PATH me lo envía planificador por socket
+	int instructionPointerActual = 0, instructionPointer, instruccionBloqueante, pID;
+	char* instruccionActual, ruta;
+	FILE* programa = fopen(ruta, "r"); //rutame lo envía planificador por socket
 
 	if(programa == NULL)
 		printf("\nEl programa no existe o está vacío.\n");
 
-	while(programCounterActual < PC) //PC me lo envía planificador por socket
+	while(instructionPointerActual < instructionPointer) //IP me lo envía planificador por socket
 	{
-		fgets(instruccionActual, 80, programa);
-		programCounterActual++;
+		fgets(instruccionActual, string_length(instruccionActual), programa);
+		instructionPointerActual++;
 	}
 
-	while(fgets(instruccionActual, 80, programa) != NULL)
+	while(fgets(instruccionActual, string_length(instruccionActual), programa) != NULL)
 	{
 		instruccionBloqueante = ejecutarInstruccion(instruccionActual, pID);
 		//pID me lo envia el planificador por socket

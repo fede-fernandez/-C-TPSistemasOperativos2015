@@ -40,7 +40,7 @@ int ejecutarInstruccion(char* instruccion, int idDeProceso);
 
 /*Funciones mAnsisOp*/
 int instruccionIniciar(int numeroDePaginas, int idDeProceso);
-int instruccionLeer(int numeroDePagina);
+int instruccionLeer(int numeroDePagina, int idDeProceso);
 int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso);
 int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso);
 int instruccionFinalizar(int idDeProceso);

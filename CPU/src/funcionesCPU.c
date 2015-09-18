@@ -47,17 +47,21 @@ int ejecutarInstruccion(char* instruccion, int idDeProceso)
 	char** instruccionSeparadaPorEspacios = string_split(instruccion, " ");
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "iniciar"))
-		return instruccionIniciar(instruccionSeparadaPorEspacios[1], idDeProceso);
+		return instruccionIniciar(atoi(string_substring_until(instruccionSeparadaPorEspacios[1],
+				string_length(instruccionSeparadaPorEspacios[1])-1)), idDeProceso);
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "leer"))
-		return instruccionLeer(instruccionSeparadaPorEspacios[1], idDeProceso);
+		return instruccionLeer(atoi(string_substring_until(instruccionSeparadaPorEspacios[1],
+				string_length(instruccionSeparadaPorEspacios[1])-1)), idDeProceso);
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "escribir"))
-		return instruccionEscribir(instruccionSeparadaPorEspacios[1],
-				instruccionSeparadaPorEspacios[2], idDeProceso);
+		return instruccionEscribir(atoi(instruccionSeparadaPorEspacios[1]),
+				string_substring_until(instruccionSeparadaPorEspacios[2],
+								(string_length(instruccionSeparadaPorEspacios[2])-1)), idDeProceso);
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "entrada-salida"))
-		return instruccionEntradaSalida(instruccionSeparadaPorEspacios[1], idDeProceso);
+		return instruccionEntradaSalida(atoi(string_substring_until(instruccionSeparadaPorEspacios[1],
+				string_length(instruccionSeparadaPorEspacios[1])-1)), idDeProceso);
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "finalizar"))
 		return instruccionFinalizar(idDeProceso);
@@ -73,10 +77,10 @@ int instruccionIniciar(int numeroDePaginas, int idDeProceso)
 	//Envio socket a Proceso Memoria con la instrucción iniciar
 	//y el número de páginas que voy a pedirle
 	//Proceso Memoria me avisa si se pudo hacer o no
-	return FALSE;
+	return 0;
 }
 
-int instruccionLeer(int numeroDePagina)
+int instruccionLeer(int numeroDePagina, int idDeProceso)
 {
 	//Envio socket a Proceso Memoria con la instruccion leer
 	//y el numero de pagina que quiero recibir
