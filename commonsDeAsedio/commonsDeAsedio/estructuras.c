@@ -49,7 +49,7 @@ tipoEstructuraPCB deserializarPCB(size_t tamanioBloque,void* bloque){
 	return pcbRecibido;
 }
 
-tipoInstruccionCpu recibirInstruccionCpu(int socketCpu){
+tipoInstruccion recibirInstruccion(int socketCpu){
 
 	size_t tamanioBloque;
 
@@ -59,23 +59,25 @@ tipoInstruccionCpu recibirInstruccionCpu(int socketCpu){
 
 	recibirMensajeCompleto(socketCpu,buffer,tamanioBloque);
 
-	tipoInstruccionCpu instruccionRecibida = deserializarInstruccionCpu(tamanioBloque, buffer);
+	tipoInstruccion instruccionRecibida = deserializarInstruccion(tamanioBloque, buffer);
 
 	return instruccionRecibida;
 }
 
-tipoInstruccionCpu deserializarInstruccionCpu(size_t tamanioBloque,void* buffer){
+tipoInstruccion deserializarInstruccion(size_t tamanioBloque,void* buffer){
 
-	tipoInstruccionCpu* instruccion;
+	tipoInstruccion instruccion;
 
-	memcpy(buffer,instruccion->instruccion,sizeof(char));tamanioBloque-=sizeof(char);
-	memcpy(buffer+sizeof(char),(int*)instruccion->pid,sizeof(int));tamanioBloque-=sizeof(int);
-	deserializarIntYCadena((int*)instruccion->nroPagina,instruccion->texto,tamanioBloque,buffer+sizeof(char)+sizeof(int));
+	memcpy(buffer,&instruccion.pid,sizeof(int));tamanioBloque-=sizeof(int);
 
-	return *instruccion;
+	memcpy(buffer+sizeof(int),&instruccion.instruccion,sizeof(char));tamanioBloque-=sizeof(char);
+
+	deserializarIntYCadena(&instruccion.nroPagina,&instruccion.texto,tamanioBloque,buffer+sizeof(char)+sizeof(int));
+
+	return instruccion;
 }
 
-void* serializarRespuestaCpu(tipoRespuestaCpu respuesta){
+void* serializarRespuesta(tipoRespuesta respuesta){
 
 	size_t tamanioInformacion = strlen(respuesta.informacion);
 
@@ -90,4 +92,19 @@ void* serializarRespuestaCpu(tipoRespuestaCpu respuesta){
 
 	return buffer;
 }
+void* serializarInstruccion(tipoInstruccion instruccion){
 
+	size_t tamanioTexto = strlen(instruccion.texto);
+	size_t tamanioBloque = 4*sizeof(int)+sizeof(char)+tamanioTexto;
+
+		void* buffer = malloc(tamanioBloque);
+
+		memcpy(buffer,&tamanioBloque,sizeof(size_t));
+		memcpy(buffer+sizeof(size_t),&instruccion.pid,sizeof(int));
+		memcpy(buffer+sizeof(size_t)+sizeof(int),&instruccion.instruccion,sizeof(char));
+		memcpy(buffer+sizeof(size_t)+sizeof(int)+sizeof(char),&instruccion.nroPagina,sizeof(int));
+		memcpy(buffer+sizeof(size_t)+2*sizeof(int)+sizeof(char),&instruccion.texto,tamanioTexto);
+
+		return buffer;
+
+}
