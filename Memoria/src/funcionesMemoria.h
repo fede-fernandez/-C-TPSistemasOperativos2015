@@ -76,4 +76,27 @@ void tratarLecturas(int socketParaCpus,int socketParaSwap,t_list* listaLectura);
 void tratarEscrituras(int socketParaCpus,int socketParaSwap,t_list* listaEscritura);
 
 
+/***************instrucciones*******************/
+void ejecutarInstrunccion (tipoInstruccionCpu instruccionCPU);
+
+/****iniciar N*****/
+bool reservarMemoriaEnSwap(int cantidadDePaginas, int procesoID);
+
+bool reservarMemoriaEnRam(int cantidadDePaginas, int procesoID);
+
+void cancelarInicializacion(int procesoID);
+
+void reservarMemoriaParaProceso(int cantidadDePaginas, int procesoID);
+
+/*******leer pagina***********/
+bool buscarPaginaEnRam(int pagina, int procesoID, char* contenidoDePagina);
+
+bool buscarPaginaEnSwap(int pagina, int procesoID);
+
+void enviarPaginaACPU(int procesoID, char* contenidoDePagina);
+
+void pedirPaginaDesdeSwapARam(int proceso, int numeroDePagina, char* contenidoDePagina);
+
+void leerPagina(int numeroPagina, int procesoID);
+
 #endif /* FUNCIONESMEMORIA_H_ */
