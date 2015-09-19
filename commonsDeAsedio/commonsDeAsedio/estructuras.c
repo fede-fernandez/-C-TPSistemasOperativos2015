@@ -6,7 +6,7 @@
  */
 #include "estructuras.h"
 
-void* serializarPCB(tipoEstructuraPCB pcb){
+void* serializarPCB(tipoPCB pcb){
 
 	size_t tamanioRuta = strlen(pcb.ruta);
 	size_t tamanioBloque = 4*sizeof(int)+sizeof(char)+strlen(pcb.ruta);
@@ -22,7 +22,7 @@ void* serializarPCB(tipoEstructuraPCB pcb){
 	return buffer;
 }
 
-tipoEstructuraPCB recibirPCB(int socketPlanificador){
+tipoPCB recibirPCB(int socketPlanificador){
 
 	size_t tamanioBloque;
 
@@ -32,14 +32,14 @@ tipoEstructuraPCB recibirPCB(int socketPlanificador){
 
 	recibirMensajeCompleto(socketPlanificador,bloque,tamanioBloque);
 
-	tipoEstructuraPCB pcbRecibido = deserializarPCB(tamanioBloque,bloque);
+	tipoPCB pcbRecibido = deserializarPCB(tamanioBloque,bloque);
 
 	return pcbRecibido;
 }
 
-tipoEstructuraPCB deserializarPCB(size_t tamanioBloque,void* bloque){
+tipoPCB deserializarPCB(size_t tamanioBloque,void* bloque){
 
-	tipoEstructuraPCB pcbRecibido;
+	tipoPCB pcbRecibido;
 
 	memcpy(bloque,&pcbRecibido.pid,sizeof(int));tamanioBloque-=sizeof(int);
 	memcpy(bloque+sizeof(int),&pcbRecibido.estado,sizeof(char));tamanioBloque-=sizeof(char);
@@ -56,8 +56,6 @@ tipoInstruccion recibirInstruccion(int socketCpu){
 	recibirBloque(&tamanioBloque,socketCpu);
 
 	void* buffer = malloc(tamanioBloque);
-
-	recibirMensajeCompleto(socketCpu,buffer,tamanioBloque);
 
 	tipoInstruccion instruccionRecibida = deserializarInstruccion(tamanioBloque, buffer);
 
@@ -107,4 +105,16 @@ void* serializarInstruccion(tipoInstruccion instruccion){
 
 		return buffer;
 
+}
+
+tipoRespuesta deserializarRespuesta(size_t tamanioBloque,void* buffer){
+
+	size_t tamanioInformacion = tamanioBloque-sizeof(char);
+
+	tipoRespuesta respuesta;
+
+	memcpy(&respuesta.respuesta,buffer,sizeof(char));
+	memcpy(&respuesta.informacion,buffer+sizeof(char),tamanioInformacion);
+
+	return respuesta;
 }

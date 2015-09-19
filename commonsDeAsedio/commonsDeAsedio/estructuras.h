@@ -29,7 +29,7 @@ typedef struct{
 	int insPointer;
 	char estado;
 	char* ruta;
-} tipoEstructuraPCB;
+} tipoPCB;
 
 typedef struct{
 	char instruccion;
@@ -50,11 +50,11 @@ typedef struct{
 
 
 
-void* serializarPCB(tipoEstructuraPCB pcb);
+void* serializarPCB(tipoPCB pcb);
 
-tipoEstructuraPCB deserializarPCB(size_t tamanioBloque,void* bloque);
+tipoPCB deserializarPCB(size_t tamanioBloque,void* bloque);
 
-tipoEstructuraPCB recibirPCB(int socketPlanificador);
+tipoPCB recibirPCB(int socketPlanificador);
 
 tipoInstruccion recibirInstruccion(int socketCpu);
 
@@ -63,5 +63,7 @@ tipoInstruccion deserializarInstruccion(size_t tamanioBloque,void* buffer);
 void* serializarRespuesta(tipoRespuesta respuesta);
 
 void* serializarInstruccion(tipoInstruccion instruccion);
+
+tipoRespuesta deserializarRespuesta(size_t tamanioBloque,void* buffer);
 
 #endif /* COMMONSDEASEDIO_ESTRUCTURAS_H_ */
