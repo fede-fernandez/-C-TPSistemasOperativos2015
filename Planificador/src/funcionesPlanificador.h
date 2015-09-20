@@ -29,22 +29,23 @@ typedef struct{
 typedef struct{
 	int id;
 	int pc;
-	char estado[20];
+	char estado;
 	char path[30];
-} t_estructura_PCB;
+} t_PCB;
 
 typedef struct{
 	int id_cpu;
 	int disponibilidad;// "0" NO Esta disponible y, "1" Esta disponible
 	int puerto;
-} t_estructura_CPU;
+} t_CPU;
 
 typedef struct{
-	int id;
+	int id; // id proceso
 	int tiempo;// tiempo que se va a dormir el procesos
-} t_estructura_bloqueados;
+} t_bloqueados;
 
-t_estructura_PCB* PCB_create(int id, int pc, char estado[20], char path[30]);
+
+
 
 tipoConfigPlanificador* crearConfigPlanificador();
 
@@ -52,6 +53,14 @@ void destruirConfigPlanificador(tipoConfigPlanificador* estructuraDeConfiguracio
 
 tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDeArchivoDeConfiguracion);
 
-t_estructura_PCB* recibirPCB(int socketPlanificador);
+static t_PCB* PCB_create(int id, int pc, char estado, char path[30]);
+
+static int *id_create(int id);
+
+static t_CPU *cpu_create(int id_cpu, int disponibilidad, int puerto);
+
+
+
+t_PCB* recibirPCB(int socketPlanificador);
 
 #endif /* FUNCIONESPLANIFICADOR_H_ */
