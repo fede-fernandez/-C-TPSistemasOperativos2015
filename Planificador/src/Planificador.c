@@ -20,6 +20,8 @@ t_list* CPUs; // lista de cpu disponibles
 t_list* procesos_bloqueados; // lista donde se encolan los procesos para luego mandarlos a dormir
 int socketEscucha; // socket que escuche las conecciones entrantes
 int quantum; // 0 si tiene quantum y el "valor" en caso de que tenga quantum
+fd_set maestro; // conjunto maestro de descriptores de fichero
+int fdmax; // número máximo de descriptores de fichero
 
 int correr_path(void);
 
@@ -278,7 +280,7 @@ int menu(void) {
 			   ps();	        break;
 			case 4:
 			   cpu();	        break;*/
-			default: printf("Opción incorrecta. Por favor ingrese una opción del 1 al 4\n"); break;
+			default: printf("Opción incorrecta. Por favor ingrese una opción del 1 al 4 \n"); break;
 		  }
 
 	}
