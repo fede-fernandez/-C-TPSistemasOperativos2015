@@ -238,9 +238,11 @@ void* ejecutar_proceso(void){
 		nodo_pcb->estado = 'E'; // le cambio el valor que esta en memoria dinamica
 
 		//buscar_CPU_disponible(CPUs , cpu_puerto) // Esta funcion me devuelve un puerto libre
-		// list_find() ?¿?¿?
+		// con list_find() ?¿?¿?
 
 		// mandar_PCB_al_cpu();
+
+		free(id);
 
 
 	}
