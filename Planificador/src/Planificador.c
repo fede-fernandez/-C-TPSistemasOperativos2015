@@ -7,93 +7,31 @@
 #include "funcionesPlanificador.h"
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <commons/collections/queue.h>
 #include <commonsDeAsedio/cliente-servidor.h>
+
+
+// VARIABLES GLOBALES <-------------------
+
+int contador_de_id_procesos = 0; // para saber cuantos procesos hay en el sistema
+t_list* lista_de_PCB;
+t_list* procesos_en_ready; // lista de procesos "listos para ejecutar"
+t_list* CPUs; // lista de cpu disponibles
+t_list* procesos_bloqueados; // lista donde se encolan los procesos para luego mandarlos a dormir
+int socketEscucha; // socket que escuche las conecciones entrantes
+int quantum; // 0 si tiene quantum y el "valor" en caso de que tenga quantum
+
+int correr_path(void);
+
 
 //--------------- -------estructuras, esto va en el .h------------------------------------------
 
-//Las movi al header pero dejo los comentarios momentaneamente
+//Las movi al header las estructuras y funciones_create()
 
 // -------------------------------------------------------------------------------------------------------
 
 
 //-------------------------------------FUNCIONES HILOS--------------------------------------------------------------------
-
-//---------------Hilo encargado de mandar a ejecutar procesos a la CPUs-------------------------
-
-void* ejecutar_proceso(void){
-
-	/*while(1){
-
-		// wait(cant_procesos_listos);
-		// wait(cant_CPUs_libres);
-		//sacar_ultimo_elemento_de_la_lista( procesos_en_ready, id );
-		//PCB=buscar_id_de_proceso(lista_de_PCB , id);
-		//actualizar_PCB(PCB) ----[de listo a--> ejecucion]
-		//buscar_CPU_disponible(cpu_disponibles , cpu_puerto)
-		//send(cpu_puerto, PCB, strlen(PCB) + 1, 0);
-
-	}*///Lo comento momentaneamente para hacer el checkpoint 1
-
-	int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
-
-	int socket = crearSocket();
-
-	asociarAPuerto(socket,puerto);
-
-	escucharConexiones(socket,1);
-
-	int socketCpu = crearSocketParaAceptarSolicitudes(socket);
-
-	char mensaje[30] = "correr programa";
-
-	enviarMensaje(socket,&mensaje,sizeof(mensaje));
-
-	printf("Enviado comando 'correr programa'\n");
-
-	liberarSocket(socketCpu);
-
-	liberarSocket(socket);
-
-	getchar();
-
-	return 0;
-}
-////..............................................................................................
-
-//-------------- Hilo encargado de recibir las rafagas de las CPU que vienen de: quantun/entrada_salida---------
-
-void* recibir_rafagas(void){
-
-	while(1){
-		// select se bloque hasta que le llegan "mensajitos"
-		// preguntar a todos los puertos de "lista_de_PCB" si recibieron mensajes
-		//una vez que encontramos el puerto, lo saco ese puerto de la lista
-		// CPU = list_get(cpu_disponibles,cpu_puerto);
-		// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
-		// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
-
-	    /*llegada = recv(cpu_puerto, (void*) package, PACKAGESIZE, 0); // la CPU me manda un chart: Quantum / E_S / Fin
-
-	      PCB = recv(cpu_puerto, (void*) package, PACKAGESIZE, 0); // recibe la estructura de PCB que le manda la CPU
-
-			    switch (llegada) {
-
-				  case   'Q':
-				      quantum(PCB);	         break; // va a meter ese proceso a la cola de redy y actualizar PCB
-				  case   'B':
-				      entrada_salida(PCB);   break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
-				  case   'F':
-				      fin(PCB);	             break; // unicamente actualiza el PCB del proceso llegante
-			 }
-
-		// agregar esa CPU como disponible(); */
-
-	}
-
-
-	return 0;
-}
-//-------------------------------------------------------------------------------------------------------------
 
 
 
@@ -101,39 +39,175 @@ void* recibir_rafagas(void){
 
 void* recibir_conexion(void){
 
-	// socketEscucha = socket(serverInfo->ai_family, serverInfo->ai_socktype, serverInfo->ai_protocol);
-	// bind(socketEscucha,serverInfo->ai_addr, serverInfo->ai_addrlen);
-	// listen(socketEscucha, BACKLOG);
+	int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
+	int socketCpu;
+	int id;
+
+	socketEscucha = crearSocket();
+	asociarAPuerto(socketEscucha,puerto);
+	escucharConexiones(socketEscucha,1); //  me pongo a escuchar conexiones
 
 	while(1){
 
-		//socketCPU = accept(socketEscucha, (struct sockaddr *) &addr, &addrlen);
-		//idCPU = recv(socketCPU, (void*) package, PACKAGESIZE, 0); // recibe la id del CPU
-		//armar nodo y meterla en la lista de CPUs , ordenado por id de cpu
-		// chequear en el archivo de configuracion si el algoritmos es con quantum
-		// le emando mensaje para indicar si el algortmo es con quantum / o no
-		//send(socketCPU, quantum, strlen(message) + 1, 0)
+		socketCpu = crearSocketParaAceptarSolicitudes(socketEscucha); // es bloqueante ?¿?,
 
+		recibirMensaje(socketCpu, &id, sizeof(int));// recibo id de CPU
+
+		list_add(CPUs, cpu_create(id,1,socketCpu)); // guardo en la lista
+
+		enviarMensaje(socketCpu,&quantum,sizeof(quantum)); // le mando el quantum, que es un int
 	}
 
 	return 0;
 }
-////..............................................................................................
+
+
 
 //-----------------------------------------------------------------------------------------------------------
+
+
+
+//-------------- Hilo encargado de recibir las rafagas de las CPU que vienen de: quantun/entrada_salida---------
+
+int llega_quantum(t_PCB PCB){
+
+	t_PCB *nodo_pcb;
+
+	// meter id en ready
+
+	queue_push(procesos_en_ready,id_create(PCB.id));
+
+	// buscar id de proceso en "lista_de_PCB"
+
+	nodo_pcb =list_get(lista_de_PCB, PCB.id - 1);
+
+	// actualizo el PCB
+
+	nodo_pcb->estado = 'R'; // le cambio el valor que esta en memoria dinamica
+
+	nodo_pcb->pc = PCB.pc; // le cambio el valor que esta en memoria dinamica
+
+	return 0;
+
+}
+
+int llega_entrada_salida(t_PCB PCB){
+
+	t_PCB *nodo_pcb;
+
+	queue_push(procesos_bloqueados,id_create(PCB.id));
+
+	// buscar id de proceso en "lista_de_PCB"
+
+	nodo_pcb =list_get(lista_de_PCB, PCB.id - 1);
+
+	// actualizo el PCB
+
+	nodo_pcb->estado = 'B'; // le cambio el valor que esta en memoria dinamica
+
+	nodo_pcb->pc = PCB.pc; // le cambio el valor que esta en memoria dinamica
+
+	return 0;
+
+}
+
+int llega_de_fin(t_PCB PCB){
+
+	t_PCB *nodo_pcb;
+
+	// buscar id de proceso en "lista_de_PCB"
+
+	nodo_pcb =list_get(lista_de_PCB, PCB.id - 1);
+
+	nodo_pcb->estado = 'F'; // le cambio el valor que esta en memoria dinamica
+
+	nodo_pcb->pc = PCB.pc; // le cambio el valor que esta en memoria dinamica
+
+	return 0;
+
+
+}
+
+void* recibir_rafagas(void){
+
+	t_CPU *nodo_cpu;
+	t_PCB PCB;
+	int id_cpu;
+	char llegada;
+	t_PCB PCB;
+
+	while(1){
+
+		// select se bloque hasta que le llegan "mensajitos"
+		// preguntar a todos los puertos de "lista_de_PCB" si recibieron mensajes
+		//una vez que encontramos el puerto, lo saco ese puerto de la lista
+
+		nodo_cpu =list_get(CPUs,id_cpu-1 );
+
+		// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
+
+		recibirMensaje(socketCpu, &llegada, sizeof(char));// recibo llegada
+
+		PCB = recibirPCB(socketCpu); // recibe el PCB
+
+
+
+		switch (llegada) {
+		  case   'Q':
+		      llega_quantum(PCB);	       break; // va a meter ese proceso a la cola de redy y actualizar PCB
+		  case   'B':
+			  llega_entrada_salida(PCB);   break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
+		  case   'F':
+		      llega_de_fin(PCB);	       break; // unicamente actualiza el PCB del proceso llegante
+
+		}
+
+
+		// agregar esa CPU como disponible();
+
+
+	}
+
+
+
+
+//-------------------------------------------------------------------------------------------------------------
+
+
+
 //---------------Hilo encargado de dormir procesesos durante un cierto tiempo "T"--------------------------
 //---------------tambien los pasa a la cola de "listos" una vez pasado ese tiempo-------------------------
 
 
 void* bloquear_procesos(void){
 
+	t_bloqueados *nodo_bloqueado;
+	t_PCB *nodo_pcb;
+
+
 	while(1){
 
 		// sacar un proceso de la cola de "procesos_bloqueados" (modificando la lista)
-		// dormirlo segun indique su campo "tiempo"
+
+		nodo_bloqueado = queue_pop(procesos_bloqueados);
+
+		sleep(nodo_bloqueado->tiempo);
+
 		// una vez transcurrido ese tiempo buscar con la id en "lista_de_PCB" y sacar su PCB (sin modificar la lista)
+
+		nodo_pcb =list_get(lista_de_PCB, nodo_bloqueado->id - 1); // se modifica la lista ?? (no se tiene q modificar!)
+
 		// modificar su estado de: bloqueado a--> listo y meter de nuevo en "lista_de_PCB"
+
+		nodo_pcb->estado = 'L'; // le cambio el valor que esta en memoria dinamica
+
 		// meter id de proceso en cola: "procesos_en_ready"
+
+		queue_push(procesos_en_ready,nodo_bloqueado->id); // ya hay un nuevo nodo en la cola
+
+		free(nodo_bloqueado); // saco el node de memoria dinamica
+
+
 
 	}
 
@@ -142,19 +216,34 @@ void* bloquear_procesos(void){
 
 //---------------------------------------------------------------------------------------------------------
 
+//---------------Hilo encargado de mandar a ejecutar procesos a la CPUs-------------------------
+
+void* ejecutar_proceso(void){
+
+	int *id;
+	t_PCB *nodo_pcb;
+
+	while(1){
+
+		// wait(cant_procesos_listos);
+
+		// wait(cant_CPUs_libres);
+
+		id = queue_pop(procesos_en_ready); //sacar_primer_elemento_de_la_cola
+
+		nodo_pcb =list_get(lista_de_PCB, *id-1); //PCB=buscar_id_de_proceso (sin desarmar la lista)
+
+		nodo_pcb->estado = 'E'; // le cambio el valor que esta en memoria dinamica
+
+		//buscar_CPU_disponible(CPUs , cpu_puerto) // Esta funcion me devuelve un puerto libre
+		// list_find() ?¿?¿?
+
+		// mandar_PCB_al_cpu();
 
 
+	}
 
-// Variables Globales
-
-int contador_de_id_procesos = 0; // para saber cuantos procesos hay en el sistema
-t_list* lista_de_PCB;
-t_list* procesos_en_ready; // lista de procesos "listos para ejecutar"
-t_list* cpu_disponibles; // lista de cpu disponibles
-t_list* procesos_bloqueados; // lista donde se encolan los procesos para luego mandarlos a dormir
-int socketEscucha; // socket que escuche las conecciones entrantes
-
-int correr_path(void);
+//--------------------------------------------------------------------------------------------------------
 
 int menu(void) {
 
@@ -166,11 +255,16 @@ int menu(void) {
 		 int opcion = 0;
 
 			printf("################################################################\n");
+			printf("#     --------> *****  LOS  JAVIMANCOS ***** <-------------    #\n");
+			printf("################################################################\n");
+			printf("                                                                \n");
 			printf("# Ingrese una opción para continuar:                           #\n");
 			printf("#  1) Correr Path                                              #\n");
 			printf("#  2) Finalizar PID                                            #\n");
 			printf("#  3) ps                                                       #\n");
 			printf("#  4) cpu                                                      #\n");
+			printf("                                                                \n");
+			printf("################################################################\n");
 			printf("################################################################\n");
 
 		 scanf("%d",&opcion);
@@ -199,7 +293,8 @@ int main(void) {
 
 	lista_de_PCB = list_create(); //Crea la lista_de_PCB
 	procesos_en_ready = list_create(); //Crea la lista de pocesos en ready
-	cpu_disponibles = list_create(); // crea lista de CPUs conectadas
+	CPUs = list_create(); // crea lista de CPUs conectadas
+	procesos_bloqueados = queue_create(); // crea lista de procesos bloqueados
 
 	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
 	pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
@@ -217,28 +312,33 @@ int main(void) {
 
 	destruirConfigPlanificador(configuracion);
 
+	//destruir hilos
+
 	return EXIT_SUCCESS;
 }
 
 
 int correr_path(void){
+
+
 	char comando[30];
 	char path[30];
-	t_estructura_PCB *PCB;
+	t_PCB *PCB;
 
   //limpiar pantalla
 	printf("Ingresar Comando: \n");
+
 	scanf("%s %s", comando, path); // supongo que siempre es un comando valido y path tambien
-	contador_de_id_procesos++;
+
+	contador_de_id_procesos++; // mantengo la cuenta de todos los procesos que se crearon en el sistema
+
 	// Agrego el elemento al final de la lista (para que quede ordenada por ID)
-	list_add(lista_de_PCB, PCB_create(contador_de_id_procesos, 1, "nuevo", path));
-	// agrego la id a lo ultimo de la lista
-	list_add(procesos_en_ready,&contador_de_id_procesos);
+	list_add(lista_de_PCB, PCB_create(contador_de_id_procesos, 1, 'R', path));
+
+	// agrego la id a lo ultimo de la cola
+	queue_push(procesos_en_ready,id_create(contador_de_id_procesos));
 
 	printf("Proceso %s en ejecucion....\n", path);
 
-	sleep(2);
-
 	return 0;
-
-	}
+}
