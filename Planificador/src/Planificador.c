@@ -71,59 +71,59 @@ void* recibir_conexion(void){
 
 //-------------- Hilo encargado de recibir las rafagas de las CPU que vienen de: quantun/entrada_salida---------
 
-int llega_quantum(t_PCB PCB){
+int llega_quantum(t_PCB *PCB){
 
 	t_PCB *nodo_pcb;
 
 	// meter id en ready
 
-	queue_push(procesos_en_ready,id_create(PCB.id));
+	queue_push(procesos_en_ready,id_create(PCB->id));
 
 	// buscar id de proceso en "lista_de_PCB"
 
-	nodo_pcb =list_get(lista_de_PCB, PCB.id - 1);
+	nodo_pcb =list_get(lista_de_PCB, PCB->id  - 1);
 
 	// actualizo el PCB
 
 	nodo_pcb->estado = 'R'; // le cambio el valor que esta en memoria dinamica
 
-	nodo_pcb->pc = PCB.pc; // le cambio el valor que esta en memoria dinamica
+	nodo_pcb->pc = PCB->pc; // le cambio el valor que esta en memoria dinamica
 
 	return 0;
 
 }
 
-int llega_entrada_salida(t_PCB PCB){
+int llega_entrada_salida(t_PCB *PCB){
 
 	t_PCB *nodo_pcb;
 
-	queue_push(procesos_bloqueados,id_create(PCB.id));
+	queue_push(procesos_bloqueados,id_create(PCB->id ));
 
 	// buscar id de proceso en "lista_de_PCB"
 
-	nodo_pcb =list_get(lista_de_PCB, PCB.id - 1);
+	nodo_pcb =list_get(lista_de_PCB, PCB->id  - 1);
 
 	// actualizo el PCB
 
 	nodo_pcb->estado = 'B'; // le cambio el valor que esta en memoria dinamica
 
-	nodo_pcb->pc = PCB.pc; // le cambio el valor que esta en memoria dinamica
+	nodo_pcb->pc = PCB->pc; // le cambio el valor que esta en memoria dinamica
 
 	return 0;
 
 }
 
-int llega_de_fin(t_PCB PCB){
+int llega_de_fin(t_PCB *PCB){
 
 	t_PCB *nodo_pcb;
 
 	// buscar id de proceso en "lista_de_PCB"
 
-	nodo_pcb =list_get(lista_de_PCB, PCB.id - 1);
+	nodo_pcb =list_get(lista_de_PCB, PCB->id - 1);
 
 	nodo_pcb->estado = 'F'; // le cambio el valor que esta en memoria dinamica
 
-	nodo_pcb->pc = PCB.pc; // le cambio el valor que esta en memoria dinamica
+	nodo_pcb->pc = PCB->pc; // le cambio el valor que esta en memoria dinamica
 
 	return 0;
 
@@ -133,10 +133,10 @@ int llega_de_fin(t_PCB PCB){
 void* recibir_rafagas(void){
 
 	t_CPU *nodo_cpu;
-	t_PCB PCB;
+	t_PCB *PCB;
 	int id_cpu;
 	char llegada;
-	t_PCB PCB;
+
 
 	while(1){
 
@@ -166,6 +166,8 @@ void* recibir_rafagas(void){
 
 
 		// agregar esa CPU como disponible();
+
+		//free(PCB);
 
 
 	}
