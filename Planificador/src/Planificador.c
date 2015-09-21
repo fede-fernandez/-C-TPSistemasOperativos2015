@@ -9,8 +9,7 @@
 #include <sys/types.h>
 #include <commons/collections/queue.h>
 #include <commonsDeAsedio/cliente-servidor.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+
 
 
 // VARIABLES GLOBALES <-------------------
