@@ -53,14 +53,16 @@ void destruirConfigPlanificador(tipoConfigPlanificador* estructuraDeConfiguracio
 
 tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDeArchivoDeConfiguracion);
 
-static t_PCB* PCB_create(int id, int pc, char estado, char path[30]);
+t_PCB* PCB_create(int id, int pc, char estado, char path[30]);
 
-static int *id_create(int id);
+int *id_create(int id);
 
-static t_CPU *cpu_create(int id_cpu, int disponibilidad, int puerto);
+t_CPU *cpu_create(int id_cpu, int disponibilidad, int puerto);
 
 
 
 t_PCB* recibirPCB(int socketPlanificador);
+
+void enviarPCB(int socketCPU,t_PCB* PCB);
 
 #endif /* FUNCIONESPLANIFICADOR_H_ */
