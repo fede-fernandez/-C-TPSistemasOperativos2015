@@ -259,23 +259,27 @@ void* ejecutar_proceso(void){
 
 int menu(void) {
 
+	int opcion;
+
 	while(1) // el menu tiene que estar presente siempre
 
 	{
 		 // limpiar pantalla
 
-		 int opcion = 0;
+		opcion = 0;
 
 			printf("################################################################\n");
+			printf("#     --------> **************************** <-------------    #\n");
 			printf("#     --------> *****  LOS  JAVIMANCOS ***** <-------------    #\n");
-			printf("#####################-----------------------####################\n");
-			printf("                                                                \n");
-			printf("# Ingrese una opción para continuar:                           #\n");
+			printf("#--------------------------------------------------------------#\n");
+			printf("#                                                              #\n");
+			printf("#  Ingrese una opción para continuar:                          #\n");
+			printf("#                                                              #\n");
 			printf("#     1) Correr Path                                           #\n");
 			printf("#     2) Finalizar PID                                         #\n");
 			printf("#     3) ps                                                    #\n");
 			printf("#     4) cpu                                                   #\n");
-			printf("                                                                \n");
+			printf("#                                                              #\n");
 			printf("################################################################\n");
 			printf("################################################################\n");
 
