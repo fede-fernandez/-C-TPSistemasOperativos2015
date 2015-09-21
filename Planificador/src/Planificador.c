@@ -9,6 +9,8 @@
 #include <sys/types.h>
 #include <commons/collections/queue.h>
 #include <commonsDeAsedio/cliente-servidor.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 
 // VARIABLES GLOBALES <-------------------
@@ -20,7 +22,8 @@ t_list* CPUs; // lista de cpu disponibles
 t_list* procesos_bloqueados; // lista donde se encolan los procesos para luego mandarlos a dormir
 int socketEscucha; // socket que escuche las conecciones entrantes
 int quantum; // 0 si tiene quantum y el "valor" en caso de que tenga quantum
-fd_set maestro; // conjunto maestro de descriptores de fichero
+fd_set master; // conjunto maestro de descriptores de fichero
+fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
 int fdmax; // número máximo de descriptores de fichero
 
 int correr_path(void);
@@ -58,6 +61,12 @@ void* recibir_conexion(void){
 		list_add(CPUs, cpu_create(id,1,socketCpu)); // guardo en la lista
 
 		enviarMensaje(socketCpu,&quantum,sizeof(quantum)); // le mando el quantum, que es un int
+
+		FD_SET(socketCpu, &master); // Agrega socketCpu al master set
+		if (socketCpu > fdmax) { // es el mayor ?
+			fdmax = socketCpu;
+		}
+
 	}
 
 	return 0;
@@ -136,23 +145,34 @@ void* recibir_rafagas(void){
 	t_PCB *PCB;
 	int id_cpu;
 	char llegada;
+	int i=0; // puerto donde hubo cambios
 
 
 	while(1){
 
-		// select se bloque hasta que le llegan "mensajitos"
-		// preguntar a todos los puertos de "lista_de_PCB" si recibieron mensajes
-		//una vez que encontramos el puerto, lo saco ese puerto de la lista
+		read_fds = master; // backup de mi descriptores
 
-		nodo_cpu =list_get(CPUs,id_cpu-1 );
+		// select se bloque hasta que le llegan "mensajitos"
+		select(fdmax+1, &read_fds, NULL, NULL, NULL);
+		for(i = 0; i <= fdmax; i++) {
+
+			// preguntar a todos los puertos de "read_fds" si recibieron mensajes
+			if (FD_ISSET(i, &read_fds)) { //pregunta si i está en el conjunto y si hubo cambio
+
+				break; // encontramos el puerto donde huvo cambios
+				// podria poner un goto xDDD (para q salga del for) xDDD
+			}
+		}
+
+		//una vez que encontramos el puerto, lo saco con "i" el nodo de la lista
+
+		nodo_cpu=buscar_nodo_por_puerto(CPUs,i); // falta desarrollar esa funcion de busquedad
 
 		// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
 
-		recibirMensaje(socketCpu, &llegada, sizeof(char));// recibo llegada
+		recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
-		PCB = recibirPCB(socketCpu); // recibe el PCB
-
-
+		PCB = recibirPCB(nodo_cpu->puerto); // recibe el PCB
 
 		switch (llegada) {
 		  case   'Q':
@@ -166,11 +186,13 @@ void* recibir_rafagas(void){
 
 
 		// agregar esa CPU como disponible();
+		nodo_cpu->disponibilidad = 1;
 
-		//free(PCB);
+		free(PCB);
 
 
 	}
+}
 
 
 
@@ -262,13 +284,13 @@ int menu(void) {
 
 			printf("################################################################\n");
 			printf("#     --------> *****  LOS  JAVIMANCOS ***** <-------------    #\n");
-			printf("################################################################\n");
+			printf("#####################-----------------------####################\n");
 			printf("                                                                \n");
 			printf("# Ingrese una opción para continuar:                           #\n");
-			printf("#  1) Correr Path                                              #\n");
-			printf("#  2) Finalizar PID                                            #\n");
-			printf("#  3) ps                                                       #\n");
-			printf("#  4) cpu                                                      #\n");
+			printf("#     1) Correr Path                                           #\n");
+			printf("#     2) Finalizar PID                                         #\n");
+			printf("#     3) ps                                                    #\n");
+			printf("#     4) cpu                                                   #\n");
 			printf("                                                                \n");
 			printf("################################################################\n");
 			printf("################################################################\n");
