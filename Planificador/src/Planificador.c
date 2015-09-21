@@ -63,8 +63,8 @@ void* recibir_conexion(void){
 		enviarMensaje(socketCpu,&quantum,sizeof(quantum)); // le mando el quantum, que es un int
 
 		FD_SET(socketCpu, &master); // Agrega socketCpu al master set
-		if (socketCpu > fdmax) { // es el mayor ?
-			fdmax = socketCpu;
+		if (socketCpu > fdmax) { // es el mayor
+			fdmax = socketCpu; // guardo el mayor es el mayor
 		}
 
 	}
@@ -82,21 +82,12 @@ void* recibir_conexion(void){
 
 int llega_quantum(t_PCB *PCB){
 
-	t_PCB *nodo_pcb;
-
-	// meter id en ready
-
+	// meter procesos en la cola de ready
 	queue_push(procesos_en_ready,id_create(PCB->id));
-
-	// buscar id de proceso en "lista_de_PCB"
-
-	nodo_pcb =list_get(lista_de_PCB, PCB->id  - 1);
 
 	// actualizo el PCB
 
-	nodo_pcb->estado = 'R'; // le cambio el valor que esta en memoria dinamica
-
-	nodo_pcb->pc = PCB->pc; // le cambio el valor que esta en memoria dinamica
+	PCB->estado = 'R'; // le cambio el valor que esta en memoria dinamica
 
 	return 0;
 
@@ -104,19 +95,12 @@ int llega_quantum(t_PCB *PCB){
 
 int llega_entrada_salida(t_PCB *PCB){
 
-	t_PCB *nodo_pcb;
-
+	// meter procesos en la cola de ready
 	queue_push(procesos_bloqueados,id_create(PCB->id ));
-
-	// buscar id de proceso en "lista_de_PCB"
-
-	nodo_pcb =list_get(lista_de_PCB, PCB->id  - 1);
 
 	// actualizo el PCB
 
-	nodo_pcb->estado = 'B'; // le cambio el valor que esta en memoria dinamica
-
-	nodo_pcb->pc = PCB->pc; // le cambio el valor que esta en memoria dinamica
+	PCB->estado = 'B'; // le cambio el valor que esta en memoria dinamica
 
 	return 0;
 
@@ -124,28 +108,21 @@ int llega_entrada_salida(t_PCB *PCB){
 
 int llega_de_fin(t_PCB *PCB){
 
-	t_PCB *nodo_pcb;
-
-	// buscar id de proceso en "lista_de_PCB"
-
-	nodo_pcb =list_get(lista_de_PCB, PCB->id - 1);
-
-	nodo_pcb->estado = 'F'; // le cambio el valor que esta en memoria dinamica
-
-	nodo_pcb->pc = PCB->pc; // le cambio el valor que esta en memoria dinamica
+	PCB->estado = 'F'; // le cambio el valor que esta en memoria dinamica
 
 	return 0;
-
 
 }
 
 void* recibir_rafagas(void){
 
 	t_CPU *nodo_cpu;
+	t_PCB *PCB_recibido;
 	t_PCB *PCB;
 	int id_cpu;
-	char llegada;
+	char llegada; // "Quantum", Bloqueado y "Fin"
 	int i=0; // puerto donde hubo cambios
+
 
 
 	while(1){
@@ -159,12 +136,12 @@ void* recibir_rafagas(void){
 			// preguntar a todos los puertos de "read_fds" si recibieron mensajes
 			if (FD_ISSET(i, &read_fds)) { //pregunta si i está en el conjunto y si hubo cambio
 
-				break; // encontramos el puerto donde huvo cambios
+				break; // encontramos el puerto donde hubo cambios, "i" es el puerto con cambios
 				// podria poner un goto xDDD (para q salga del for) xDDD
 			}
 		}
 
-		//una vez que encontramos el puerto, lo saco con "i" el nodo de la lista
+		//una vez que encontramos el puerto, lo saco con "i" al nodo de la lista
 
 		nodo_cpu=buscar_nodo_por_puerto(CPUs,i); // falta desarrollar esa funcion de busquedad
 
@@ -172,7 +149,15 @@ void* recibir_rafagas(void){
 
 		recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
-		PCB = recibirPCB(nodo_cpu->puerto); // recibe el PCB
+		PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
+
+		// buscar id de proceso en "lista_de_PCB"
+
+		PCB =list_get(lista_de_PCB, PCB_recibido->id - 1);
+
+		*PCB = *PCB_recibido; // actualizo PCB ---> la magia de c =)
+
+
 
 		switch (llegada) {
 		  case   'Q':
@@ -184,14 +169,13 @@ void* recibir_rafagas(void){
 
 		}
 
-
 		// agregar esa CPU como disponible();
 		nodo_cpu->disponibilidad = 1;
 
-		free(PCB);
-
+		free(PCB_recibido);
 
 	}
+
 }
 
 
@@ -225,13 +209,13 @@ void* bloquear_procesos(void){
 
 		// modificar su estado de: bloqueado a--> listo y meter de nuevo en "lista_de_PCB"
 
-		nodo_pcb->estado = 'L'; // le cambio el valor que esta en memoria dinamica
+		nodo_pcb->estado = 'R'; // le cambio el valor que esta en memoria dinamica
 
 		// meter id de proceso en cola: "procesos_en_ready"
 
 		queue_push(procesos_en_ready,nodo_bloqueado->id); // ya hay un nuevo nodo en la cola
 
-		free(nodo_bloqueado); // saco el node de memoria dinamica
+		free(nodo_bloqueado); // saco el nodo de memoria dinamica
 
 
 
