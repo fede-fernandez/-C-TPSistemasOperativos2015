@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>
@@ -14,9 +15,21 @@
 
 #define MAXIMAS_CONEXIONES_ENTRANTES 1
 
+
+tipoInstruccion* crearInstruccion(char ins,int pid,int pag,char* testo){
+	tipoInstruccion* aux = malloc(sizeof(tipoInstruccion));
+
+	aux->instruccion = ins;
+	aux->pid = pid;
+	aux->nroPagina = pag;
+	aux->texto = strdup(testo);
+
+	return aux;
+}
+
 int main(void) {
 
-	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("/home/utnso/Escritorio/cfgSWAP");
+	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("cfgSWAP");
 	//FILE* particion = inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
 	t_list* listaDeHuecosUtilizados = inicializarListaDeHuecosUtilizados();
 
@@ -39,6 +52,26 @@ int main(void) {
 //	reservarEspacio(listaDeHuecosUtilizados,2,5,configuracion);
 //	reservarEspacio(listaDeHuecosUtilizados,3,2,configuracion);
 
+	//pid base cantidad
+//	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(1,1,2));
+	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(2,4,2));
+//	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(0,10,15));
+//
+//	printf("base para nuevo: %d",baseParaMProcSiTengoEspacioContiguo(listaDeHuecosUtilizados,20,64));
+
+
+//	reservarEspacio(listaDeHuecosUtilizados,17,5,configuracion->cantidadDePaginas);
+//	reservarEspacio(listaDeHuecosUtilizados,255,10,configuracion->cantidadDePaginas);
+	reservarEspacio(listaDeHuecosUtilizados,13,2,configuracion->cantidadDePaginas);
+	reservarEspacio(listaDeHuecosUtilizados,7,1,configuracion->cantidadDePaginas);
+
+
+	imprimirListaDeHuecos(listaDeHuecosUtilizados);
+
+
+	puts("\n");
+
+	list_sort(listaDeHuecosUtilizados,(void*)baseMenor);
 
 	imprimirListaDeHuecos(listaDeHuecosUtilizados);
 
