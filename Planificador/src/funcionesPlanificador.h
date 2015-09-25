@@ -45,7 +45,7 @@ typedef struct{
 } t_bloqueados;
 
 
-
+int correr_path(void);
 
 tipoConfigPlanificador* crearConfigPlanificador();
 
@@ -58,6 +58,8 @@ t_PCB* PCB_create(int id, int pc, char estado, char path[30]);
 int *id_create(int id);
 
 t_CPU *cpu_create(int id_cpu, int disponibilidad, int puerto);
+
+int diponibilidad(t_CPU * nodo);
 
 
 

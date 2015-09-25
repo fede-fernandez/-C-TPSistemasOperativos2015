@@ -55,7 +55,28 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeC
 
 void tratarEscritura(int socketParaCpus,int socketParaSwap,int socketParaEscribir){}
 
-void tratarLectura(int socketParaCpus,int socketParaSwap,int socketParaLeer){}
+void tratarLectura(int socketParaCpus,int socketParaSwap,int socketParaLeer){
+
+	void ejecutarInstrunccion (tipoInstruccion instruccionCPU){
+		switch (instruccionCPU.instruccion) {
+			case 'i'://inciar
+				reservarMemoriaParaProceso(instruccionCPU, socketParaCpus, socketParaSwap);
+				break;
+
+			case 'l'://lectura
+
+				break;
+			case 'e'://escritura
+				break;
+			case 's'://entrada y salida
+				break;
+			case 'f'://finalizar
+				break;
+		}
+	}
+
+
+}
 
 void tratarLecturas(int socketParaCpus,int socketParaSwap,t_list* listaLectura){
 
@@ -100,66 +121,63 @@ void ejecutarInstrunccion (tipoInstruccion instruccionCPU){
 }
 
 /****iniciar N*****/
-bool reservarMemoriaEnSwap(int cantidadDePaginas, int procesoID){
-	return true;
+int reservarMemoriaEnSwap(tipoInstruccion instruccion, int socketSwap){
+	return 1;
 }
 
-bool reservarMemoriaEnRam(int cantidadDePaginas, int procesoID){
-	return true;
+int reservarMemoriaEnRam(tipoInstruccion instruccion){
+	return 1;
 }
 
 void cancelarInicializacion(int procesoID){
 
 }
 
-void reservarMemoriaParaProceso(int cantidadDePaginas, int procesoID){
-	if (reservarMemoriaEnSwap(cantidadDePaginas, procesoID)) {
-		if (reservarMemoriaEnRam(cantidadDePaginas, procesoID)) {
+void reservarMemoriaParaProceso(tipoInstruccion instruccion, int socketCPU, int socketSWAP){
+	if (reservarMemoriaEnSwap(instruccion, socketSWAP)) {
+		if (reservarMemoriaEnRam(instruccion)) {
 
 		} else {
 			//ver algoritmos para pasar procesos de ram a swap y liberar espacio para el nuevo proceso
 		}
 	} else {
-		cancelarInicializacion(procesoID);
+		//cancelarInicializacion(procesoID);
 	}
 
 }
 
 /*******leer pagina***********/
 
-bool buscarPaginaEnRam(int pagina, int procesoID, char* contenidoDePagina){
-	return true;
+int buscarPaginaEnRam(tipoInstruccion instruccion, char* contenidoDePagina){
+	return 1;
 }
 
-bool buscarPaginaEnSwap(int pagina, int procesoID){
-	return true;
+int buscarPaginaEnSwap(tipoInstruccion instruccion,char* contenidoDePagina, int socketSwap){
+	return 1;
 }
 
-void enviarPaginaACPU(int procesoID, char* contenidoDePagina){
-
-}
-
-void pedirPaginaDesdeSwapARam(int proceso, int numeroDePagina, char* contenidoDePagina){
+void enviarPaginaACPU(tipoInstruccion instruccion, char* contenidoDePagina){
 
 }
 
-void leerPagina(int numeroPagina, int procesoID){
+void pedirPaginaDesdeSwapARam(tipoInstruccion isntruccion, char* contenidoDePagina, int socketSwap){
+
+}
+
+void leerPagina(tipoInstruccion instruccion, int socketSwap){
 
 	char* contenidoDePagina;
 
-	if (buscarPaginaEnRam(numeroPagina, procesoID, contenidoDePagina)) {
-		enviarPaginaACPU(procesoID, contenidoDePagina);
+	if (buscarPaginaEnRam(instruccion, contenidoDePagina)) {
+		enviarPaginaACPU(instruccion, contenidoDePagina);
 
-	} else {
-		if (buscarPaginaEnSwap(numeroPagina, procesoID)) {
-			pedirPaginaDesdeSwapARam(procesoID, numeroPagina, contenidoDePagina);
-			enviarPaginaACPU(procesoID, contenidoDePagina);
+	} else if (buscarPaginaEnSwap(instruccion, contenidoDePagina, socketSwap)) {
+			pedirPaginaDesdeSwapARam(instruccion, contenidoDePagina, socketSwap);
+			enviarPaginaACPU(instruccion, contenidoDePagina);
 			//gorenlpm, hace los scripts
 		} else {
 			//informar el error de alguna forma
 		}
-
-	}
 }
 
 /************ESCRIBIR PAGINAS***************/

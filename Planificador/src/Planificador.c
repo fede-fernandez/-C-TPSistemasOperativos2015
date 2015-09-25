@@ -25,8 +25,6 @@ fd_set master; // conjunto maestro de descriptores de fichero
 fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
 int fdmax; // número máximo de descriptores de fichero
 
-int correr_path(void);
-
 
 //--------------- -------estructuras, esto va en el .h------------------------------------------
 
@@ -39,7 +37,7 @@ int correr_path(void);
 
 
 
-//---------------Hilo encargado de recibir conexiones de CPUs   -------------------------
+//---------------HILO encargado de recibir conexiones de CPUs   -------------------------
 
 void* recibir_conexion(void){
 
@@ -77,7 +75,7 @@ void* recibir_conexion(void){
 
 
 
-//-------------- Hilo encargado de recibir las rafagas de las CPU que vienen de: quantun/entrada_salida---------
+//-------------- HILO encargado de recibir las rafagas de las CPU que vienen de: quantun/entrada_salida---------
 
 int llega_quantum(t_PCB *PCB){
 
@@ -119,7 +117,7 @@ void* recibir_rafagas(void){
 	t_PCB *PCB_recibido;
 	t_PCB *PCB;
 	int id_cpu;
-	char llegada; // "Quantum", Bloqueado y "Fin"
+	char llegada; // "Quantum", "Bloqueado" y "Fin"
 	int i=0; // puerto donde hubo cambios
 
 
@@ -184,7 +182,7 @@ void* recibir_rafagas(void){
 
 
 
-//---------------Hilo encargado de dormir procesesos durante un cierto tiempo "T"--------------------------
+//---------------HILO encargado de dormir procesesos durante un cierto tiempo "T"--------------------------
 //---------------tambien los pasa a la cola de "listos" una vez pasado ese tiempo-------------------------
 
 
@@ -217,7 +215,6 @@ void* bloquear_procesos(void){
 		free(nodo_bloqueado); // saco el nodo de memoria dinamica
 
 
-
 	}
 
 	return 0;
@@ -225,12 +222,13 @@ void* bloquear_procesos(void){
 
 //---------------------------------------------------------------------------------------------------------
 
-//---------------Hilo encargado de mandar a ejecutar procesos a la CPUs-------------------------
+//---------------HILO encargado de mandar a ejecutar procesos a la CPUs-------------------------
 
 void* ejecutar_proceso(void){
 
 	int *id;
 	t_PCB *nodo_pcb;
+	t_CPU * nodo_cpu;
 
 	while(1){
 
@@ -245,7 +243,7 @@ void* ejecutar_proceso(void){
 		nodo_pcb->estado = 'E'; // le cambio el valor que esta en memoria dinamica
 
 		//buscar_CPU_disponible(CPUs , cpu_puerto) // Esta funcion me devuelve un puerto libre
-		// con list_find() ?¿?¿?
+		nodo_cpu=list_find(CPUs,(void*)diponibilidad);
 
 		// mandar_PCB_al_cpu();
 
@@ -328,6 +326,7 @@ int main(void) {
 	destruirConfigPlanificador(configuracion);
 
 	//destruir hilos
+	// destruir listas..todo lo q este en memoria dinamica.
 
 	return EXIT_SUCCESS;
 }

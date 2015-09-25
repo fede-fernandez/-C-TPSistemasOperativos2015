@@ -120,3 +120,19 @@ tipoRespuesta deserializarRespuesta(size_t tamanioBloque,void* buffer){
 
 	return respuesta;
 }
+
+/*******************Funciones para tipoRespuesta*************************/
+
+tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion){
+	tipoRespuesta* aux = malloc(sizeof(tipoRespuesta));
+
+	aux->respuesta = respuesta;
+	aux->informacion = informacion;
+
+	return aux;
+}
+
+void destruirTipoRespuesta(tipoRespuesta* respuesta){
+	free(respuesta->informacion);
+	free(respuesta);
+}
