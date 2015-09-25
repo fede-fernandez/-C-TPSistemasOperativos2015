@@ -45,7 +45,7 @@ typedef struct{
 } t_bloqueados;
 
 
-
+int correr_path(void);
 
 tipoConfigPlanificador* crearConfigPlanificador();
 
