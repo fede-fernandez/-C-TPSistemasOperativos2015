@@ -263,6 +263,64 @@ void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePag
 	list_sort(listaDeHuecosUtilizados,(void*)baseMenor);
 }
 
+int buscarBaseDeHuecoVacioMasProximo(t_list* listaDeHuecosUtilizados, int baseAnterior){
+	//si baseAnterior es distinto de base de hueco mas proximo
+	// mover en archivo
+	// mover en lista
+
+	return 0;
+}
+
+int baseDeHuecoMasProximoA(int baseAnterior){
+
+
+
+	return 0;
+}
+
+void compactacionAlpha(t_list* listaDeHuecosUtilizados, FILE* particion,int tamanioDePagina){
+	tipoHuecoUtilizado* hueco;
+	int ultimaPaginaEscrita = 0;
+
+
+	int i;
+	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
+		hueco = list_get(listaDeHuecosUtilizados,i);
+
+		moverHueco(hueco,particion,ultimaPaginaEscrita,tamanioDePagina);
+		ultimaPaginaEscrita = traducirDireccionLogicaAFisica(hueco,hueco->cantidadDePaginasQueOcupa);
+	}
+}
+
+void moverHueco(tipoHuecoUtilizado* hueco,FILE* particion, int ultimaPaginaEscrita,int tamanioDePagina){
+	int direccionFisicaBase = traducirDireccionLogicaAFisica(hueco,hueco->baseDeMProc);
+	hueco->baseDeMProc = ultimaPaginaEscrita;
+
+	int dirFisicaVieja;
+	int dirFisicaNueva;
+
+	int i;
+	for (i = 0; i < hueco->cantidadDePaginasQueOcupa; ++i) {
+
+
+		dirFisicaVieja = direccionFisicaBase + i;
+		dirFisicaNueva = traducirDireccionLogicaAFisica(hueco,i);
+
+		moverPagina(particion,dirFisicaVieja,dirFisicaNueva,tamanioDePagina);
+	}
+
+	hueco->baseDeMProc = ultimaPaginaEscrita;
+
+
+}
+
+void moverPagina(FILE* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina){
+
+	char* pagina = leerBloqueMapeado(particion,dirFisVieja,tamanioDePagina);
+	escribirBloqueMapeado(particion,pagina,dirFisNueva,tamanioDePagina);
+
+}
 
 
 ///////FUNCIONES AUXILIARES/////
+

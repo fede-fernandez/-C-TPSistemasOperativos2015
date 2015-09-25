@@ -45,6 +45,15 @@ void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePag
 void compactar();
 
 
+void compactacionAlpha(t_list* listaDeHuecosUtilizados, FILE* particion,int tamanioDePagina);
+
+void moverHueco(tipoHuecoUtilizado* hueco,FILE* particion, int ultimaPaginaEscrita,int tamanioDePagina);
+void moverPagina(FILE* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina);
+
+int traducirDireccionLogicaAFisica(tipoHuecoUtilizado* hueco,int dirLogicaDePagina);
+int espacioEntreDosHuecosUtilizados(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);
+
+
 
 ////////FUNCIONES AUXILIARES///////////
 void imprimirHueco(tipoHuecoUtilizado* hueco);
