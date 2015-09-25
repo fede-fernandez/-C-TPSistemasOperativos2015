@@ -8,6 +8,7 @@
 #ifndef NODO_SRC_MMAP_H_
 #define NODO_SRC_MMAP_H_
 #include <stdio.h>
+#include <commons/string.h>
 
 #define CARACTER_VACIO '@'
 
