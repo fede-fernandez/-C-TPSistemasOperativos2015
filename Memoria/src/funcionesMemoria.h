@@ -56,26 +56,26 @@ void tratarEscrituras(int socketParaCpus,int socketParaSwap,t_list* listaEscritu
 
 
 /***************instrucciones*******************/
-void ejecutarInstrunccion (tipoInstruccion instruccionCPU);
+void ejecutarInstruccion (tipoInstruccion instruccionCPU);
 
 /****iniciar N*****/
-bool reservarMemoriaEnSwap(int cantidadDePaginas, int procesoID);
+int reservarMemoriaEnSwap(tipoInstruccion instruccion, int socketSwap);
 
-bool reservarMemoriaEnRam(int cantidadDePaginas, int procesoID);
+int reservarMemoriaEnRam(tipoInstruccion instruccion);
 
 void cancelarInicializacion(int procesoID);
 
-void reservarMemoriaParaProceso(int cantidadDePaginas, int procesoID);
+void reservarMemoriaParaProceso(tipoInstruccion instruccion, int socketCPU, int socketSWAP);
 
 /*******leer pagina***********/
-bool buscarPaginaEnRam(int pagina, int procesoID, char* contenidoDePagina);
+int buscarPaginaEnRam(tipoInstruccion instruccion, char* contenidoDePagina);
 
-bool buscarPaginaEnSwap(int pagina, int procesoID);
+int buscarPaginaEnSwap(tipoInstruccion instruccion, char* contenidoDePagina, int socketSwap);
 
-void enviarPaginaACPU(int procesoID, char* contenidoDePagina);
+void enviarPaginaACPU(tipoInstruccion instruccion, char* contenidoDePagina);
 
-void pedirPaginaDesdeSwapARam(int proceso, int numeroDePagina, char* contenidoDePagina);
+void pedirPaginaDesdeSwapARam(tipoInstruccion instruccion, char* contenidoDePagina, int socketSwap);
 
-void leerPagina(int numeroPagina, int procesoID);
+void leerPagina(tipoInstruccion instruccion, int socketSwap);
 
 #endif /* FUNCIONESMEMORIA_H_ */
