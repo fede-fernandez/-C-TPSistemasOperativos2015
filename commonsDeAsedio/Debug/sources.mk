@@ -14,5 +14,4 @@ LIBRARIES :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 commonsDeAsedio \
-commonsDeAsedio/Debug \
 

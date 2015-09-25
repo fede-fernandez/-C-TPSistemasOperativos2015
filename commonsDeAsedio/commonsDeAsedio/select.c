@@ -80,6 +80,12 @@ int mayorDeLista(t_list* lista){
 
 bool filtrarListas(t_list* listaPrincipal,t_list* listaLectura,t_list* listaEscritura){
 
+	/*struct timeval tiempoEspera;
+
+	tiempoEspera.tv_sec = 1;
+
+	tiempoEspera.tv_usec = 250000;*/
+
 	fd_set estructuraLectura;
 
 	fd_set estructuraEscritura;

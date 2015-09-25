@@ -9,7 +9,7 @@
 void* serializarPCB(tipoPCB pcb){
 
 	size_t tamanioRuta = strlen(pcb.ruta);
-	size_t tamanioBloque = 4*sizeof(int)+sizeof(char)+strlen(pcb.ruta);
+	size_t tamanioBloque = 2*sizeof(int)+sizeof(char)+tamanioRuta+sizeof(size_t);
 
 	void* buffer = malloc(tamanioBloque);
 
@@ -22,15 +22,17 @@ void* serializarPCB(tipoPCB pcb){
 	return buffer;
 }
 
-tipoPCB recibirPCB(int socketPlanificador){
+tipoPCB recibirPCB(int socketEnviador){
 
 	size_t tamanioBloque;
 
-	recibirBloque(&tamanioBloque,socketPlanificador);
+	printf("Recibiendo bloque...\n");
+
+	recibirBloque(&tamanioBloque,socketEnviador);
 
 	void* bloque = malloc(tamanioBloque);
 
-	recibirMensajeCompleto(socketPlanificador,bloque,tamanioBloque);
+	printf("Bloque recibido...\n");
 
 	tipoPCB pcbRecibido = deserializarPCB(tamanioBloque,bloque);
 
@@ -41,10 +43,10 @@ tipoPCB deserializarPCB(size_t tamanioBloque,void* bloque){
 
 	tipoPCB pcbRecibido;
 
-	memcpy(bloque,&pcbRecibido.pid,sizeof(int));tamanioBloque-=sizeof(int);
-	memcpy(bloque+sizeof(int),&pcbRecibido.estado,sizeof(char));tamanioBloque-=sizeof(char);
-	memcpy(bloque+sizeof(int)+sizeof(char),&pcbRecibido.insPointer,sizeof(int));tamanioBloque-=sizeof(int);
-	memcpy(bloque+2*sizeof(int)+sizeof(char),&pcbRecibido.ruta,tamanioBloque);
+	memcpy(&pcbRecibido.pid,bloque,sizeof(int));tamanioBloque-=sizeof(int);
+	memcpy(&pcbRecibido.estado,bloque+sizeof(int),sizeof(char));tamanioBloque-=sizeof(char);
+	memcpy(&pcbRecibido.insPointer,bloque+sizeof(int)+sizeof(char),sizeof(int));tamanioBloque-=sizeof(int);
+	memcpy(&pcbRecibido.ruta,bloque+2*sizeof(int)+sizeof(char),tamanioBloque);
 
 	return pcbRecibido;
 }
@@ -70,7 +72,7 @@ tipoInstruccion deserializarInstruccion(size_t tamanioBloque,void* buffer){
 
 	memcpy(buffer+sizeof(int),&instruccion.instruccion,sizeof(char));tamanioBloque-=sizeof(char);
 
-	deserializarIntYCadena(&instruccion.nroPagina,&instruccion.texto,tamanioBloque,buffer+sizeof(char)+sizeof(int));
+	deserializarIntYCadena(&instruccion.nroPagina,instruccion.texto,tamanioBloque,buffer+sizeof(char)+sizeof(int));
 
 	return instruccion;
 }
@@ -93,7 +95,7 @@ void* serializarRespuesta(tipoRespuesta respuesta){
 void* serializarInstruccion(tipoInstruccion instruccion){
 
 	size_t tamanioTexto = strlen(instruccion.texto);
-	size_t tamanioBloque = 4*sizeof(int)+sizeof(char)+tamanioTexto;
+	size_t tamanioBloque = 4*sizeof(int)+sizeof(char)+tamanioTexto+sizeof(size_t);
 
 		void* buffer = malloc(tamanioBloque);
 

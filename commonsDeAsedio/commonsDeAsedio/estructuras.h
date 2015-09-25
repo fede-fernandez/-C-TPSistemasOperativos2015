@@ -22,7 +22,7 @@
 #define ESCRIBIR 'e'
 #define LECTURA 'l'
 #define FINALIZAR 'f'
-#define ENTRADA-SALIDA 's'
+#define ENTRADA_SALIDA 's'
 
 typedef struct{
 	int pid;
