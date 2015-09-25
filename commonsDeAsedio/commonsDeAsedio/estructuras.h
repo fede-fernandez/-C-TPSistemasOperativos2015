@@ -66,4 +66,8 @@ void* serializarInstruccion(tipoInstruccion instruccion);
 
 tipoRespuesta deserializarRespuesta(size_t tamanioBloque,void* buffer);
 
+tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion);
+
+void destruirTipoRespuesta(tipoRespuesta* respuesta);
+
 #endif /* COMMONSDEASEDIO_ESTRUCTURAS_H_ */
