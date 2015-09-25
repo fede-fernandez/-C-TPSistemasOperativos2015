@@ -52,47 +52,6 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeC
 	return cfg;
 }
 
-tipoInstruccion recibirInstruccionCpu(int socketCpu){
-
-	size_t tamanioBloque;
-
-	recibirBloque(&tamanioBloque,socketCpu);
-
-	void* buffer = malloc(tamanioBloque);
-
-	recibirMensajeCompleto(socketCpu,buffer,tamanioBloque);
-	
-	tipoInstruccion instruccionRecibida = deserializarInstruccion(tamanioBloque, buffer);
-
-	return instruccionRecibida;
-}
-
-tipoInstruccion deserializarInstruccion(size_t tamanioBloque,void* buffer){
-
-	tipoInstruccion* instruccion;
-
-	memcpy(buffer,instruccion->instruccion,sizeof(char));tamanioBloque-=sizeof(char);
-	memcpy(buffer+sizeof(char),(int*)instruccion->pid,sizeof(int));tamanioBloque-=sizeof(int);
-	deserializarIntYCadena((int*)instruccion->nroPagina,instruccion->texto,tamanioBloque,buffer+sizeof(char)+sizeof(int));
-
-	return *instruccion;
-}
-
-void* serializarRespuestaCpu(tipoRespuesta respuesta){
-
-	size_t tamanioInformacion = strlen(respuesta.informacion);
-
-	size_t tamanioBloque = tamanioInformacion+sizeof(char);
-
-	void* buffer = malloc(tamanioBloque+sizeof(int));
-
-	memcpy(buffer,&tamanioBloque,sizeof(size_t));
-	memcpy(buffer+sizeof(size_t),&respuesta.respuesta,sizeof(char));
-	memcpy(buffer+sizeof(size_t)+sizeof(char),&tamanioInformacion,sizeof(size_t));
-	memcpy(buffer+2*sizeof(size_t)+sizeof(char),&respuesta.informacion,tamanioInformacion);
-
-	return buffer;
-}
 
 void tratarEscritura(int socketParaCpus,int socketParaSwap,int socketParaEscribir){}
 
@@ -204,3 +163,50 @@ void leerPagina(int numeroPagina, int procesoID){
 }
 
 /************ESCRIBIR PAGINAS***************/
+
+/*
+
+tipoInstruccion recibirInstruccionCpu(int socketCpu){
+
+	size_t tamanioBloque;
+
+	recibirBloque(&tamanioBloque,socketCpu);
+
+	void* buffer = malloc(tamanioBloque);
+
+	recibirMensajeCompleto(socketCpu,buffer,tamanioBloque);
+
+	tipoInstruccion instruccionRecibida = deserializarInstruccion(tamanioBloque, buffer);
+
+	return instruccionRecibida;
+}
+
+tipoInstruccion deserializarInstruccion(size_t tamanioBloque,void* buffer){
+
+	tipoInstruccion* instruccion;
+
+	memcpy(buffer,instruccion->instruccion,sizeof(char));tamanioBloque-=sizeof(char);
+	memcpy(buffer+sizeof(char),(int*)instruccion->pid,sizeof(int));tamanioBloque-=sizeof(int);
+	deserializarIntYCadena((int*)instruccion->nroPagina,instruccion->texto,tamanioBloque,buffer+sizeof(char)+sizeof(int));
+
+	return *instruccion;
+}
+
+void* serializarRespuestaCpu(tipoRespuesta respuesta){
+
+	size_t tamanioInformacion = strlen(respuesta.informacion);
+
+	size_t tamanioBloque = tamanioInformacion+sizeof(char);
+
+	void* buffer = malloc(tamanioBloque+sizeof(int));
+
+	memcpy(buffer,&tamanioBloque,sizeof(size_t));
+	memcpy(buffer+sizeof(size_t),&respuesta.respuesta,sizeof(char));
+	memcpy(buffer+sizeof(size_t)+sizeof(char),&tamanioInformacion,sizeof(size_t));
+	memcpy(buffer+2*sizeof(size_t)+sizeof(char),&respuesta.informacion,tamanioInformacion);
+
+	return buffer;
+}
+ */
+
+
