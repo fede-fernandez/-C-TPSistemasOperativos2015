@@ -228,6 +228,7 @@ void* ejecutar_proceso(void){
 
 	int *id;
 	t_PCB *nodo_pcb;
+	t_CPU * nodo_cpu;
 
 	while(1){
 
@@ -242,7 +243,7 @@ void* ejecutar_proceso(void){
 		nodo_pcb->estado = 'E'; // le cambio el valor que esta en memoria dinamica
 
 		//buscar_CPU_disponible(CPUs , cpu_puerto) // Esta funcion me devuelve un puerto libre
-		// con list_find() ?¿?¿?
+		nodo_cpu=list_find(CPUs,(void*)diponibilidad);
 
 		// mandar_PCB_al_cpu();
 
@@ -325,7 +326,7 @@ int main(void) {
 	destruirConfigPlanificador(configuracion);
 
 	//destruir hilos
-	// destruir listas..eta.
+	// destruir listas..todo lo q este en memoria dinamica.
 
 	return EXIT_SUCCESS;
 }

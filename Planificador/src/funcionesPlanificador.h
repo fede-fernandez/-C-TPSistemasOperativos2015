@@ -59,6 +59,8 @@ int *id_create(int id);
 
 t_CPU *cpu_create(int id_cpu, int disponibilidad, int puerto);
 
+int diponibilidad(t_CPU * nodo);
+
 
 
 t_PCB* recibirPCB(int socketPlanificador);

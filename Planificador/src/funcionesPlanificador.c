@@ -54,7 +54,7 @@ tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDe
 }
 
  t_CPU *cpu_create(int id_cpu, int disponibilidad, int puerto) { // esta funcion crea la estructura
-	t_CPU *new = malloc(sizeof(t_PCB));
+	t_CPU *new = malloc(sizeof(t_CPU));
     new->id_cpu = id_cpu;
     new->disponibilidad = disponibilidad;
     new->puerto = puerto;
@@ -67,6 +67,16 @@ tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDe
 	return new;
 
 }
+
+ int diponibilidad(t_CPU * nodo){ // condicion para encontrar un puerto disponible
+
+ 	if(nodo->disponibilidad == 1){
+ 		return 1;
+ 	}
+ 	else{
+ 		return 0;
+ 	}
+ }
 
 t_PCB* recibirPCB(int socketPlanificador){
 
