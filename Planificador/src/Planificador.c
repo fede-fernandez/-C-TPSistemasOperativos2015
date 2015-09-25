@@ -61,7 +61,7 @@ void* recibir_conexion(void){
 
 		FD_SET(socketCpu, &master); // Agrega socketCpu al master set
 		if (socketCpu > fdmax) { // es el mayor
-			fdmax = socketCpu; // guardo el mayor es el mayor
+			fdmax = socketCpu; // guardo el mayor
 		}
 
 	}
@@ -272,9 +272,13 @@ int menu(void) {
 			printf("#                                                              #\n");
 			printf("#  Ingrese una opción para continuar:                          #\n");
 			printf("#                                                              #\n");
+			printf("#                                                              #\n");
 			printf("#     1) Correr Path                                           #\n");
+			printf("#                                                              #\n");
 			printf("#     2) Finalizar PID                                         #\n");
+			printf("#                                                              #\n");
 			printf("#     3) ps                                                    #\n");
+			printf("#                                                              #\n");
 			printf("#     4) cpu                                                   #\n");
 			printf("#                                                              #\n");
 			printf("################################################################\n");
