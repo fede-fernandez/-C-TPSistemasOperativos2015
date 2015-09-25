@@ -80,8 +80,8 @@ t_PCB* recibirPCB(int socketPlanificador){
 
 	memcpy(PCB->id,paquete,sizeof(int));
 	memcpy(PCB->pc,paquete+sizeof(int),sizeof(int));
-	memcpy(PCB->estado,paquete+sizeof(int)+sizeof(char),sizeof(char));
-	memcpy(PCB->path,paquete+sizeof(int)+sizeof(char)+sizeof(char[30]),sizeof(char[30]));
+	memcpy(PCB->estado,paquete+sizeof(int)+sizeof(int),sizeof(char));
+	memcpy(PCB->path,paquete+sizeof(int)+sizeof(int)+sizeof(char),sizeof(char[30]));
 
 	return PCB;
 }
@@ -95,8 +95,8 @@ void enviarPCB(int socketCPU,t_PCB* PCB){
 	t_PCB paquete;
 	memcpy(paquete,PCB->id,sizeof(int));
 	memcpy(paquete+sizeof(int),PCB->pc,sizeof(int));
-	memcpy(paquete+sizeof(int)+sizeof(char),PCB->estado,sizeof(char));
-	memcpy(paquete+sizeof(int)+sizeof(char)+sizeof(char[30]),PCB->path,sizeof(char[30]));
+	memcpy(paquete+sizeof(int)+sizeof(int),PCB->estado,sizeof(char));
+	memcpy(paquete+sizeof(int)+sizeof(int)+sizeof(char),PCB->path,sizeof(char[30]));
 
 	enviarMensaje(socketCPU,paquete,sizeof(paquete));
 
