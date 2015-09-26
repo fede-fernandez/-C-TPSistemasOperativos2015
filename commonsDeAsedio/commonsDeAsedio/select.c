@@ -78,7 +78,7 @@ int mayorDeLista(t_list* lista){
 	return maximo;
 }
 
-bool filtrarListas(t_list* listaPrincipal,t_list* listaLectura,t_list* listaEscritura){
+bool filtrarListas(t_list* listaPrincipal,t_list* listaFiltrada){
 
 	/*struct timeval tiempoEspera;
 
@@ -86,35 +86,26 @@ bool filtrarListas(t_list* listaPrincipal,t_list* listaLectura,t_list* listaEscr
 
 	tiempoEspera.tv_usec = 250000;*/
 
-	fd_set estructuraLectura;
+	fd_set estructuraFiltro;
 
-	fd_set estructuraEscritura;
-
-	limpiarLista(listaEscritura);
-
-	limpiarLista(listaLectura);
+	limpiarLista(listaFiltrada);
 
 	int resultado,maximoSocket = mayorDeLista(listaPrincipal);
 
 	do{
-		FD_ZERO(&estructuraEscritura);
-		FD_ZERO(&estructuraLectura);
+		FD_ZERO(&estructuraFiltro);
 
-		estructuraLectura = crearEstructuraDesdeLista(listaPrincipal);
+		estructuraFiltro = crearEstructuraDesdeLista(listaPrincipal);
 
-		estructuraEscritura =  crearEstructuraDesdeLista(listaPrincipal);
-
-		resultado = select(maximoSocket+1,&estructuraLectura,&estructuraEscritura,NULL,NULL);
+		resultado = select(maximoSocket+1,&estructuraFiltro,NULL,NULL,NULL);
 
 	}while(resultado<=0);
 
-	listaLectura = crearListaDesdeEstructura(estructuraLectura,maximoSocket);
-
-	listaEscritura = crearListaDesdeEstructura(estructuraEscritura,maximoSocket);
+	listaFiltrada = crearListaDesdeEstructura(estructuraFiltro,maximoSocket);
 
 	int* socketServidor = list_get(listaPrincipal,0);
 
-	return perteneceALista(listaLectura,*socketServidor);
+	return perteneceALista(listaFiltrada,*socketServidor);
 
 }
 

@@ -6,18 +6,20 @@
  */
 #include "estructuras.h"
 
-void* serializarPCB(tipoPCB pcb){
+void* serializarPCB(tipoPCB pcb,size_t* tamanioBloque){
 
-	size_t tamanioRuta = strlen(pcb.ruta);
-	size_t tamanioBloque = 2*sizeof(int)+sizeof(char)+tamanioRuta+sizeof(size_t);
+	size_t tamanioRuta = strlen(pcb.ruta);//+sizeof(char);
+	*tamanioBloque = sizeof(tipoPCB)-sizeof(char)+sizeof(size_t)+tamanioRuta;
 
 	void* buffer = malloc(tamanioBloque);
 
-	memcpy(buffer,&tamanioBloque,sizeof(size_t));
-	memcpy(buffer+sizeof(size_t),&pcb.pid,sizeof(int));
-	memcpy(buffer+sizeof(size_t)+sizeof(int),&pcb.estado,sizeof(char));
-	memcpy(buffer+sizeof(size_t)+sizeof(int)+sizeof(char),&pcb.insPointer,sizeof(int));
-	memcpy(buffer+sizeof(size_t)+2*sizeof(int)+sizeof(char),&pcb.ruta,tamanioRuta);
+	void* proximo = buffer;
+
+	memcpy(proximo,&tamanioBloque,sizeof(size_t));  proximo+=sizeof(size_t);
+	memcpy(proximo,&pcb.pid,sizeof(int));           proximo+=sizeof(int);
+	memcpy(proximo,&pcb.estado,sizeof(char));  		proximo+=sizeof(char);
+	memcpy(proximo,&pcb.insPointer,sizeof(int));  	proximo+=sizeof(int);
+	memcpy(proximo,&pcb.ruta,tamanioRuta);
 
 	return buffer;
 }
@@ -28,9 +30,7 @@ tipoPCB recibirPCB(int socketEnviador){
 
 	printf("Recibiendo bloque...\n");
 
-	recibirBloque(&tamanioBloque,socketEnviador);
-
-	void* bloque = malloc(tamanioBloque);
+	void* bloque = recibirBloque(&tamanioBloque,socketEnviador);
 
 	printf("Bloque recibido...\n");
 
@@ -43,10 +43,14 @@ tipoPCB deserializarPCB(size_t tamanioBloque,void* bloque){
 
 	tipoPCB pcbRecibido;
 
-	memcpy(&pcbRecibido.pid,bloque,sizeof(int));tamanioBloque-=sizeof(int);
-	memcpy(&pcbRecibido.estado,bloque+sizeof(int),sizeof(char));tamanioBloque-=sizeof(char);
-	memcpy(&pcbRecibido.insPointer,bloque+sizeof(int)+sizeof(char),sizeof(int));tamanioBloque-=sizeof(int);
-	memcpy(&pcbRecibido.ruta,bloque+2*sizeof(int)+sizeof(char),tamanioBloque);
+	void* proximo = bloque;
+
+	size_t tamanioRuta = tamanioBloque-sizeof(tipoPCB)+sizeof(char);
+
+	memcpy(&pcbRecibido.pid,proximo,sizeof(int)); 			proximo+=sizeof(int);
+	memcpy(&pcbRecibido.estado,proximo,sizeof(char));		proximo+=sizeof(char);
+	memcpy(&pcbRecibido.insPointer,proximo,sizeof(int));	proximo+=sizeof(int);
+	memcpy(&pcbRecibido.ruta,proximo,tamanioRuta);
 
 	return pcbRecibido;
 }

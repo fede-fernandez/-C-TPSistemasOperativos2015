@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "cliente-servidor.h"
+#include <commons/string.h>
+
 
 //resultado de ejecucion
 #define MANQUEADO 'm'
@@ -50,7 +52,7 @@ typedef struct{
 
 
 
-void* serializarPCB(tipoPCB pcb);
+void* serializarPCB(tipoPCB pcb,size_t* tamanio);
 
 tipoPCB deserializarPCB(size_t tamanioBloque,void* bloque);
 

@@ -21,7 +21,7 @@ t_list* crearListaDesdeEstructura(fd_set estructura,int maximoSocket);
 fd_set crearEstructuraDesdeLista(t_list* lista);
 
 //Solo pido que el socket del servidor lo pongan primero en la lista
-bool filtrarListas(t_list* listaPrincipal,t_list* listaLectura,t_list* listaEscritura);
+bool filtrarListas(t_list* listaPrincipal,t_list* listaFiltrada);
 
 void cargarEnLista(t_list* lista,int socket);
 
