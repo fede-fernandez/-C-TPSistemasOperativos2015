@@ -23,8 +23,7 @@ int main(void) {
 	bool memoriaActiva = true,hayCpuParaConexion = false;
 
 	t_list* listaPrincipal = list_create();
-	t_list* listaLectura = list_create();
-	t_list* listaEscritura = list_create();
+	t_list* listaFiltrada = list_create();
 /////////////////////////////////////////////////////////////////////////////////////
 
 	asociarAPuerto(socketParaCpus,configuracion->puertoDeEscucha);
@@ -35,16 +34,16 @@ int main(void) {
 
 	while(memoriaActiva){
 
-		hayCpuParaConexion = filtrarListas(listaPrincipal,listaLectura,listaEscritura);
+		hayCpuParaConexion = filtrarListas(listaPrincipal,listaFiltrada);
 
 		if(hayCpuParaConexion){
 			socketCpuEntrante = crearSocketParaAceptarSolicitudes(socketParaCpus);
 			cargarEnLista(listaPrincipal,socketCpuEntrante);
 		}
 
-		tratarLecturas(socketParaCpus,socketParaSwap,listaLectura);
+		if(!list_is_empty(listaFiltrada))
+		tratarPeticiones(socketParaCpus,socketParaSwap,listaFiltrada);
 
-		tratarEscrituras(socketParaCpus,socketParaSwap,listaEscritura);
 	}
 
 	destruirConfigMemoria(configuracion);

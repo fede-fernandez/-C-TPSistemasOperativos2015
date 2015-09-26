@@ -53,32 +53,13 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeC
 }
 
 
-void tratarEscritura(int socketParaCpus,int socketParaSwap,int socketParaEscribir){}
 
-void tratarLectura(int socketParaCpus,int socketParaSwap,int socketParaLeer){
-
-	void ejecutarInstrunccion (tipoInstruccion instruccionCPU){
-		switch (instruccionCPU.instruccion) {
-			case 'i'://inciar
-				reservarMemoriaParaProceso(instruccionCPU, socketParaCpus, socketParaSwap);
-				break;
-
-			case 'l'://lectura
-
-				break;
-			case 'e'://escritura
-				break;
-			case 's'://entrada y salida
-				break;
-			case 'f'://finalizar
-				break;
-		}
-	}
+void tratarPeticion(int socketParaCpus,int socketParaSwap,int socketParaLeer){
 
 
 }
 
-void tratarLecturas(int socketParaCpus,int socketParaSwap,t_list* listaLectura){
+void tratarPeticiones(int socketParaCpus,int socketParaSwap,t_list* listaLectura){
 
 	int var;
 	if(!list_is_empty(listaLectura)){
@@ -86,26 +67,15 @@ void tratarLecturas(int socketParaCpus,int socketParaSwap,t_list* listaLectura){
 
 		int* socketCpuActual = list_get(listaLectura,var);
 
-		tratarLectura(socketParaCpus,socketParaSwap,*socketCpuActual);
+		tratarPeticion(socketParaCpus,socketParaSwap,*socketCpuActual);
 		}
 	}
 }
-void tratarEscrituras(int socketParaCpus,int socketParaSwap,t_list* listaEscritura){
 
-	int var;
-	if(!list_is_empty(listaEscritura)){
-	for (var = 0; var <list_size(listaEscritura); ++var) {
-
-		int* socketCpuActual = list_get(listaEscritura,var);
-
-		tratarEscritura(socketParaCpus,socketParaSwap,*socketCpuActual);
-		}
-	}
-}
 
 /*************instrucciones*******************/
 
-void ejecutarInstrunccion (tipoInstruccion instruccionCPU){
+void ejecutarInstruccion (tipoInstruccion instruccionCPU){
 	switch (instruccionCPU.instruccion) {
 		case 'i'://inciar
 			break;

@@ -46,14 +46,9 @@ void destruirConfigMemoria(tipoConfigMemoria* estructuraDeConfiguracion);
 
 tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeConfiguracion);
 
-void tratarEscritura(int socketParaCpus,int socketParaSwap,int socketParaEscribir);
+void tratarPeticion(int socketParaCpus,int socketParaSwap,int socketParaLeer);
 
-void tratarLectura(int socketParaCpus,int socketParaSwap,int socketParaLeer);
-
-void tratarLecturas(int socketParaCpus,int socketParaSwap,t_list* listaLectura);
-
-void tratarEscrituras(int socketParaCpus,int socketParaSwap,t_list* listaEscritura);
-
+void tratarPeticiones(int socketParaCpus,int socketParaSwap,t_list* listaLectura);
 
 /***************instrucciones*******************/
 void ejecutarInstruccion (tipoInstruccion instruccionCPU);
