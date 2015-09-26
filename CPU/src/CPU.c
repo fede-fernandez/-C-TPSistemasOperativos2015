@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "funcionesCPU.h"
 #include <commonsDeAsedio/cliente-servidor.h>
+#include <commonsDeAsedio/estructuras.h>
 
 #define puertoParaPlanificador 7201//Esto es solo
 #define puertoParaAdministrador 7202//para la entrega
