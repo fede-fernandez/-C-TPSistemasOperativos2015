@@ -24,10 +24,10 @@ bool baseMenor(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);
 
 
 /********FUNCIONES QUE ATIENDEN LAS INSTRUCCIONES DEL LENGUAJE MANSISOP**************/
-int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP);
+int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion);
 void liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso);
-char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,FILE* particion);
-void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, FILE* particion);
+char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion);
+void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion);
 
 
 
@@ -45,10 +45,10 @@ void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePag
 void compactar();
 
 
-void compactacionAlpha(t_list* listaDeHuecosUtilizados, FILE* particion,int tamanioDePagina);
+void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina);
 
-void moverHueco(tipoHuecoUtilizado* hueco,FILE* particion, int ultimaPaginaEscrita,int tamanioDePagina);
-void moverPagina(FILE* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina);
+void moverHueco(tipoHuecoUtilizado* hueco,char* particion, int ultimaPaginaEscrita,int tamanioDePagina);
+void moverPagina(char* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina);
 
 int traducirDireccionLogicaAFisica(tipoHuecoUtilizado* hueco,int dirLogicaDePagina);
 int espacioEntreDosHuecosUtilizados(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);

@@ -62,6 +62,8 @@ void imprimirListaDeHuecos(t_list* lista){
 	for (i = 0; i < list_size(lista); ++i) {
 		imprimirHueco(list_get(lista,i));
 	}
+
+	puts("\n");
 }
 
 void imprimirHueco(tipoHuecoUtilizado* hueco){
@@ -70,10 +72,17 @@ void imprimirHueco(tipoHuecoUtilizado* hueco){
 
 }
 
-int paginasLibresAlInicio(t_list* listaDeHuecosUtilizados){
-	tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,0);
+int paginasLibresAlInicio(t_list* listaDeHuecosUtilizados, int cantidadTotalDePaginas){
 
-	return aux->baseDeMProc;//Si el primer proceso en lista empieza, por ejemplo en la pagina 2, entonces significa que tiene 2 paginas libres {0,1}
+	if(list_is_empty(listaDeHuecosUtilizados)){
+		return cantidadTotalDePaginas;
+	}
+	else {
+		tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,0);
+
+		return aux->baseDeMProc;//Si el primer proceso en lista empieza, por ejemplo en la pagina 2, entonces significa que tiene 2 paginas libres {0,1}
+
+	}
 }
 
 int paginasLibresAlFinal(t_list* listaDeHuecosUtilizados, int cantTotalDePaginas){
@@ -146,7 +155,7 @@ t_list* inicializarListaDeHuecosUtilizados(){
 
 
 /////////////////////FUNCIONES PRINCIPALES//////////////
-int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP){
+int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion){
 
 	int baseParaNuevoPID;
 
@@ -154,15 +163,25 @@ int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int can
 	if (cantidadDePaginasDisponibles(listaDeHuecosUtilizados,cantDePaginasDeSWAP) >= cantPaginasSolicitadas) {
 		//tengo espacio contiguo para almacenar las paginas que el mprc necesita?
 		if((baseParaNuevoPID = baseParaMProcSiTengoEspacioContiguo(listaDeHuecosUtilizados,cantPaginasSolicitadas,cantDePaginasDeSWAP)) != -1){
+
 			//compactar()
+			//compactacionAlpha(listaDeHuecosUtilizados,particion,tamanioDePagina);
 			//baseNuevo = ultima pagina ocupada para asignar al final
+//			tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,list_size(listaDeHuecosUtilizados)-1);
+//			baseParaNuevoPID = traducirDireccionLogicaAFisica(aux->baseDeMProc,aux->cantidadDePaginasQueOcupa);
+		}
+		else {
+			compactacionAlpha(listaDeHuecosUtilizados,particion,tamanioDePagina);
+						//baseNuevo = ultima pagina ocupada para asignar al final
+			tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,list_size(listaDeHuecosUtilizados)-1);
+			baseParaNuevoPID = traducirDireccionLogicaAFisica(aux,aux->cantidadDePaginasQueOcupa);
 		}
 		asignarEspacio(listaDeHuecosUtilizados,pidProcesoNuevo,cantPaginasSolicitadas,baseParaNuevoPID);
 
 	}
 	else {
 		//enviar error a memoria
-		printf("Error al asignar: no hay espacio suficiente");
+		printf("Error al asignar pid: %d, no hay espacio contiguo suficiente para almacenar %d paginas\n",pidProcesoNuevo,cantPaginasSolicitadas);
 	}
 
 	return 0;
@@ -182,7 +201,7 @@ void liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
 
 }
 
-char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,FILE* particion){
+char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion){
 	char* contenidoDePagina;
 
 	//buscarPIDEnListaDeHuecos
@@ -199,7 +218,7 @@ char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDeP
 	return contenidoDePagina;
 }
 
-void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, FILE* particion){
+void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion){
 	//buscarPIDEnListaDeHuecos
 	tipoHuecoUtilizado* huecoDelProceso = buscarHuecoPorPID(listaDeHuecosUtilizados,pidProceso);
 
@@ -229,11 +248,8 @@ int baseParaMProcSiTengoEspacioContiguo(t_list* listaDeHuecosUtilizados, int can
 
 	int pagina;
 
-	tipoHuecoUtilizado* h1;
-	tipoHuecoUtilizado* h2;
-	int i;
-
-	if (paginasLibresAlInicio(listaDeHuecosUtilizados) >= cantDePaginasSolicitadas) {
+	int prueba = paginasLibresAlInicio(listaDeHuecosUtilizados,cantTotalDePaginas);
+	if ((prueba >= cantDePaginasSolicitadas)) {
 		return 0;
 	}
 	//Verifico espacio contiguo entre bloques
@@ -278,7 +294,7 @@ int baseDeHuecoMasProximoA(int baseAnterior){
 	return 0;
 }
 
-void compactacionAlpha(t_list* listaDeHuecosUtilizados, FILE* particion,int tamanioDePagina){
+void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina){
 	tipoHuecoUtilizado* hueco;
 	int ultimaPaginaEscrita = 0;
 
@@ -292,7 +308,7 @@ void compactacionAlpha(t_list* listaDeHuecosUtilizados, FILE* particion,int tama
 	}
 }
 
-void moverHueco(tipoHuecoUtilizado* hueco,FILE* particion, int ultimaPaginaEscrita,int tamanioDePagina){
+void moverHueco(tipoHuecoUtilizado* hueco,char* particion, int ultimaPaginaEscrita,int tamanioDePagina){
 	int direccionFisicaBase = traducirDireccionLogicaAFisica(hueco,hueco->baseDeMProc);
 	hueco->baseDeMProc = ultimaPaginaEscrita;
 
@@ -314,7 +330,7 @@ void moverHueco(tipoHuecoUtilizado* hueco,FILE* particion, int ultimaPaginaEscri
 
 }
 
-void moverPagina(FILE* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina){
+void moverPagina(char* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina){
 
 	char* pagina = leerBloqueMapeado(particion,dirFisVieja,tamanioDePagina);
 	escribirBloqueMapeado(particion,pagina,dirFisNueva,tamanioDePagina);

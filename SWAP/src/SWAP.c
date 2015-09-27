@@ -30,9 +30,12 @@ tipoInstruccion* crearInstruccion(char ins,int pid,int pag,char* testo){
 int main(void) {
 
 	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("cfgSWAP");
-	//FILE* particion = inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
 	t_list* listaDeHuecosUtilizados = inicializarListaDeHuecosUtilizados();
-	FILE* particion = fopen("swap.data","r+");
+
+	FILE* particion = inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
+
+	//FILE* particion = fopen("swap","r+");
+
 
 //	int socketParaAdministrador = crearSocket();
 //	asociarAPuerto(socketParaAdministrador,configuracion->puertoDeEscucha);
@@ -47,44 +50,11 @@ int main(void) {
 //	liberarSocket(administradorMemoria);
 //	liberarSocket(socketParaAdministrador);
 
-
-	/****************PRUEBAS************************/
-
-//	reservarEspacio(listaDeHuecosUtilizados,2,5,configuracion);
-//	reservarEspacio(listaDeHuecosUtilizados,3,2,configuracion);
-
-	//pid base cantidad
-	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(1,1,2));
-	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(2,4,2));
-	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(0,10,15));
-//
-//	printf("base para nuevo: %d",baseParaMProcSiTengoEspacioContiguo(listaDeHuecosUtilizados,20,64));
-
-
-//	reservarEspacio(listaDeHuecosUtilizados,17,5,configuracion->cantidadDePaginas);
-//	reservarEspacio(listaDeHuecosUtilizados,255,10,configuracion->cantidadDePaginas);
-//	reservarEspacio(listaDeHuecosUtilizados,13,2,configuracion->cantidadDePaginas);
-//	reservarEspacio(listaDeHuecosUtilizados,7,30,configuracion->cantidadDePaginas);
-
-
-	imprimirListaDeHuecos(listaDeHuecosUtilizados);
-
-
-	puts("\n");
-
-	list_sort(listaDeHuecosUtilizados,(void*)baseMenor);
-
-	compactacionAlpha(listaDeHuecosUtilizados,particion,configuracion->tamanioDePagina);
-
-
-	imprimirListaDeHuecos(listaDeHuecosUtilizados);
-
-
-
 	list_destroy_and_destroy_elements(listaDeHuecosUtilizados,(void*)destruirHuecoUtilizado);
 	destruirConfigSWAP(configuracion);
-	//fclose(particion);
+	fclose(particion);
 
 
 	return EXIT_SUCCESS;
 }
+

@@ -54,57 +54,5 @@ void liberarMemoriaDeArchivoCompletoMapeado(FILE* archivoAMapear, void* resultad
 }
 
 
-///////////////////////////////////////////////////
-
-
-void escribirBloqueMapeado(FILE* archivo,char* contenidoAEscribir,int numDeBloque, int tamanioDeBloque){
-	fseek(archivo,numDeBloque*tamanioDeBloque,SEEK_SET);
-
-	char* aux = completarBloque(contenidoAEscribir,tamanioDeBloque);
-
-	fwrite(aux,tamanioDeBloque,1,archivo);
-}
-
-char* leerBloqueMapeado(FILE* archivo,int numDeBloque, int tamanioDeBloque){
-	char* leido = string_new();
-
-	fseek(archivo,numDeBloque*tamanioDeBloque,SEEK_SET);
-
-	fread(leido,tamanioDeBloque,1,archivo);
-
-	char* aux = recuperarBloque(leido);
-
-	return aux;
-}
-
-
-/////////AUXILIARES/////////
-
-
-char* completarBloque(char* bloqueACompletar, int tamanioDeBloque){
-
-	int cantACompletar = tamanioDeBloque - string_length(bloqueACompletar);
-	char* aux = string_duplicate(bloqueACompletar);
-
-	string_append(&aux,string_repeat(CARACTER_VACIO,cantACompletar));
-
-	return aux;
-}
-
-char* recuperarBloque(char* bloqueAVaciar){
-	char* bloque = string_new();
-	int i;
-
-	for (i = 0; i < string_length(bloqueAVaciar); ++i) {
-		if (bloqueAVaciar[i] == CARACTER_VACIO)
-			break;
-	}
-
-	bloque = string_substring_until(bloqueAVaciar,i);
-
-	return bloque;
-}
-
-
 
 

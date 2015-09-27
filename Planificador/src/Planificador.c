@@ -4,10 +4,11 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <commons/collections/list.h>
+#include <commons/collections/queue.h>
 #include "funcionesPlanificador.h"
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <commons/collections/queue.h>
+
 #include <commonsDeAsedio/cliente-servidor.h>
 
 
@@ -15,18 +16,19 @@
 // VARIABLES GLOBALES <-------------------
 
 int contador_de_id_procesos = 0; // para saber cuantos procesos hay en el sistema
-t_list* lista_de_PCB;
-t_list* procesos_en_ready; // lista de procesos "listos para ejecutar"
-t_list* CPUs; // lista de cpu disponibles
-t_list* procesos_bloqueados; // lista donde se encolan los procesos para luego mandarlos a dormir
+t_list *lista_de_PCB;
+t_queue *procesos_en_ready; // cola de procesos "listos para ejecutar"
+t_list *CPUs; // lista de cpu disponibles
+t_queue *procesos_bloqueados; // cola donde se encolan los procesos para luego mandarlos a dormir
 int socketEscucha; // socket que escuche las conecciones entrantes
 int quantum; // 0 si tiene quantum y el "valor" en caso de que tenga quantum
 fd_set master; // conjunto maestro de descriptores de fichero
 fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
 int fdmax; // número máximo de descriptores de fichero
 
+int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
 
-//--------------- -------estructuras, esto va en el .h------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 //Las movi al header las estructuras y funciones_create()
 
@@ -41,7 +43,7 @@ int fdmax; // número máximo de descriptores de fichero
 
 void* recibir_conexion(void){
 
-	int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
+
 	int socketCpu;
 	int id;
 
@@ -75,7 +77,7 @@ void* recibir_conexion(void){
 
 
 
-//-------------- HILO encargado de recibir las rafagas de las CPU que vienen de: quantun/entrada_salida---------
+//------- HILO encargado de recibir las rafagas de las CPU que vienen de: quantum/entrada_salida/fin---------
 
 int llega_quantum(t_PCB *PCB){
 
@@ -169,6 +171,8 @@ void* recibir_rafagas(void){
 		// agregar esa CPU como disponible();
 		nodo_cpu->disponibilidad = 1;
 
+		// despertar al hilo ejecutar_proceso();
+
 		free(PCB_recibido);
 
 	}
@@ -242,8 +246,8 @@ void* ejecutar_proceso(void){
 
 		nodo_pcb->estado = 'E'; // le cambio el valor que esta en memoria dinamica
 
-		//buscar_CPU_disponible(CPUs , cpu_puerto) // Esta funcion me devuelve un puerto libre
-		nodo_cpu=list_find(CPUs,(void*)diponibilidad);
+		//buscar_CPU_disponible.Esta funcion me devuelve un puerto libre
+		nodo_cpu=list_find(CPUs,(void*)diponibilidad); // siempre tiene q haber un puerto libre, o explota el programa
 
 		// mandar_PCB_al_cpu();
 
@@ -308,10 +312,16 @@ int main(void) {
 
 	tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
 
+	puerto = configuracion->puertoEscucha;
+	quantum = configuracion->quantum;
+
+	destruirConfigPlanificador(configuracion);
+
+
 	lista_de_PCB = list_create(); //Crea la lista_de_PCB
-	procesos_en_ready = list_create(); //Crea la lista de pocesos en ready
+	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
 	CPUs = list_create(); // crea lista de CPUs conectadas
-	procesos_bloqueados = queue_create(); // crea lista de procesos bloqueados
+	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
 
 	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
 	pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
@@ -319,18 +329,17 @@ int main(void) {
 	pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de "procesos_bloqueados"
 
 	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso "main"
-	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta implementar la funcion "recibir_conexion"
-	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta implementar la funcion "ejecutar_proceso"
-	pthread_create(&recibir, NULL, recibir_rafagas, NULL); // falta implementar la funcion
-	pthread_create(&bloquear, NULL, bloquear_procesos, NULL); //falta implementar la funcion
+	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta testear la funcion "recibir_conexion"
+	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta testear la funcion "ejecutar_proceso"
+	pthread_create(&recibir, NULL, recibir_rafagas, NULL); // falta testear la funcion "recibir_rafagas"
+	pthread_create(&bloquear, NULL, bloquear_procesos, NULL); //falta testear la funcion "bloquear_procesos"
 
 
 	menu();
 
-	destruirConfigPlanificador(configuracion);
 
 	//destruir hilos
-	// destruir listas..todo lo q este en memoria dinamica.
+	//destruir listas..todo lo q este en memoria dinamica.
 
 	return EXIT_SUCCESS;
 }
@@ -344,6 +353,9 @@ int correr_path(void){
 	t_PCB *PCB;
 
   //limpiar pantalla
+
+	system("clear");
+
 	printf("Ingresar Comando: \n");
 
 	scanf("%s %s", comando, path); // supongo que siempre es un comando valido y path tambien
@@ -357,6 +369,8 @@ int correr_path(void){
 	queue_push(procesos_en_ready,id_create(contador_de_id_procesos));
 
 	printf("Proceso %s en ejecucion....\n", path);
+
+	sleep(2);
 
 	return 0;
 }

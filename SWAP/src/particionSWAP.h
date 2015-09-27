@@ -12,8 +12,17 @@
 #include <stdlib.h>
 #include <commons/string.h>
 
+#define CARACTER_VACIO '\0'
+
+
 //////////////FUNCIONES PARA EL ARCHIVO DE PARTICION///////////////////////
 
 FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas);
+
+void escribirBloqueMapeado(char* archivo,char* contenidoAEscribir,int numDeBloque, int tamanioDeBloque);
+
+char* leerBloqueMapeado(char* archivo,int numDeBloque, int tamanioDeBloque);
+
+
 
 #endif /* PARTICIONSWAP_H_ */
