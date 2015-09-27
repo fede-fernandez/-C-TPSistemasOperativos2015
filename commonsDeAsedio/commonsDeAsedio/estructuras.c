@@ -6,10 +6,11 @@
  */
 #include "estructuras.h"
 
-void* serializarPCB(tipoPCB pcb,size_t* tamanioBloque){
+void* serializarPCB(tipoPCB pcb,size_t* tamanio){
 
-	size_t tamanioRuta = strlen(pcb.ruta);//+sizeof(char);
-	*tamanioBloque = sizeof(tipoPCB)-sizeof(char)+sizeof(size_t)+tamanioRuta;
+	size_t tamanioRuta = strlen(pcb.ruta)+sizeof(char);
+
+	size_t tamanioBloque = 2*sizeof(int)+sizeof(char)+sizeof(size_t)+tamanioRuta;
 
 	void* buffer = malloc(tamanioBloque);
 
@@ -20,6 +21,8 @@ void* serializarPCB(tipoPCB pcb,size_t* tamanioBloque){
 	memcpy(proximo,&pcb.estado,sizeof(char));  		proximo+=sizeof(char);
 	memcpy(proximo,&pcb.insPointer,sizeof(int));  	proximo+=sizeof(int);
 	memcpy(proximo,&pcb.ruta,tamanioRuta);
+
+	*tamanio = tamanioBloque;
 
 	return buffer;
 }
@@ -45,7 +48,7 @@ tipoPCB deserializarPCB(size_t tamanioBloque,void* bloque){
 
 	void* proximo = bloque;
 
-	size_t tamanioRuta = tamanioBloque-sizeof(tipoPCB)+sizeof(char);
+	size_t tamanioRuta = tamanioBloque-2*sizeof(int)-sizeof(char);
 
 	memcpy(&pcbRecibido.pid,proximo,sizeof(int)); 			proximo+=sizeof(int);
 	memcpy(&pcbRecibido.estado,proximo,sizeof(char));		proximo+=sizeof(char);
