@@ -329,10 +329,10 @@ int main(void) {
 	pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de "procesos_bloqueados"
 
 	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso "main"
-	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta implementar la funcion "recibir_conexion"
-	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta implementar la funcion "ejecutar_proceso"
-	pthread_create(&recibir, NULL, recibir_rafagas, NULL); // falta implementar la funcion
-	pthread_create(&bloquear, NULL, bloquear_procesos, NULL); //falta implementar la funcion
+	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta testear la funcion "recibir_conexion"
+	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta testear la funcion "ejecutar_proceso"
+	pthread_create(&recibir, NULL, recibir_rafagas, NULL); // falta testear la funcion "recibir_rafagas"
+	pthread_create(&bloquear, NULL, bloquear_procesos, NULL); //falta testear la funcion "bloquear_procesos"
 
 
 	menu();
