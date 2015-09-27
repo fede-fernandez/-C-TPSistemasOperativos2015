@@ -4,10 +4,11 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <commons/collections/list.h>
+#include <commons/collections/queue.h>
 #include "funcionesPlanificador.h"
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <commons/collections/queue.h>
+
 #include <commonsDeAsedio/cliente-servidor.h>
 
 
@@ -25,8 +26,9 @@ fd_set master; // conjunto maestro de descriptores de fichero
 fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
 int fdmax; // número máximo de descriptores de fichero
 
+int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
 
-//--------------- -------estructuras, esto va en el .h------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 //Las movi al header las estructuras y funciones_create()
 
@@ -41,7 +43,7 @@ int fdmax; // número máximo de descriptores de fichero
 
 void* recibir_conexion(void){
 
-	int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
+
 	int socketCpu;
 	int id;
 
@@ -75,7 +77,7 @@ void* recibir_conexion(void){
 
 
 
-//-------------- HILO encargado de recibir las rafagas de las CPU que vienen de: quantun/entrada_salida---------
+//------- HILO encargado de recibir las rafagas de las CPU que vienen de: quantum/entrada_salida/fin---------
 
 int llega_quantum(t_PCB *PCB){
 
@@ -310,6 +312,12 @@ int main(void) {
 
 	tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
 
+	puerto = configuracion->puertoEscucha;
+	quantum = configuracion->quantum;
+
+	destruirConfigPlanificador(configuracion);
+
+
 	lista_de_PCB = list_create(); //Crea la lista_de_PCB
 	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
 	CPUs = list_create(); // crea lista de CPUs conectadas
@@ -329,7 +337,6 @@ int main(void) {
 
 	menu();
 
-	destruirConfigPlanificador(configuracion);
 
 	//destruir hilos
 	//destruir listas..todo lo q este en memoria dinamica.
