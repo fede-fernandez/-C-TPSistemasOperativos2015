@@ -155,7 +155,7 @@ t_list* inicializarListaDeHuecosUtilizados(){
 
 
 /////////////////////FUNCIONES PRINCIPALES//////////////
-int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, FILE* particion){
+int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion){
 
 	int baseParaNuevoPID;
 
@@ -201,7 +201,7 @@ void liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
 
 }
 
-char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,FILE* particion){
+char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion){
 	char* contenidoDePagina;
 
 	//buscarPIDEnListaDeHuecos
@@ -218,7 +218,7 @@ char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDeP
 	return contenidoDePagina;
 }
 
-void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, FILE* particion){
+void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion){
 	//buscarPIDEnListaDeHuecos
 	tipoHuecoUtilizado* huecoDelProceso = buscarHuecoPorPID(listaDeHuecosUtilizados,pidProceso);
 
@@ -294,7 +294,7 @@ int baseDeHuecoMasProximoA(int baseAnterior){
 	return 0;
 }
 
-void compactacionAlpha(t_list* listaDeHuecosUtilizados, FILE* particion,int tamanioDePagina){
+void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina){
 	tipoHuecoUtilizado* hueco;
 	int ultimaPaginaEscrita = 0;
 
@@ -308,7 +308,7 @@ void compactacionAlpha(t_list* listaDeHuecosUtilizados, FILE* particion,int tama
 	}
 }
 
-void moverHueco(tipoHuecoUtilizado* hueco,FILE* particion, int ultimaPaginaEscrita,int tamanioDePagina){
+void moverHueco(tipoHuecoUtilizado* hueco,char* particion, int ultimaPaginaEscrita,int tamanioDePagina){
 	int direccionFisicaBase = traducirDireccionLogicaAFisica(hueco,hueco->baseDeMProc);
 	hueco->baseDeMProc = ultimaPaginaEscrita;
 
@@ -330,7 +330,7 @@ void moverHueco(tipoHuecoUtilizado* hueco,FILE* particion, int ultimaPaginaEscri
 
 }
 
-void moverPagina(FILE* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina){
+void moverPagina(char* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina){
 
 	char* pagina = leerBloqueMapeado(particion,dirFisVieja,tamanioDePagina);
 	escribirBloqueMapeado(particion,pagina,dirFisNueva,tamanioDePagina);

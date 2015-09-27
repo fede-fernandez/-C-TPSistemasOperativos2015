@@ -38,7 +38,10 @@ FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int canti
 
 
 
-void escribirBloqueMapeado(FILE* archivo,char* contenidoAEscribir,int numDeBloque, int tamanioDeBloque){
+void escribirBloqueMapeado(char* rutaDeParticion,char* contenidoAEscribir,int numDeBloque, int tamanioDeBloque){
+
+	FILE* archivo = fopen(rutaDeParticion,"r+");
+
 	fseek(archivo,numDeBloque*tamanioDeBloque,SEEK_SET);
 
 	char* aux = completarBloque(contenidoAEscribir,tamanioDeBloque);
@@ -46,7 +49,9 @@ void escribirBloqueMapeado(FILE* archivo,char* contenidoAEscribir,int numDeBloqu
 	fwrite(aux,tamanioDeBloque,1,archivo);
 }
 
-char* leerBloqueMapeado(FILE* archivo,int numDeBloque, int tamanioDeBloque){
+char* leerBloqueMapeado(char* rutaDeParticion,int numDeBloque, int tamanioDeBloque){
+	FILE* archivo = fopen(rutaDeParticion,"r+");
+
 	char* leido = string_new();
 
 	fseek(archivo,numDeBloque*tamanioDeBloque,SEEK_SET);

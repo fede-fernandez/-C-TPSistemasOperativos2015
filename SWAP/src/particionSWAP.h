@@ -19,9 +19,9 @@
 
 FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas);
 
-void escribirBloqueMapeado(FILE* archivo,char* contenidoAEscribir,int numDeBloque, int tamanioDeBloque);
+void escribirBloqueMapeado(char* archivo,char* contenidoAEscribir,int numDeBloque, int tamanioDeBloque);
 
-char* leerBloqueMapeado(FILE* archivo,int numDeBloque, int tamanioDeBloque);
+char* leerBloqueMapeado(char* archivo,int numDeBloque, int tamanioDeBloque);
 
 
 
