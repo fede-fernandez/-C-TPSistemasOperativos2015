@@ -47,27 +47,52 @@ int ejecutarInstruccion(char* instruccion, int idDeProceso)
 	char** instruccionSeparadaPorEspacios = string_split(instruccion, " ");
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "iniciar"))
-		return instruccionIniciar(atoi(string_substring_until(instruccionSeparadaPorEspacios[1],
-				string_length(instruccionSeparadaPorEspacios[1])-1)), idDeProceso);
+	{
+		return instruccionIniciar(atoi(sacarPuntoYComaFinal(instruccionSeparadaPorEspacios[1])), idDeProceso);
+	}
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "leer"))
-		return instruccionLeer(atoi(string_substring_until(instruccionSeparadaPorEspacios[1],
-				string_length(instruccionSeparadaPorEspacios[1])-1)), idDeProceso);
+	{
+		return instruccionLeer(atoi(sacarPuntoYComaFinal(instruccionSeparadaPorEspacios[1])), idDeProceso);
+	}
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "escribir"))
+	{
 		return instruccionEscribir(atoi(instruccionSeparadaPorEspacios[1]),
-				string_substring_until(instruccionSeparadaPorEspacios[2],
-								(string_length(instruccionSeparadaPorEspacios[2])-1)), idDeProceso);
+				sacarComillas(sacarPuntoYComaFinal(instruccionSeparadaPorEspacios[2])),
+				idDeProceso);
+	}
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "entrada-salida"))
-		return instruccionEntradaSalida(atoi(string_substring_until(instruccionSeparadaPorEspacios[1],
-				string_length(instruccionSeparadaPorEspacios[1])-1)), idDeProceso);
+	{
+		instruccionEntradaSalida(atoi(sacarPuntoYComaFinal(instruccionSeparadaPorEspacios[1])), idDeProceso);
+	}
 
 	if(string_equals_ignore_case(instruccionSeparadaPorEspacios[0], "finalizar"))
+	{
 		return instruccionFinalizar(idDeProceso);
+	}
+
 
 	return 0;
 }
+
+char* sacarPuntoYComaFinal(char* frase)
+{
+	if(string_ends_with(frase,";"))
+		return string_substring_until(frase, string_length(frase)-1);
+	else
+		return frase;
+}
+
+char* sacarComillas(char* frase)
+{
+	if(string_starts_with(frase, "\"") && string_ends_with(frase, "\""))
+			return string_substring_until(string_substring_from(frase, 1), string_length(frase) -1);
+		else
+			return frase;
+}
+
 
 //Por ahora envio a Memoria solo idDelProceso para que lo asigne a la pagina, si necesita
 //mas cosas avisenme, o usamos el pcb para todo.
