@@ -50,18 +50,15 @@ int main(void) {
 
 	/****************PRUEBAS************************/
 
-//	reservarEspacio(listaDeHuecosUtilizados,2,5,configuracion);
-//	reservarEspacio(listaDeHuecosUtilizados,3,2,configuracion);
-
 	//pid base cantidad
-	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(1,1,2));
-	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(2,4,2));
-	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(0,10,15));
+//	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(1,1,2));
+//	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(2,4,2));
+//	list_add(listaDeHuecosUtilizados,crearHuecoUtilizado(0,10,15));
 //
 //	printf("base para nuevo: %d",baseParaMProcSiTengoEspacioContiguo(listaDeHuecosUtilizados,20,64));
 
 
-//	reservarEspacio(listaDeHuecosUtilizados,17,5,configuracion->cantidadDePaginas);
+	reservarEspacio(listaDeHuecosUtilizados,17,5,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,particion);
 //	reservarEspacio(listaDeHuecosUtilizados,255,10,configuracion->cantidadDePaginas);
 //	reservarEspacio(listaDeHuecosUtilizados,13,2,configuracion->cantidadDePaginas);
 //	reservarEspacio(listaDeHuecosUtilizados,7,30,configuracion->cantidadDePaginas);

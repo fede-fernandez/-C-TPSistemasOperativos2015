@@ -24,7 +24,7 @@ bool baseMenor(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);
 
 
 /********FUNCIONES QUE ATIENDEN LAS INSTRUCCIONES DEL LENGUAJE MANSISOP**************/
-int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP);
+int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, FILE* particion);
 void liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso);
 char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,FILE* particion);
 void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, FILE* particion);

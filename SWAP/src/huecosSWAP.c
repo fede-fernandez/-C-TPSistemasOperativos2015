@@ -70,10 +70,17 @@ void imprimirHueco(tipoHuecoUtilizado* hueco){
 
 }
 
-int paginasLibresAlInicio(t_list* listaDeHuecosUtilizados){
-	tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,0);
+int paginasLibresAlInicio(t_list* listaDeHuecosUtilizados, int cantidadTotalDePaginas){
 
-	return aux->baseDeMProc;//Si el primer proceso en lista empieza, por ejemplo en la pagina 2, entonces significa que tiene 2 paginas libres {0,1}
+	if(list_is_empty(listaDeHuecosUtilizados)){
+		return cantidadTotalDePaginas;
+	}
+	else {
+		tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,0);
+
+		return aux->baseDeMProc;//Si el primer proceso en lista empieza, por ejemplo en la pagina 2, entonces significa que tiene 2 paginas libres {0,1}
+
+	}
 }
 
 int paginasLibresAlFinal(t_list* listaDeHuecosUtilizados, int cantTotalDePaginas){
@@ -146,7 +153,7 @@ t_list* inicializarListaDeHuecosUtilizados(){
 
 
 /////////////////////FUNCIONES PRINCIPALES//////////////
-int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP){
+int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, FILE* particion){
 
 	int baseParaNuevoPID;
 
@@ -155,6 +162,7 @@ int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int can
 		//tengo espacio contiguo para almacenar las paginas que el mprc necesita?
 		if((baseParaNuevoPID = baseParaMProcSiTengoEspacioContiguo(listaDeHuecosUtilizados,cantPaginasSolicitadas,cantDePaginasDeSWAP)) != -1){
 			//compactar()
+			compactacionAlpha(listaDeHuecosUtilizados,particion,tamanioDePagina);
 			//baseNuevo = ultima pagina ocupada para asignar al final
 		}
 		asignarEspacio(listaDeHuecosUtilizados,pidProcesoNuevo,cantPaginasSolicitadas,baseParaNuevoPID);
@@ -229,11 +237,8 @@ int baseParaMProcSiTengoEspacioContiguo(t_list* listaDeHuecosUtilizados, int can
 
 	int pagina;
 
-	tipoHuecoUtilizado* h1;
-	tipoHuecoUtilizado* h2;
-	int i;
-
-	if (paginasLibresAlInicio(listaDeHuecosUtilizados) >= cantDePaginasSolicitadas) {
+	int prueba = paginasLibresAlInicio(listaDeHuecosUtilizados,cantTotalDePaginas);
+	if ((prueba >= cantDePaginasSolicitadas)) {
 		return 0;
 	}
 	//Verifico espacio contiguo entre bloques
