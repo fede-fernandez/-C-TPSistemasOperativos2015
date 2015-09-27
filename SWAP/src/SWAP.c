@@ -83,7 +83,7 @@ int main(void) {
 	char* paginaLeida = leerPagina(listaDeHuecosUtilizados,0,0,configuracion->tamanioDePagina,particion);
 	imprimirListaDeHuecos(listaDeHuecosUtilizados);
 
-	printf(paginaLeida);
+	printf("%s",paginaLeida);
 
 
 

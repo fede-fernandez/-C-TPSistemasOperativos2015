@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <commons/string.h>
 
-#define CARACTER_VACIO '\0'
+
 
 #define VEINTE_MB 20*1024*1024 //20 KiB para 20MiB debe ser 20*1024*1024
 
@@ -28,13 +28,7 @@ void liberarMemoriaDeArchivoCompletoMapeado(FILE* archivoAMapear, void* resultad
 ////////////////////////////////////////
 
 
-void escribirBloqueMapeado(FILE* archivo,char* contenidoAEscribir,int numDeBloque, int tamanioDeBloque);
 
-char* leerBloqueMapeado(FILE* archivo,int numDeBloque, int tamanioDeBloque);
-
-char* completarBloque(char* bloqueACompletar, int tamanioDeBloque);
-
-char* recuperarBloque(char* bloqueAVaciar);
 
 
 #endif /* NODO_SRC_MMAP_H_ */
