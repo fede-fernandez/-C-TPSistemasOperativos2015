@@ -20,6 +20,8 @@
 #define ALGORITMO_PLANIFICACION "ALGORITMO_PLANIFICACION"
 #define QUANTUM "QUANTUM"
 
+extern 	int puertoConCambios=0; // puerto donde hubo cambios
+
 typedef struct{
 	int puertoEscucha;
 	char* algoritmoDePlanificacion;
@@ -61,7 +63,7 @@ t_CPU *cpu_create(int id_cpu, int disponibilidad, int puerto);
 
 int diponibilidad(t_CPU * nodo);
 
-
+int buscar_por_puerto(t_CPU *nodo );
 
 t_PCB* recibirPCB(int socketPlanificador);
 

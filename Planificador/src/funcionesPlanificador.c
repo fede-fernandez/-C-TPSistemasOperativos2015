@@ -114,4 +114,12 @@ void enviarPCB(int socketCPU,t_PCB* PCB){
 }
 
 
+int buscar_por_puerto(t_CPU *nodo){
 
+	if(nodo->puerto == puertoConCambios){
+
+		return 1;
+	}
+
+	return 0;
+}

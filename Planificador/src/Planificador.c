@@ -120,29 +120,29 @@ void* recibir_rafagas(void){
 	t_PCB *PCB;
 	int id_cpu;
 	char llegada; // "Quantum", "Bloqueado" y "Fin"
-	int i=0; // puerto donde hubo cambios
+
 
 
 
 	while(1){
 
-		read_fds = master; // backup de mi descriptores
+		read_fds = master; // backup de mi descriptores de archivo.
 
-		// select se bloque hasta que le llegan "mensajitos"
+		// select se bloque hasta que le llegan "mensajitos".
 		select(fdmax+1, &read_fds, NULL, NULL, NULL);
-		for(i = 0; i <= fdmax; i++) {
+		for(puertoConCambios = 0; puertoConCambios <= fdmax; puertoConCambios++) {
 
-			// preguntar a todos los puertos de "read_fds" si recibieron mensajes
-			if (FD_ISSET(i, &read_fds)) { //pregunta si i está en el conjunto y si hubo cambio
+			// preguntar a todos los puertos de "read_fds" si recibieron mensajes.
+			if (FD_ISSET(puertoConCambios, &read_fds)) { //pregunta si "puertoConCambios" está en el conjunto y si hubo cambio.
 
-				break; // encontramos el puerto donde hubo cambios, "i" es el puerto con cambios
-				// podria poner un goto xDDD (para q salga del for) xDDD
+				break; // encontramos el puerto donde hubo cambios, "puertoConCambios" es el puerto con cambios.
+				// salgo del for.
 			}
 		}
 
-		//una vez que encontramos el puerto, lo saco con "i" al nodo de la lista
+		//una vez que encontramos el puerto, lo saco con "puertoConCambios" al nodo de la lista
 
-		nodo_cpu=buscar_nodo_por_puerto(CPUs,i); // falta desarrollar esa funcion de busquedad
+		nodo_cpu= list_find(CPUs,(void*)(buscar_por_puerto)); // "puertoConCambios" es la variable gloval, esta en el .h
 
 		// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
 
