@@ -32,7 +32,7 @@ int main(void) {
 	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("cfgSWAP");
 	//FILE* particion = inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
 	t_list* listaDeHuecosUtilizados = inicializarListaDeHuecosUtilizados();
-	FILE* particion = fopen("swap.data","r+");
+	FILE* particion = fopen("swap","r+");
 
 //	int socketParaAdministrador = crearSocket();
 //	asociarAPuerto(socketParaAdministrador,configuracion->puertoDeEscucha);
@@ -58,23 +58,50 @@ int main(void) {
 //	printf("base para nuevo: %d",baseParaMProcSiTengoEspacioContiguo(listaDeHuecosUtilizados,20,64));
 
 
-	reservarEspacio(listaDeHuecosUtilizados,17,5,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,particion);
-//	reservarEspacio(listaDeHuecosUtilizados,255,10,configuracion->cantidadDePaginas);
+	reservarEspacio(listaDeHuecosUtilizados,0,10,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,particion);
+	reservarEspacio(listaDeHuecosUtilizados,1,10,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,particion);
+	reservarEspacio(listaDeHuecosUtilizados,2,10,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,particion);
+	reservarEspacio(listaDeHuecosUtilizados,3,10,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,particion);
+	reservarEspacio(listaDeHuecosUtilizados,4,10,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,particion);
+	reservarEspacio(listaDeHuecosUtilizados,5,10,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,particion);
+
+	reservarEspacio(listaDeHuecosUtilizados,15,1,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,particion);
+
+	imprimirListaDeHuecos(listaDeHuecosUtilizados);
+
+	liberarEspacio(listaDeHuecosUtilizados,2);
+	liberarEspacio(listaDeHuecosUtilizados,5);
+
+//	imprimirListaDeHuecos(listaDeHuecosUtilizados);
+//
+//	compactacionAlpha(listaDeHuecosUtilizados,particion,configuracion->tamanioDePagina);
+
+
+	reservarEspacio(listaDeHuecosUtilizados,2000,20,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,particion);
+
+//	escribirPagina(listaDeHuecosUtilizados,0,"hola",0,configuracion->tamanioDePagina,particion);
+	char* paginaLeida = leerPagina(listaDeHuecosUtilizados,0,0,configuracion->tamanioDePagina,particion);
+	imprimirListaDeHuecos(listaDeHuecosUtilizados);
+
+	printf(paginaLeida);
+
+
+
+
 //	reservarEspacio(listaDeHuecosUtilizados,13,2,configuracion->cantidadDePaginas);
 //	reservarEspacio(listaDeHuecosUtilizados,7,30,configuracion->cantidadDePaginas);
 
 
-	imprimirListaDeHuecos(listaDeHuecosUtilizados);
 
 
 	puts("\n");
 
-	list_sort(listaDeHuecosUtilizados,(void*)baseMenor);
+	//list_sort(listaDeHuecosUtilizados,(void*)baseMenor);
 
-	compactacionAlpha(listaDeHuecosUtilizados,particion,configuracion->tamanioDePagina);
+	//compactacionAlpha(listaDeHuecosUtilizados,particion,configuracion->tamanioDePagina);
 
 
-	imprimirListaDeHuecos(listaDeHuecosUtilizados);
+	//imprimirListaDeHuecos(listaDeHuecosUtilizados);
 
 
 
@@ -85,3 +112,4 @@ int main(void) {
 
 	return EXIT_SUCCESS;
 }
+

@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <commons/string.h>
 
-#define CARACTER_VACIO '@'
+#define CARACTER_VACIO '\0'
 
 #define VEINTE_MB 20*1024*1024 //20 KiB para 20MiB debe ser 20*1024*1024
 

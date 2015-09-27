@@ -62,6 +62,8 @@ void imprimirListaDeHuecos(t_list* lista){
 	for (i = 0; i < list_size(lista); ++i) {
 		imprimirHueco(list_get(lista,i));
 	}
+
+	puts("\n");
 }
 
 void imprimirHueco(tipoHuecoUtilizado* hueco){
@@ -161,16 +163,25 @@ int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int can
 	if (cantidadDePaginasDisponibles(listaDeHuecosUtilizados,cantDePaginasDeSWAP) >= cantPaginasSolicitadas) {
 		//tengo espacio contiguo para almacenar las paginas que el mprc necesita?
 		if((baseParaNuevoPID = baseParaMProcSiTengoEspacioContiguo(listaDeHuecosUtilizados,cantPaginasSolicitadas,cantDePaginasDeSWAP)) != -1){
+
 			//compactar()
-			compactacionAlpha(listaDeHuecosUtilizados,particion,tamanioDePagina);
+			//compactacionAlpha(listaDeHuecosUtilizados,particion,tamanioDePagina);
 			//baseNuevo = ultima pagina ocupada para asignar al final
+//			tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,list_size(listaDeHuecosUtilizados)-1);
+//			baseParaNuevoPID = traducirDireccionLogicaAFisica(aux->baseDeMProc,aux->cantidadDePaginasQueOcupa);
+		}
+		else {
+			compactacionAlpha(listaDeHuecosUtilizados,particion,tamanioDePagina);
+						//baseNuevo = ultima pagina ocupada para asignar al final
+			tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,list_size(listaDeHuecosUtilizados)-1);
+			baseParaNuevoPID = traducirDireccionLogicaAFisica(aux,aux->cantidadDePaginasQueOcupa);
 		}
 		asignarEspacio(listaDeHuecosUtilizados,pidProcesoNuevo,cantPaginasSolicitadas,baseParaNuevoPID);
 
 	}
 	else {
 		//enviar error a memoria
-		printf("Error al asignar: no hay espacio suficiente");
+		printf("Error al asignar pid: %d, no hay espacio contiguo suficiente para almacenar %d paginas\n",pidProcesoNuevo,cantPaginasSolicitadas);
 	}
 
 	return 0;
