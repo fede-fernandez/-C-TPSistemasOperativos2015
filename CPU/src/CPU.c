@@ -4,11 +4,7 @@
 #include <commonsDeAsedio/cliente-servidor.h>
 #include <commonsDeAsedio/estructuras.h>
 
-#define puertoParaPlanificador 7201//Esto es solo
-#define puertoParaAdministrador 7202//para la entrega
-
 int main(void) {
-
 	tipoConfigCPU* configuracion = cargarArchivoDeConfiguracionDeCPU("cfgCPU");//ruta de ejemplo
 
 	bool cpuActiva = true;
@@ -33,9 +29,9 @@ int main(void) {
 
 		char* instruccionActual, ruta = pcbRecibido.ruta;
 
-		//CUando mierda usas el estado ferni??
 
-		FILE* programa = fopen(ruta, "r"); //rutame lo envía planificador por socket
+
+		FILE* programa = fopen(ruta, "r");
 
 		if(programa == NULL)
 			printf("\nEl programa no existe o está vacío.\n");

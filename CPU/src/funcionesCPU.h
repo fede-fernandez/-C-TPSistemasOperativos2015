@@ -27,7 +27,6 @@ typedef struct{
 	int retardo;
 }tipoConfigCPU;
 
-
 tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfiguracionDelCPU);
 
 tipoConfigCPU* crearConfigCPU();
@@ -39,14 +38,18 @@ void destruirConfigCPU(tipoConfigCPU* estructuraDeConfiguracion);
 /************Funciones principales del CPU************/
 int ejecutarInstruccion(char* instruccion, int idDeProceso);
 
+
 /*Funciones mAnsisOp*/
 int instruccionIniciar(int numeroDePaginas, int idDeProceso);
 int instruccionLeer(int numeroDePagina, int idDeProceso);
 int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso);
 int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso);
 int instruccionFinalizar(int idDeProceso);
-/*Fin de Funciones mAnsisOp*/
-/*********Fin de Funciones principales del CPU*********/
+
+
+/*Funciones de control de lineas de codigo mAnsisOp*/
+char* sacarPuntoYComaFinal(char* frase);
+char* sacarComillas(char* frase);
 
 
 #endif /* FUNCIONESCPU_H_ */
