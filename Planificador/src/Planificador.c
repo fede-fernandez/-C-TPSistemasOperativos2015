@@ -35,8 +35,75 @@ int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
 // -------------------------------------------------------------------------------------------------------
 
 
-//-------------------------------------FUNCIONES HILOS--------------------------------------------------------------------
 
+int main(void) {
+
+	tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
+
+	puerto = configuracion->puertoEscucha;
+	quantum = configuracion->quantum;
+
+	destruirConfigPlanificador(configuracion);
+
+
+	lista_de_PCB = list_create(); //Crea la lista_de_PCB
+	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
+	CPUs = list_create(); // crea lista de CPUs conectadas
+	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
+
+	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
+	pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
+	pthread_t recibir;
+	pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de "procesos_bloqueados"
+
+	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso "main"
+	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta testear la funcion "recibir_conexion"
+	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta testear la funcion "ejecutar_proceso"
+	pthread_create(&recibir, NULL, recibir_rafagas, NULL); // falta testear la funcion "recibir_rafagas"
+	pthread_create(&bloquear, NULL, bloquear_procesos, NULL); //falta testear la funcion "bloquear_procesos"
+
+
+	menu();
+
+
+	//destruir hilos
+	//destruir listas..todo lo q este en memoria dinamica.
+
+	return EXIT_SUCCESS;
+}
+
+int correr_path(void){
+
+
+	char comando[30];
+	char path[30];
+	t_PCB *PCB;
+
+  //limpiar pantalla
+
+	system("clear");
+
+	printf("Ingresar Comando: \n");
+
+	scanf("%s %s", comando, path); // supongo que siempre es un comando valido y path tambien
+
+	contador_de_id_procesos++; // mantengo la cuenta de todos los procesos que se crearon en el sistema
+
+	// Agrego el elemento al final de la lista (para que quede ordenada por ID)
+	list_add(lista_de_PCB, PCB_create(contador_de_id_procesos, 1, 'R', path));
+
+	// agrego la id a lo ultimo de la cola
+	queue_push(procesos_en_ready,id_create(contador_de_id_procesos));
+
+	printf("Proceso %s en ejecucion....\n", path);
+
+	sleep(2);
+
+	return 0;
+}
+
+
+//-------------------------------------FUNCIONES HILOS--------------------------------------------------------------------
 
 
 //---------------HILO encargado de recibir conexiones de CPUs   -------------------------
@@ -98,7 +165,6 @@ int llega_entrada_salida(t_PCB *PCB){
 	queue_push(procesos_bloqueados,id_create(PCB->id ));
 
 	// actualizo el PCB
-
 	PCB->estado = 'B'; // le cambio el valor que esta en memoria dinamica
 
 	return 0;
@@ -141,11 +207,9 @@ void* recibir_rafagas(void){
 		}
 
 		//una vez que encontramos el puerto, lo saco con "puertoConCambios" al nodo de la lista
-
 		nodo_cpu= list_find(CPUs,(void*)(buscar_por_puerto)); // "puertoConCambios" es la variable gloval, esta en el .h
 
 		// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
-
 		recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
 		PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
@@ -199,21 +263,17 @@ void* bloquear_procesos(void){
 	while(1){
 
 		// sacar un proceso de la cola de "procesos_bloqueados" (modificando la lista)
-
 		nodo_bloqueado = queue_pop(procesos_bloqueados);
 
 		sleep(nodo_bloqueado->tiempo);
 
 		// una vez transcurrido ese tiempo buscar con la id en "lista_de_PCB" y sacar su PCB (sin modificar la lista)
-
 		nodo_pcb =list_get(lista_de_PCB, nodo_bloqueado->id - 1); // se modifica la lista ?? (no se tiene q modificar!)
 
 		// modificar su estado de: bloqueado a--> listo y meter de nuevo en "lista_de_PCB"
-
 		nodo_pcb->estado = 'R'; // le cambio el valor que esta en memoria dinamica
 
 		// meter id de proceso en cola: "procesos_en_ready"
-
 		queue_push(procesos_en_ready,nodo_bloqueado->id); // ya hay un nuevo nodo en la cola
 
 		free(nodo_bloqueado); // saco el nodo de memoria dinamica
@@ -308,69 +368,3 @@ int menu(void) {
 
 }
 
-int main(void) {
-
-	tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
-
-	puerto = configuracion->puertoEscucha;
-	quantum = configuracion->quantum;
-
-	destruirConfigPlanificador(configuracion);
-
-
-	lista_de_PCB = list_create(); //Crea la lista_de_PCB
-	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
-	CPUs = list_create(); // crea lista de CPUs conectadas
-	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
-
-	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
-	pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
-	pthread_t recibir;
-	pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de "procesos_bloqueados"
-
-	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso "main"
-	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta testear la funcion "recibir_conexion"
-	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta testear la funcion "ejecutar_proceso"
-	pthread_create(&recibir, NULL, recibir_rafagas, NULL); // falta testear la funcion "recibir_rafagas"
-	pthread_create(&bloquear, NULL, bloquear_procesos, NULL); //falta testear la funcion "bloquear_procesos"
-
-
-	menu();
-
-
-	//destruir hilos
-	//destruir listas..todo lo q este en memoria dinamica.
-
-	return EXIT_SUCCESS;
-}
-
-
-int correr_path(void){
-
-
-	char comando[30];
-	char path[30];
-	t_PCB *PCB;
-
-  //limpiar pantalla
-
-	system("clear");
-
-	printf("Ingresar Comando: \n");
-
-	scanf("%s %s", comando, path); // supongo que siempre es un comando valido y path tambien
-
-	contador_de_id_procesos++; // mantengo la cuenta de todos los procesos que se crearon en el sistema
-
-	// Agrego el elemento al final de la lista (para que quede ordenada por ID)
-	list_add(lista_de_PCB, PCB_create(contador_de_id_procesos, 1, 'R', path));
-
-	// agrego la id a lo ultimo de la cola
-	queue_push(procesos_en_ready,id_create(contador_de_id_procesos));
-
-	printf("Proceso %s en ejecucion....\n", path);
-
-	sleep(2);
-
-	return 0;
-}
