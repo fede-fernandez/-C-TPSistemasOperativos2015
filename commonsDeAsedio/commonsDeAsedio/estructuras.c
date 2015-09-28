@@ -88,13 +88,13 @@ tipoInstruccion deserializarInstruccion(size_t tamanioBloque,void* buffer){
 	return instruccion;
 }
 
-void* serializarRespuesta(tipoRespuesta respuesta){
+void* serializarRespuesta(tipoRespuesta respuesta,size_t* tamanioRespuesta){
 
 	size_t tamanioInformacion = strlen(respuesta.informacion)+sizeof(char);
 
 	size_t tamanioBloque = tamanioInformacion+sizeof(char)+sizeof(size_t);
 
-	void* buffer = malloc(tamanioBloque+sizeof(int));
+	void* buffer = malloc(tamanioBloque);
 
 	void* proximo = buffer;
 
@@ -102,9 +102,11 @@ void* serializarRespuesta(tipoRespuesta respuesta){
 	memcpy(proximo,&respuesta.respuesta,sizeof(char));				proximo+=sizeof(char);
 	memcpy(proximo,respuesta.informacion,tamanioInformacion);
 
+	*tamanioRespuesta = tamanioBloque;
+
 	return buffer;
 }
-void* serializarInstruccion(tipoInstruccion instruccion){
+void* serializarInstruccion(tipoInstruccion instruccion,size_t* tamanioInstruccion){
 
 	size_t tamanioTexto = strlen(instruccion.texto)+sizeof(char);
 	size_t tamanioBloque = 2*sizeof(int)+sizeof(char)+tamanioTexto+sizeof(size_t);
@@ -119,6 +121,8 @@ void* serializarInstruccion(tipoInstruccion instruccion){
 		memcpy(proximo,&instruccion.nroPagina,sizeof(int));		proximo+=sizeof(int);
 		memcpy(proximo,instruccion.texto,tamanioTexto);
 
+		*tamanioInstruccion = tamanioBloque;
+
 		return buffer;
 
 }
@@ -130,7 +134,7 @@ tipoRespuesta deserializarRespuesta(size_t tamanioBloque,void* buffer){
 	tipoRespuesta respuesta;
 
 	memcpy(&respuesta.respuesta,buffer,sizeof(char));
-	memcpy(&respuesta.informacion,buffer+sizeof(char),tamanioInformacion);
+	memcpy(respuesta.informacion,buffer+sizeof(char),tamanioInformacion);
 
 	return respuesta;
 }

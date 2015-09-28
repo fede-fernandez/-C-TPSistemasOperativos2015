@@ -62,9 +62,9 @@ tipoInstruccion recibirInstruccion(int socketCpu);
 
 tipoInstruccion deserializarInstruccion(size_t tamanioBloque,void* buffer);
 
-void* serializarRespuesta(tipoRespuesta respuesta);
+void* serializarRespuesta(tipoRespuesta respuesta,size_t* tamanio);
 
-void* serializarInstruccion(tipoInstruccion instruccion);
+void* serializarInstruccion(tipoInstruccion instruccion,size_t* tamanio);
 
 tipoRespuesta deserializarRespuesta(size_t tamanioBloque,void* buffer);
 
