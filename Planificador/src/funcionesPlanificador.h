@@ -20,7 +20,7 @@
 #define ALGORITMO_PLANIFICACION "ALGORITMO_PLANIFICACION"
 #define QUANTUM "QUANTUM"
 
-extern 	int puertoConCambios=0; // puerto donde hubo cambios
+extern int puertoConCambios=0; // puerto donde hubo cambios
 
 typedef struct{
 	int puertoEscucha;
@@ -47,7 +47,27 @@ typedef struct{
 } t_bloqueados;
 
 
+//------- -------------Funciones HILOS prototipadas----------------
+
+void* recibir_conexion(void);
+
+int llega_quantum(t_PCB *PCB);
+
+int llega_entrada_salida(t_PCB *PCB);
+
+int llega_de_fin(t_PCB *PCB);
+
+void* recibir_rafagas(void);
+
+void* bloquear_procesos(void);
+
+void* ejecutar_proceso(void);
+//-------------------------------------------------------------------
+
+int menu(void) ;
+
 int correr_path(void);
+//-------------------------------------------------------------------
 
 tipoConfigPlanificador* crearConfigPlanificador();
 
@@ -55,15 +75,19 @@ void destruirConfigPlanificador(tipoConfigPlanificador* estructuraDeConfiguracio
 
 tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDeArchivoDeConfiguracion);
 
+//-----------------------------------------------------------------------
 t_PCB* PCB_create(int id, int pc, char estado, char path[30]);
 
 int *id_create(int id);
 
 t_CPU *cpu_create(int id_cpu, int disponibilidad, int puerto);
+//------------------------------------------------------------------------
 
+//-------------------------------------------------------
 int diponibilidad(t_CPU * nodo);
 
 int buscar_por_puerto(t_CPU *nodo );
+//-------------------------------------------------------
 
 t_PCB* recibirPCB(int socketPlanificador);
 
