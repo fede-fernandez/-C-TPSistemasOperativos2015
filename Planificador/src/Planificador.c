@@ -3,12 +3,13 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <semaphore.h>
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include "funcionesPlanificador.h"
-#include <sys/wait.h>
+
 
 
 
@@ -35,7 +36,9 @@ pthread_mutex_t ready;
 
 //semaforos de sincronizacion
 
-
+sem_t solicitud_ejecucion;
+sem_t solicitud_cpuLibre;
+sem_t solicitud_deBloqueo;
 
 //--------------------------------------------------------------------------------------------------
 
@@ -54,9 +57,15 @@ int main(void) {
 
 	destruirConfigPlanificador(configuracion);
 
+	//Declaración de Mutex
 	pthread_mutex_init(&pcbs,NULL);
 	pthread_mutex_init(&cpuss,NULL);
 	pthread_mutex_init(&ready,NULL);
+
+	// Inicialización de Semáforos en:0
+	sem_init(&solicitud_ejecucion, 1, 0);
+	sem_init(&solicitud_cpuLibre, 1, 0);
+	sem_init(&solicitud_deBloqueo, 1, 0);
 
 	lista_de_PCB = list_create(); //Crea la lista_de_PCB
 	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
@@ -80,10 +89,13 @@ int main(void) {
 
 	//destruir hilos
 	//destruir listas.todo lo q este en memoria dinamica.
-
 	pthread_mutex_destroy(pcbs);
 	pthread_mutex_destroy(cpuss);
 	pthread_mutex_destroy(ready);
+
+	sem_destroy(solicitud_ejecucion);
+	sem_destroy(solicitud_cpuLibre);
+	sem_destroy(solicitud_deBloqueo);
 
 	return EXIT_SUCCESS;
 }
@@ -119,6 +131,8 @@ int correr_path(void){
 
 
 	printf("Proceso %s en ejecucion....\n", path);
+
+	sem_post(&solicitud_ejecucion);
 
 	sleep(1);
 
@@ -160,6 +174,7 @@ void* recibir_conexion(){
 			fdmax = socketCpu; // guardo el mayor
 		}
 
+		sem_post(&solicitud_cpuLibre);
 	}
 
 	return 0;
@@ -234,10 +249,9 @@ void* recibir_rafagas(){
 
 		pthread_mutex_unlock(&cpuss);
 
-		// despertar al hilo ejecutar_proceso();
-
 		free(PCB_recibido);
 
+		sem_post(&solicitud_cpuLibre); // desperta a al hilo "ejecutar_proceso"
 	}
 
 }
@@ -297,7 +311,7 @@ void* bloquear_procesos(){
 
 	while(1){
 
-
+		sem_wait(&solicitud_deBloqueo);
 
 		// sacar un proceso de la cola de "procesos_bloqueados" (modificando la lista)
 		nodo_bloqueado = queue_pop(procesos_bloqueados);
@@ -322,6 +336,7 @@ void* bloquear_procesos(){
 
 		free(nodo_bloqueado); // saco el nodo de memoria dinamica
 
+		sem_post(&solicitud_ejecucion);
 
 	}
 
@@ -340,9 +355,9 @@ void* ejecutar_proceso(){
 
 	while(1){
 
-		// wait(cant_procesos_listos);
+		sem_wait(&solicitud_ejecucion);
 
-		// wait(cant_CPUs_libres);
+		sem_wait(&solicitud_cpuLibre);;
 
 		pthread_mutex_lock(&ready);
 		id = queue_pop(procesos_en_ready); //sacar_primer_elemento_de_la_cola
@@ -403,6 +418,8 @@ int menu(void) {
 			printf("#                                                              #\n");
 			printf("#     4) cpu                                                   #\n");
 			printf("#                                                              #\n");
+			printf("#     5) Salir                                                   #\n");
+			printf("#                                                              #\n");
 			printf("################################################################\n");
 			printf("################################################################\n");
 
@@ -417,6 +434,9 @@ int menu(void) {
 			   ps();	        break;
 			case 4:
 			   cpu();	        break;*/
+			case 5:
+			   return 0;	        break;
+
 			default: printf("Opción incorrecta. Por favor ingrese una opción del 1 al 4 \n"); break;
 		  }
 
