@@ -20,7 +20,7 @@ void* serializarPCB(tipoPCB pcb,size_t* tamanio){
 	memcpy(proximo,&pcb.pid,sizeof(int));           proximo+=sizeof(int);
 	memcpy(proximo,&pcb.estado,sizeof(char));  		proximo+=sizeof(char);
 	memcpy(proximo,&pcb.insPointer,sizeof(int));  	proximo+=sizeof(int);
-	memcpy(proximo,&pcb.ruta,tamanioRuta);
+	memcpy(proximo,pcb.ruta,tamanioRuta);
 
 	*tamanio = tamanioBloque;
 
@@ -53,7 +53,7 @@ tipoPCB deserializarPCB(size_t tamanioBloque,void* bloque){
 	memcpy(&pcbRecibido.pid,proximo,sizeof(int)); 			proximo+=sizeof(int);
 	memcpy(&pcbRecibido.estado,proximo,sizeof(char));		proximo+=sizeof(char);
 	memcpy(&pcbRecibido.insPointer,proximo,sizeof(int));	proximo+=sizeof(int);
-	memcpy(&pcbRecibido.ruta,proximo,tamanioRuta);
+	memcpy(pcbRecibido.ruta,proximo,tamanioRuta);
 
 	return pcbRecibido;
 }
@@ -75,42 +75,53 @@ tipoInstruccion deserializarInstruccion(size_t tamanioBloque,void* buffer){
 
 	tipoInstruccion instruccion;
 
-	memcpy(buffer,&instruccion.pid,sizeof(int));tamanioBloque-=sizeof(int);
+	size_t tamanioIntYCadena = tamanioBloque-sizeof(char)-sizeof(int);
 
-	memcpy(buffer+sizeof(int),&instruccion.instruccion,sizeof(char));tamanioBloque-=sizeof(char);
+	void* proximo = buffer;
 
-	deserializarIntYCadena(&instruccion.nroPagina,instruccion.texto,tamanioBloque,buffer+sizeof(char)+sizeof(int));
+	memcpy(&instruccion.pid,proximo,sizeof(int));   		proximo+=sizeof(int);
+
+	memcpy(&instruccion.instruccion,proximo,sizeof(char));  proximo+=sizeof(char);
+
+	deserializarIntYCadena(&instruccion.nroPagina,instruccion.texto,tamanioIntYCadena,proximo);
 
 	return instruccion;
 }
 
-void* serializarRespuesta(tipoRespuesta respuesta){
+void* serializarRespuesta(tipoRespuesta respuesta,size_t* tamanioRespuesta){
 
-	size_t tamanioInformacion = strlen(respuesta.informacion);
+	size_t tamanioInformacion = strlen(respuesta.informacion)+sizeof(char);
 
-	size_t tamanioBloque = tamanioInformacion+sizeof(char);
+	size_t tamanioBloque = tamanioInformacion+sizeof(char)+sizeof(size_t);
 
-	void* buffer = malloc(tamanioBloque+sizeof(int));
+	void* buffer = malloc(tamanioBloque);
 
-	memcpy(buffer,&tamanioBloque,sizeof(size_t));
-	memcpy(buffer+sizeof(size_t),&respuesta.respuesta,sizeof(char));
-	memcpy(buffer+sizeof(size_t)+sizeof(char),&tamanioInformacion,sizeof(size_t));
-	memcpy(buffer+2*sizeof(size_t)+sizeof(char),&respuesta.informacion,tamanioInformacion);
+	void* proximo = buffer;
+
+	memcpy(proximo,&tamanioBloque,sizeof(size_t));          		proximo+=sizeof(size_t);
+	memcpy(proximo,&respuesta.respuesta,sizeof(char));				proximo+=sizeof(char);
+	memcpy(proximo,respuesta.informacion,tamanioInformacion);
+
+	*tamanioRespuesta = tamanioBloque;
 
 	return buffer;
 }
-void* serializarInstruccion(tipoInstruccion instruccion){
+void* serializarInstruccion(tipoInstruccion instruccion,size_t* tamanioInstruccion){
 
-	size_t tamanioTexto = strlen(instruccion.texto);
-	size_t tamanioBloque = 4*sizeof(int)+sizeof(char)+tamanioTexto+sizeof(size_t);
+	size_t tamanioTexto = strlen(instruccion.texto)+sizeof(char);
+	size_t tamanioBloque = 2*sizeof(int)+sizeof(char)+tamanioTexto+sizeof(size_t);
 
 		void* buffer = malloc(tamanioBloque);
 
-		memcpy(buffer,&tamanioBloque,sizeof(size_t));
-		memcpy(buffer+sizeof(size_t),&instruccion.pid,sizeof(int));
-		memcpy(buffer+sizeof(size_t)+sizeof(int),&instruccion.instruccion,sizeof(char));
-		memcpy(buffer+sizeof(size_t)+sizeof(int)+sizeof(char),&instruccion.nroPagina,sizeof(int));
-		memcpy(buffer+sizeof(size_t)+2*sizeof(int)+sizeof(char),&instruccion.texto,tamanioTexto);
+		void* proximo = buffer;
+
+		memcpy(proximo,&tamanioBloque,sizeof(size_t));         	proximo+=sizeof(size_t);
+		memcpy(proximo,&instruccion.pid,sizeof(int));			proximo+=sizeof(int);
+		memcpy(proximo,&instruccion.instruccion,sizeof(char));	proximo+=sizeof(char);
+		memcpy(proximo,&instruccion.nroPagina,sizeof(int));		proximo+=sizeof(int);
+		memcpy(proximo,instruccion.texto,tamanioTexto);
+
+		*tamanioInstruccion = tamanioBloque;
 
 		return buffer;
 
@@ -123,14 +134,14 @@ tipoRespuesta deserializarRespuesta(size_t tamanioBloque,void* buffer){
 	tipoRespuesta respuesta;
 
 	memcpy(&respuesta.respuesta,buffer,sizeof(char));
-	memcpy(&respuesta.informacion,buffer+sizeof(char),tamanioInformacion);
+	memcpy(respuesta.informacion,buffer+sizeof(char),tamanioInformacion);
 
 	return respuesta;
 }
 
 /*******************Funciones para tipoRespuesta*************************/
 
-tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion){
+tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion){//esto es al dope
 	tipoRespuesta* aux = malloc(sizeof(tipoRespuesta));
 
 	aux->respuesta = respuesta;
