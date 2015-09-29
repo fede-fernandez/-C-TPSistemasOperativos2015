@@ -20,10 +20,10 @@
 #define PERFECTO 'p'
 
 //instrucciones
-#define INICIAR 'i'
-#define ESCRIBIR 'e'
-#define LECTURA 'l'
 #define FINALIZAR 'f'
+#define INICIAR 'i'
+#define LECTURA 'l'
+#define ESCRIBIR 'e'
 #define ENTRADA_SALIDA 's'
 
 typedef struct{
@@ -50,21 +50,8 @@ typedef struct{
 	char* informacion;
 }tipoRespuesta;
 
-/***********************PRUEBAS************************/
-/************ESTRUCTURAS***************/
-typedef struct{
-	int numero;
-	char* cadena;
-}tipoEstructura;
 
-void imprimirEstructura(tipoEstructura estructura);
-void* serializar(tipoEstructura estructura);
-void desSerializar(void* buffer, tipoEstructura* estructura);
-/****************************************/
-
-
-
-void* serializarPCB(tipoPCB pcb,size_t* tamanio);
+void* serializarPCB(tipoPCB pcb);
 
 void deserializarPCB(void* bloque, tipoPCB* pcbrecibido);
 

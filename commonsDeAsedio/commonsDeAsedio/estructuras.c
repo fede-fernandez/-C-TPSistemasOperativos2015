@@ -6,7 +6,7 @@
  */
 #include "estructuras.h"
 
-void* serializarPCB(tipoPCB pcb,size_t* tamanio){
+void* serializarPCB(tipoPCB pcb){
 
 	size_t tamanioRuta = strlen(pcb.ruta)+sizeof(char);
 
@@ -16,14 +16,11 @@ void* serializarPCB(tipoPCB pcb,size_t* tamanio){
 
 	void* proximo = buffer;
 
-	//memcpy(proximo,&tamanioBloque,sizeof(size_t));  proximo+=sizeof(size_t);
-	memcpy(proximo,&pcb.pid,sizeof(int));           proximo+=sizeof(int);
-	memcpy(proximo,&pcb.estado,sizeof(char));  		proximo+=sizeof(char);
-	memcpy(proximo,&pcb.insPointer,sizeof(int));  	proximo+=sizeof(int);
+	memcpy(proximo,&(pcb.pid),sizeof(int));           proximo+=sizeof(int);
+	memcpy(proximo,&(pcb.estado),sizeof(char));  		proximo+=sizeof(char);
+	memcpy(proximo,&(pcb.insPointer),sizeof(int));  	proximo+=sizeof(int);
 	memcpy(proximo,&tamanioRuta,sizeof(size_t));  proximo+=sizeof(size_t);
 	memcpy(proximo,pcb.ruta,tamanioRuta);
-
-	*tamanio = tamanioBloque;
 
 	return buffer;
 }
@@ -104,6 +101,7 @@ void* serializarRespuesta(tipoRespuesta respuesta,size_t* tamanioRespuesta){
 
 	return buffer;
 }
+
 void* serializarInstruccion(tipoInstruccion instruccion,size_t* tamanioInstruccion){
 
 	size_t tamanioTexto = strlen(instruccion.texto)+sizeof(char);
@@ -152,44 +150,4 @@ void destruirTipoRespuesta(tipoRespuesta* respuesta){
 	free(respuesta->informacion);
 	free(respuesta);
 }
-
-/*************************PRUEBAS***********************************************/
-/************FUNCIONES****************/
-void imprimirEstructura(tipoEstructura estructura){
-	printf("numero: %d\n", estructura.numero);
-	printf("mensage: %s\n", estructura.cadena);
-	printf("\n");
-}
-
-void* serializar(tipoEstructura estructura){
-	void* buffer;
-	size_t tamanioBuffer;
-	size_t tamanioCadena;
-
-	tamanioCadena = strlen(estructura.cadena)+ sizeof(char);
-	tamanioBuffer = sizeof(int) + sizeof(size_t) + tamanioCadena;
-	buffer = malloc(tamanioBuffer);
-
-	memcpy(buffer, &(estructura.numero), sizeof(int));
-	memcpy(buffer+sizeof(int), &tamanioCadena, sizeof(size_t));
-	memcpy(buffer+sizeof(int)+sizeof(size_t), estructura.cadena, tamanioCadena);
-
-	return buffer;
-}
-
-void desSerializar(void* buffer, tipoEstructura* estructura){
-	size_t tamanioCadena;
-/*
-	estructura->numero = *punteroInt;
-	estructura->cadena = buffer +sizeof(int)+sizeof(size_t);
-*/
-
-
-	memcpy(&(estructura->numero), buffer, sizeof(int));
-	memcpy(&tamanioCadena, buffer+sizeof(int), sizeof(size_t));
-	memcpy(estructura->cadena, buffer+sizeof(int)+sizeof(size_t), tamanioCadena);
-
-}
-/*************************************************************************************/
-
 
