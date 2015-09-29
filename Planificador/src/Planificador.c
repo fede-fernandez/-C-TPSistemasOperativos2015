@@ -5,10 +5,9 @@
 #include <pthread.h>
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>
-#include "funcionesPlanificador.h"
 #include <sys/socket.h>
 #include <sys/types.h>
-
+#include "funcionesPlanificador.h"
 
 
 
@@ -67,7 +66,7 @@ int main(void) {
 
 
 	//destruir hilos
-	//destruir listas..todo lo q este en memoria dinamica.
+	//destruir listas.todo lo q este en memoria dinamica.
 
 	return EXIT_SUCCESS;
 }
@@ -146,38 +145,6 @@ void* recibir_conexion(){
 
 //------- HILO encargado de recibir las rafagas de las CPU que vienen de: quantum/entrada_salida/fin---------
 
-int llega_quantum(t_PCB *PCB){
-
-	// meter procesos en la cola de ready
-	queue_push(procesos_en_ready,id_create(PCB->id));
-
-	// actualizo el PCB
-
-	PCB->estado = 'R'; // le cambio el valor que esta en memoria dinamica
-
-	return 0;
-
-}
-
-int llega_entrada_salida(t_PCB *PCB){
-
-	// meter procesos en la cola de ready
-	queue_push(procesos_bloqueados,id_create(PCB->id ));
-
-	// actualizo el PCB
-	PCB->estado = 'B'; // le cambio el valor que esta en memoria dinamica
-
-	return 0;
-
-}
-
-int llega_de_fin(t_PCB *PCB){
-
-	PCB->estado = 'F'; // le cambio el valor que esta en memoria dinamica
-
-	return 0;
-
-}
 
 void* recibir_rafagas(){
 
@@ -185,8 +152,6 @@ void* recibir_rafagas(){
 	t_PCB *PCB_recibido;
 	t_PCB *PCB;
 	char llegada; // "Quantum", "Bloqueado" y "Fin"
-
-
 
 
 	while(1){
@@ -205,6 +170,8 @@ void* recibir_rafagas(){
 			}
 		}
 
+		// wait_mutex(CPUs);
+
 		//una vez que encontramos el puerto, lo saco con "puertoConCambios" al nodo de la lista
 		nodo_cpu= list_find(CPUs,(void*)(buscar_por_puerto)); // "puertoConCambios" es la variable gloval, esta en el .h
 
@@ -213,8 +180,9 @@ void* recibir_rafagas(){
 
 		PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
 
-		// buscar id de proceso en "lista_de_PCB"
+		//wait_mutex(PCB);
 
+		// buscar id de proceso en "lista_de_PCB"
 		PCB =list_get(lista_de_PCB, PCB_recibido->id - 1);
 
 		*PCB = *PCB_recibido; // actualizo PCB ---> la magia de c =)
@@ -231,8 +199,12 @@ void* recibir_rafagas(){
 
 		}
 
+		//SIGNAL_mutex(PCB);
+
 		// agregar esa CPU como disponible();
 		nodo_cpu->disponibilidad = 1;
+
+		//SIGNAL_mutex(CPUs);
 
 		// despertar al hilo ejecutar_proceso();
 
@@ -242,7 +214,45 @@ void* recibir_rafagas(){
 
 }
 
+int llega_quantum(t_PCB *PCB){
 
+	//wait_mutex(ready);
+
+	// meter procesos en la cola de ready
+	queue_push(procesos_en_ready,id_create(PCB->id));
+
+	//signal_mutex(ready);
+
+	// actualizo el PCB
+	PCB->estado = 'R'; // le cambio el valor que esta en memoria dinamica
+
+	return 0;
+
+}
+
+int llega_entrada_salida(t_PCB *PCB){
+
+	//wait_mutex(bloqueado);
+
+	// meter procesos en la cola de ready
+	queue_push(procesos_bloqueados,id_create(PCB->id ));
+
+	//siganal_mutex(bloqueado);
+
+	// actualizo el PCB
+	PCB->estado = 'B'; // le cambio el valor que esta en memoria dinamica
+
+	return 0;
+
+}
+
+int llega_de_fin(t_PCB *PCB){
+
+	PCB->estado = 'F'; // le cambio el valor que esta en memoria dinamica
+
+	return 0;
+
+}
 
 
 //-------------------------------------------------------------------------------------------------------------
@@ -309,6 +319,9 @@ void* ejecutar_proceso(){
 		nodo_cpu=list_find(CPUs,(void*)diponibilidad); // siempre tiene q haber un puerto libre, o explota el programa
 
 		// mandar_PCB_al_cpu();
+
+		// seteo esa cpu como ocupada
+		nodo_cpu->puerto = 0;
 
 		free(id);
 
