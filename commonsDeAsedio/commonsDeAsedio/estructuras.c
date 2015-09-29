@@ -16,17 +16,18 @@ void* serializarPCB(tipoPCB pcb,size_t* tamanio){
 
 	void* proximo = buffer;
 
-	memcpy(proximo,&tamanioBloque,sizeof(size_t));  proximo+=sizeof(size_t);
+	//memcpy(proximo,&tamanioBloque,sizeof(size_t));  proximo+=sizeof(size_t);
 	memcpy(proximo,&pcb.pid,sizeof(int));           proximo+=sizeof(int);
 	memcpy(proximo,&pcb.estado,sizeof(char));  		proximo+=sizeof(char);
 	memcpy(proximo,&pcb.insPointer,sizeof(int));  	proximo+=sizeof(int);
+	memcpy(proximo,&tamanioRuta,sizeof(size_t));  proximo+=sizeof(size_t);
 	memcpy(proximo,pcb.ruta,tamanioRuta);
 
 	*tamanio = tamanioBloque;
 
 	return buffer;
 }
-
+/*
 tipoPCB recibirPCB(int socketEnviador){
 
 	size_t tamanioBloque;
@@ -37,25 +38,22 @@ tipoPCB recibirPCB(int socketEnviador){
 
 	printf("Bloque recibido...\n");
 
-	tipoPCB pcbRecibido = deserializarPCB(tamanioBloque,bloque);
+	tipoPCB* pcbRecibido = deserializarPCB(tamanioBloque,bloque);
 
-	return pcbRecibido;
+	return *pcbRecibido;
 }
-
-tipoPCB deserializarPCB(size_t tamanioBloque,void* bloque){
-
-	tipoPCB pcbRecibido;
+*/
+void deserializarPCB(void* bloque, tipoPCB* pcbRecibido){
 
 	void* proximo = bloque;
 
-	size_t tamanioRuta = tamanioBloque-2*sizeof(int)-sizeof(char);
+	size_t tamanioRuta;// = tamanioBloque-2*sizeof(int)-sizeof(char);
 
-	memcpy(&pcbRecibido.pid,proximo,sizeof(int)); 			proximo+=sizeof(int);
-	memcpy(&pcbRecibido.estado,proximo,sizeof(char));		proximo+=sizeof(char);
-	memcpy(&pcbRecibido.insPointer,proximo,sizeof(int));	proximo+=sizeof(int);
-	memcpy(pcbRecibido.ruta,proximo,tamanioRuta);
-
-	return pcbRecibido;
+	memcpy(&(pcbRecibido->pid),proximo,sizeof(int)); 			proximo+=sizeof(int);
+	memcpy(&(pcbRecibido->estado),proximo,sizeof(char));		proximo+=sizeof(char);
+	memcpy(&(pcbRecibido->insPointer),proximo,sizeof(int));	proximo+=sizeof(int);
+	memcpy(&tamanioRuta,proximo,sizeof(size_t));	proximo+=sizeof(size_t);
+	memcpy(pcbRecibido->ruta,proximo,tamanioRuta);
 }
 
 tipoInstruccion recibirInstruccion(int socketCpu){
@@ -154,3 +152,44 @@ void destruirTipoRespuesta(tipoRespuesta* respuesta){
 	free(respuesta->informacion);
 	free(respuesta);
 }
+
+/*************************PRUEBAS***********************************************/
+/************FUNCIONES****************/
+void imprimirEstructura(tipoEstructura estructura){
+	printf("numero: %d\n", estructura.numero);
+	printf("mensage: %s\n", estructura.cadena);
+	printf("\n");
+}
+
+void* serializar(tipoEstructura estructura){
+	void* buffer;
+	size_t tamanioBuffer;
+	size_t tamanioCadena;
+
+	tamanioCadena = strlen(estructura.cadena)+ sizeof(char);
+	tamanioBuffer = sizeof(int) + sizeof(size_t) + tamanioCadena;
+	buffer = malloc(tamanioBuffer);
+
+	memcpy(buffer, &(estructura.numero), sizeof(int));
+	memcpy(buffer+sizeof(int), &tamanioCadena, sizeof(size_t));
+	memcpy(buffer+sizeof(int)+sizeof(size_t), estructura.cadena, tamanioCadena);
+
+	return buffer;
+}
+
+void desSerializar(void* buffer, tipoEstructura* estructura){
+	size_t tamanioCadena;
+/*
+	estructura->numero = *punteroInt;
+	estructura->cadena = buffer +sizeof(int)+sizeof(size_t);
+*/
+
+
+	memcpy(&(estructura->numero), buffer, sizeof(int));
+	memcpy(&tamanioCadena, buffer+sizeof(int), sizeof(size_t));
+	memcpy(estructura->cadena, buffer+sizeof(int)+sizeof(size_t), tamanioCadena);
+
+}
+/*************************************************************************************/
+
+
