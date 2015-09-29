@@ -5,11 +5,10 @@
 #include <pthread.h>
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>
-#include "funcionesPlanificador.h"
 #include <sys/socket.h>
 #include <sys/types.h>
-
-
+#include "funcionesPlanificador.h"
+#include <sys/wait.h>
 
 
 
@@ -28,6 +27,16 @@ int fdmax; // número máximo de descriptores de fichero
 
 int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
 
+//semaforos Mutex---------------
+
+pthread_mutex_t pcbs;
+pthread_mutex_t cpuss;
+pthread_mutex_t ready;
+
+//semaforos de sincronizacion
+
+
+
 //--------------------------------------------------------------------------------------------------
 
 //Las movi al header las estructuras y funciones_create()
@@ -45,6 +54,9 @@ int main(void) {
 
 	destruirConfigPlanificador(configuracion);
 
+	pthread_mutex_init(&pcbs,NULL);
+	pthread_mutex_init(&cpuss,NULL);
+	pthread_mutex_init(&ready,NULL);
 
 	lista_de_PCB = list_create(); //Crea la lista_de_PCB
 	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
@@ -67,7 +79,11 @@ int main(void) {
 
 
 	//destruir hilos
-	//destruir listas..todo lo q este en memoria dinamica.
+	//destruir listas.todo lo q este en memoria dinamica.
+
+	pthread_mutex_destroy(pcbs);
+	pthread_mutex_destroy(cpuss);
+	pthread_mutex_destroy(ready);
 
 	return EXIT_SUCCESS;
 }
@@ -89,15 +105,22 @@ int correr_path(void){
 
 	contador_de_id_procesos++; // mantengo la cuenta de todos los procesos que se crearon en el sistema
 
+	pthread_mutex_lock(&pcbs);
 	// Agrego el elemento al final de la lista (para que quede ordenada por ID)
 	list_add(lista_de_PCB, PCB_create(contador_de_id_procesos, 1, 'R', path));
 
+	pthread_mutex_unlock(&pcbs);
+
+	pthread_mutex_lock(&ready);
 	// agrego la id a lo ultimo de la cola
 	queue_push(procesos_en_ready,id_create(contador_de_id_procesos));
 
+	pthread_mutex_unlock(&ready);
+
+
 	printf("Proceso %s en ejecucion....\n", path);
 
-	sleep(2);
+	sleep(1);
 
 	return 0;
 }
@@ -124,7 +147,11 @@ void* recibir_conexion(){
 
 		recibirMensaje(socketCpu, &id, sizeof(int));// recibo id de CPU
 
+		pthread_mutex_lock(&cpuss);
+
 		list_add(CPUs, cpu_create(id,1,socketCpu)); // guardo en la lista
+
+		pthread_mutex_unlock(&cpuss);
 
 		enviarMensaje(socketCpu,&quantum,sizeof(quantum)); // le mando el quantum, que es un int
 
@@ -146,38 +173,6 @@ void* recibir_conexion(){
 
 //------- HILO encargado de recibir las rafagas de las CPU que vienen de: quantum/entrada_salida/fin---------
 
-int llega_quantum(t_PCB *PCB){
-
-	// meter procesos en la cola de ready
-	queue_push(procesos_en_ready,id_create(PCB->id));
-
-	// actualizo el PCB
-
-	PCB->estado = 'R'; // le cambio el valor que esta en memoria dinamica
-
-	return 0;
-
-}
-
-int llega_entrada_salida(t_PCB *PCB){
-
-	// meter procesos en la cola de ready
-	queue_push(procesos_bloqueados,id_create(PCB->id ));
-
-	// actualizo el PCB
-	PCB->estado = 'B'; // le cambio el valor que esta en memoria dinamica
-
-	return 0;
-
-}
-
-int llega_de_fin(t_PCB *PCB){
-
-	PCB->estado = 'F'; // le cambio el valor que esta en memoria dinamica
-
-	return 0;
-
-}
 
 void* recibir_rafagas(){
 
@@ -185,8 +180,6 @@ void* recibir_rafagas(){
 	t_PCB *PCB_recibido;
 	t_PCB *PCB;
 	char llegada; // "Quantum", "Bloqueado" y "Fin"
-
-
 
 
 	while(1){
@@ -205,6 +198,8 @@ void* recibir_rafagas(){
 			}
 		}
 
+		pthread_mutex_lock(&cpuss);
+
 		//una vez que encontramos el puerto, lo saco con "puertoConCambios" al nodo de la lista
 		nodo_cpu= list_find(CPUs,(void*)(buscar_por_puerto)); // "puertoConCambios" es la variable gloval, esta en el .h
 
@@ -213,8 +208,9 @@ void* recibir_rafagas(){
 
 		PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
 
-		// buscar id de proceso en "lista_de_PCB"
+		pthread_mutex_lock(&pcbs);
 
+		// buscar id de proceso en "lista_de_PCB"
 		PCB =list_get(lista_de_PCB, PCB_recibido->id - 1);
 
 		*PCB = *PCB_recibido; // actualizo PCB ---> la magia de c =)
@@ -231,8 +227,12 @@ void* recibir_rafagas(){
 
 		}
 
+		pthread_mutex_unlock(&pcbs);
+
 		// agregar esa CPU como disponible();
 		nodo_cpu->disponibilidad = 1;
+
+		pthread_mutex_unlock(&cpuss);
 
 		// despertar al hilo ejecutar_proceso();
 
@@ -242,7 +242,43 @@ void* recibir_rafagas(){
 
 }
 
+int llega_quantum(t_PCB *PCB){
 
+	pthread_mutex_lock(&ready);
+	// meter procesos en la cola de ready
+	queue_push(procesos_en_ready,id_create(PCB->id));
+
+	pthread_mutex_unlock(&ready);
+
+	// actualizo el PCB
+	PCB->estado = 'R'; // le cambio el valor que esta en memoria dinamica
+
+	return 0;
+
+}
+
+int llega_entrada_salida(t_PCB *PCB){
+
+
+	// meter procesos en la cola de ready
+	queue_push(procesos_bloqueados,id_create(PCB->id ));
+
+
+
+	// actualizo el PCB
+	PCB->estado = 'B'; // le cambio el valor que esta en memoria dinamica
+
+	return 0;
+
+}
+
+int llega_de_fin(t_PCB *PCB){
+
+	PCB->estado = 'F'; // le cambio el valor que esta en memoria dinamica
+
+	return 0;
+
+}
 
 
 //-------------------------------------------------------------------------------------------------------------
@@ -261,10 +297,14 @@ void* bloquear_procesos(){
 
 	while(1){
 
+
+
 		// sacar un proceso de la cola de "procesos_bloqueados" (modificando la lista)
 		nodo_bloqueado = queue_pop(procesos_bloqueados);
 
 		sleep(nodo_bloqueado->tiempo);
+
+		pthread_mutex_lock(&pcbs);
 
 		// una vez transcurrido ese tiempo buscar con la id en "lista_de_PCB" y sacar su PCB (sin modificar la lista)
 		nodo_pcb =list_get(lista_de_PCB, nodo_bloqueado->id - 1); // se modifica la lista ?? (no se tiene q modificar!)
@@ -272,8 +312,13 @@ void* bloquear_procesos(){
 		// modificar su estado de: bloqueado a--> listo y meter de nuevo en "lista_de_PCB"
 		nodo_pcb->estado = 'R'; // le cambio el valor que esta en memoria dinamica
 
+		pthread_mutex_unlock(&pcbs);
+
+		pthread_mutex_lock(&ready);
 		// meter id de proceso en cola: "procesos_en_ready"
 		queue_push(procesos_en_ready,id_create (nodo_bloqueado->id)); // ya hay un nuevo nodo en la cola
+
+		pthread_mutex_unlock(&ready);
 
 		free(nodo_bloqueado); // saco el nodo de memoria dinamica
 
@@ -299,16 +344,30 @@ void* ejecutar_proceso(){
 
 		// wait(cant_CPUs_libres);
 
+		pthread_mutex_lock(&ready);
 		id = queue_pop(procesos_en_ready); //sacar_primer_elemento_de_la_cola
+
+		pthread_mutex_unlock(&ready);
+
+		pthread_mutex_lock(&pcbs);
 
 		nodo_pcb =list_get(lista_de_PCB, *id-1); //PCB=buscar_id_de_proceso (sin desarmar la lista)
 
 		nodo_pcb->estado = 'E'; // le cambio el valor que esta en memoria dinamica
 
-		//buscar_CPU_disponible.Esta funcion me devuelve un puerto libre
+		pthread_mutex_lock(&cpuss);
+
+		//buscar_CPU_disponible. Esta funcion me devuelve un puerto libre
 		nodo_cpu=list_find(CPUs,(void*)diponibilidad); // siempre tiene q haber un puerto libre, o explota el programa
 
 		// mandar_PCB_al_cpu();
+
+		pthread_mutex_unlock(&pcbs);
+
+		// seteo esa cpu como ocupada
+		nodo_cpu->puerto = 0;
+
+		pthread_mutex_unlock(&cpuss);
 
 		free(id);
 
