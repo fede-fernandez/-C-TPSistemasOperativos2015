@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include <commonsDeAsedio/cliente-servidor.h>
+
 
 
 
@@ -77,7 +77,7 @@ int correr_path(void){
 
 	char comando[30];
 	char path[30];
-	t_PCB *PCB;
+
 
   //limpiar pantalla
 
@@ -108,7 +108,7 @@ int correr_path(void){
 
 //---------------HILO encargado de recibir conexiones de CPUs   -------------------------
 
-void* recibir_conexion(void){
+void* recibir_conexion(){
 
 
 	int socketCpu;
@@ -179,12 +179,11 @@ int llega_de_fin(t_PCB *PCB){
 
 }
 
-void* recibir_rafagas(void){
+void* recibir_rafagas(){
 
 	t_CPU *nodo_cpu;
 	t_PCB *PCB_recibido;
 	t_PCB *PCB;
-	int id_cpu;
 	char llegada; // "Quantum", "Bloqueado" y "Fin"
 
 
@@ -254,7 +253,7 @@ void* recibir_rafagas(void){
 //---------------tambien los pasa a la cola de "listos" una vez pasado ese tiempo-------------------------
 
 
-void* bloquear_procesos(void){
+void* bloquear_procesos(){
 
 	t_bloqueados *nodo_bloqueado;
 	t_PCB *nodo_pcb;
@@ -274,7 +273,7 @@ void* bloquear_procesos(void){
 		nodo_pcb->estado = 'R'; // le cambio el valor que esta en memoria dinamica
 
 		// meter id de proceso en cola: "procesos_en_ready"
-		queue_push(procesos_en_ready,nodo_bloqueado->id); // ya hay un nuevo nodo en la cola
+		queue_push(procesos_en_ready,id_create (nodo_bloqueado->id)); // ya hay un nuevo nodo en la cola
 
 		free(nodo_bloqueado); // saco el nodo de memoria dinamica
 
@@ -288,7 +287,7 @@ void* bloquear_procesos(void){
 
 //---------------HILO encargado de mandar a ejecutar procesos a la CPUs-------------------------
 
-void* ejecutar_proceso(void){
+void* ejecutar_proceso(){
 
 	int *id;
 	t_PCB *nodo_pcb;

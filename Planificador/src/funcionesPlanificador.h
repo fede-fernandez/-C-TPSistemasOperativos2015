@@ -49,7 +49,7 @@ typedef struct{
 
 //------- -------------Funciones HILOS prototipadas----------------
 
-void* recibir_conexion(void);
+void* recibir_conexion();
 
 int llega_quantum(t_PCB *PCB);
 
@@ -57,11 +57,11 @@ int llega_entrada_salida(t_PCB *PCB);
 
 int llega_de_fin(t_PCB *PCB);
 
-void* recibir_rafagas(void);
+void* recibir_rafagas();
 
-void* bloquear_procesos(void);
+void* bloquear_procesos();
 
-void* ejecutar_proceso(void);
+void* ejecutar_proceso();
 //-------------------------------------------------------------------
 
 int menu(void) ;
