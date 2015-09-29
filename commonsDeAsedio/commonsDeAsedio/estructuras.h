@@ -50,13 +50,25 @@ typedef struct{
 	char* informacion;
 }tipoRespuesta;
 
+/***********************PRUEBAS************************/
+/************ESTRUCTURAS***************/
+typedef struct{
+	int numero;
+	char* cadena;
+}tipoEstructura;
+
+void imprimirEstructura(tipoEstructura estructura);
+void* serializar(tipoEstructura estructura);
+void desSerializar(void* buffer, tipoEstructura* estructura);
+/****************************************/
+
 
 
 void* serializarPCB(tipoPCB pcb,size_t* tamanio);
 
-tipoPCB deserializarPCB(size_t tamanioBloque,void* bloque);
+void deserializarPCB(void* bloque, tipoPCB* pcbrecibido);
 
-tipoPCB recibirPCB(int socketPlanificador);
+//tipoPCB recibirPCB(int socketPlanificador);
 
 tipoInstruccion recibirInstruccion(int socketCpu);
 
