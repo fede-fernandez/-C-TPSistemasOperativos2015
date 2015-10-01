@@ -36,9 +36,9 @@ pthread_mutex_t ready;
 
 //semaforos de sincronizacion
 
-sem_t solicitud_ejecucion;
-sem_t solicitud_cpuLibre;
-sem_t solicitud_deBloqueo;
+sem_t solicitud_ejecucion; // cantidad de solicitud_ejecucion
+sem_t solicitud_cpuLibre; // cantidad de solicitud_cpuLibre
+sem_t solicitud_deBloqueo; // cantidad de solicitud_deBloqueo
 
 //--------------------------------------------------------------------------------------------------
 
@@ -57,12 +57,12 @@ int main(void) {
 
 	destruirConfigPlanificador(configuracion);
 
-	//Declaración de Mutex
+	//Declaración de Mutex.
 	pthread_mutex_init(&pcbs,NULL);
 	pthread_mutex_init(&cpuss,NULL);
 	pthread_mutex_init(&ready,NULL);
 
-	// Inicialización de Semáforos en:0
+	// Inicialización de Semáforos en 0.
 	sem_init(&solicitud_ejecucion, 1, 0);
 	sem_init(&solicitud_cpuLibre, 1, 0);
 	sem_init(&solicitud_deBloqueo, 1, 0);
