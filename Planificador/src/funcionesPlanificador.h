@@ -12,6 +12,7 @@
 #include <commons/config.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <commonsDeAsedio/error.h>
 #include <commonsDeAsedio/cliente-servidor.h>
 

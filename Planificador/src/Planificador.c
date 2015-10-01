@@ -89,13 +89,13 @@ int main(void) {
 
 	//destruir hilos
 	//destruir listas.todo lo q este en memoria dinamica.
-	pthread_mutex_destroy(pcbs);
-	pthread_mutex_destroy(cpuss);
-	pthread_mutex_destroy(ready);
+	pthread_mutex_destroy(&pcbs);
+	pthread_mutex_destroy(&cpuss);
+	pthread_mutex_destroy(&ready);
 
-	sem_destroy(solicitud_ejecucion);
-	sem_destroy(solicitud_cpuLibre);
-	sem_destroy(solicitud_deBloqueo);
+	sem_destroy(&solicitud_ejecucion);
+	sem_destroy(&solicitud_cpuLibre);
+	sem_destroy(&solicitud_deBloqueo);
 
 	return EXIT_SUCCESS;
 }
@@ -388,6 +388,7 @@ void* ejecutar_proceso(){
 
 
 	}
+}
 
 //--------------------------------------------------------------------------------------------------------
 
