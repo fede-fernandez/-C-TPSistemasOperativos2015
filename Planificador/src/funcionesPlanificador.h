@@ -47,7 +47,7 @@ typedef struct{
 } t_bloqueados;
 
 
-//------- -------------Funciones HILOS prototipadas----------------
+//-------Funciones HILOS prototipadas----------------
 
 void* recibir_conexion();
 
