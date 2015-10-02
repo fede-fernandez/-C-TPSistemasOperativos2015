@@ -55,17 +55,29 @@ void* serializarPCB(tipoPCB pcb);
 
 void deserializarPCB(void* bloque, tipoPCB* pcbrecibido);
 
-//tipoPCB recibirPCB(int socketPlanificador);
+tipoPCB* recibirPCB(int socketEnviador);
 
-tipoInstruccion recibirInstruccion(int socketCpu);
+void enviarPCB(int socketCliente,tipoPCB pcb);
 
-tipoInstruccion deserializarInstruccion(size_t tamanioBloque,void* buffer);
+void imprimirBufferPCB(void* buffer);
 
-void* serializarRespuesta(tipoRespuesta respuesta,size_t* tamanio);
+void* serializarInstruccion(tipoInstruccion instruccion);
 
-void* serializarInstruccion(tipoInstruccion instruccion,size_t* tamanio);
+void deserializarInstruccion(void* buffer,tipoInstruccion* instruccion);
 
-tipoRespuesta deserializarRespuesta(size_t tamanioBloque,void* buffer);
+tipoInstruccion* recibirInstruccion(int socketEnviador);
+
+void enviarInstruccion(int socketCliente,tipoInstruccion instruccion);
+
+void* serializarRespuesta(tipoRespuesta respuesta);
+
+void deserializarRespuesta(void* buffer,tipoRespuesta* respuesta);
+
+tipoRespuesta* recibirRespuesta(int socketEnviador);
+
+void enviarRespuesta(int socketCliente,tipoRespuesta respuesta);
+
+//-------------------LEONEGRO----------------------------------------
 
 tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion);
 
