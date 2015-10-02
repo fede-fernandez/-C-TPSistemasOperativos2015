@@ -131,16 +131,13 @@ int crearSocketParaAceptarSolicitudes(int socketServidor){
 	return socketAceptarSolicitud;
 }
 
+
+
 void* recibirBloque(size_t* tamanioBloque,int socketEnviador){
 
 	size_t tamanio;
 
 	recibirMensajeCompleto(socketEnviador,&tamanio,sizeof(size_t));
-
-	tamanio -= sizeof(size_t);
-
-	printf("Recibi tamanio de mensaje = %d\n",tamanio);
-
 
 	void* buffer = malloc(tamanio);
 
