@@ -79,8 +79,12 @@ void enviarRespuesta(int socketCliente,tipoRespuesta respuesta);
 
 //-------------------LEONEGRO----------------------------------------
 
+//ronan: esto lo hice yo lpm, dejen de robar mi trabajo
+
 tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion);
 
 void destruirTipoRespuesta(tipoRespuesta* respuesta);
+
+void destruirTipoInstruccion(tipoInstruccion* instruccion);
 
 #endif /* COMMONSDEASEDIO_ESTRUCTURAS_H_ */

@@ -220,7 +220,7 @@ tipoRespuesta* recibirRespuesta(int socketEnviador){
 
 /*******************Funciones para tipoRespuesta*************************/
 
-tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion){//esto es al dope
+tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion){//esto es al dope, no, yo lo uso en el swap
 	tipoRespuesta* aux = malloc(sizeof(tipoRespuesta));
 
 	aux->respuesta = respuesta;
@@ -234,3 +234,7 @@ void destruirTipoRespuesta(tipoRespuesta* respuesta){
 	free(respuesta);
 }
 
+void destruirTipoInstruccion(tipoInstruccion* instruccion){
+	free(instruccion->texto);
+	free(instruccion);
+}

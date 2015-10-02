@@ -9,6 +9,7 @@
 #define HUECOSSWAP_H_
 
 #include "estructurasSWAP.h"
+#include "particionSWAP.h"
 
 #include <commons/collections/list.h>
 #include <stdio.h>
@@ -20,16 +21,23 @@
 
 #include <commons/string.h>
 
+
+#define ERROR_NO_HAY_ESPACIO_EN_SWAP "No se pudo asignar la pagina. No hay espacio disponible en SWAP"
+#define OK_ESPACIO_RESERVADO ""
+#define OK_ESPACIO_LIBERADO ""
+#define OK_PAGINA_ESCRITA ""
+
 bool baseMenor(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);
 
 
-/********FUNCIONES QUE ATIENDEN LAS INSTRUCCIONES DEL LENGUAJE MANSISOP**************/
-int reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion);
-void liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso);
-char* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion);
-void escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion);
+/********Funciones principales de SWAP**************/
 
+tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion);
+tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso);
+tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion);
+tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion);
 
+/********Fin de funciones principales de SWAP**************/
 
 
 tipoHuecoUtilizado* crearHuecoUtilizado(int pidProceso,int inicio,int cantidadDePaginas);
@@ -42,8 +50,6 @@ int baseParaMProcSiTengoEspacioContiguo(t_list* listaDeHuecosUtilizados, int can
 
 
 void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas, int base);
-void compactar();
-
 
 void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina);
 
