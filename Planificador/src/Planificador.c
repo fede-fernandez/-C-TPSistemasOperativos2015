@@ -36,9 +36,9 @@ pthread_mutex_t ready;
 
 //semaforos de sincronizacion
 
-sem_t solicitud_ejecucion;
-sem_t solicitud_cpuLibre;
-sem_t solicitud_deBloqueo;
+sem_t solicitud_ejecucion; // cantidad de solicitud_ejecucion
+sem_t solicitud_cpuLibre; // cantidad de solicitud_cpuLibre
+sem_t solicitud_deBloqueo; // cantidad de solicitud_deBloqueo
 
 //--------------------------------------------------------------------------------------------------
 
@@ -57,12 +57,12 @@ int main(void) {
 
 	destruirConfigPlanificador(configuracion);
 
-	//Declaración de Mutex
+	//Declaración de Mutex.
 	pthread_mutex_init(&pcbs,NULL);
 	pthread_mutex_init(&cpuss,NULL);
 	pthread_mutex_init(&ready,NULL);
 
-	// Inicialización de Semáforos en:0
+	// Inicialización de Semáforos en 0.
 	sem_init(&solicitud_ejecucion, 1, 0);
 	sem_init(&solicitud_cpuLibre, 1, 0);
 	sem_init(&solicitud_deBloqueo, 1, 0);
@@ -89,13 +89,13 @@ int main(void) {
 
 	//destruir hilos
 	//destruir listas.todo lo q este en memoria dinamica.
-	pthread_mutex_destroy(pcbs);
-	pthread_mutex_destroy(cpuss);
-	pthread_mutex_destroy(ready);
+	pthread_mutex_destroy(&pcbs);
+	pthread_mutex_destroy(&cpuss);
+	pthread_mutex_destroy(&ready);
 
-	sem_destroy(solicitud_ejecucion);
-	sem_destroy(solicitud_cpuLibre);
-	sem_destroy(solicitud_deBloqueo);
+	sem_destroy(&solicitud_ejecucion);
+	sem_destroy(&solicitud_cpuLibre);
+	sem_destroy(&solicitud_deBloqueo);
 
 	return EXIT_SUCCESS;
 }
@@ -388,6 +388,7 @@ void* ejecutar_proceso(){
 
 
 	}
+}
 
 //--------------------------------------------------------------------------------------------------------
 
@@ -418,7 +419,7 @@ int menu(void) {
 			printf("#                                                              #\n");
 			printf("#     4) cpu                                                   #\n");
 			printf("#                                                              #\n");
-			printf("#     5) Salir                                                   #\n");
+			printf("#     5) Salir                                                 #\n");
 			printf("#                                                              #\n");
 			printf("################################################################\n");
 			printf("################################################################\n");

@@ -12,6 +12,7 @@
 #include <commons/config.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <commonsDeAsedio/error.h>
 #include <commonsDeAsedio/cliente-servidor.h>
 
@@ -47,7 +48,7 @@ typedef struct{
 } t_bloqueados;
 
 
-//------- -------------Funciones HILOS prototipadas----------------
+//-------Funciones HILOS prototipadas----------------
 
 void* recibir_conexion();
 
