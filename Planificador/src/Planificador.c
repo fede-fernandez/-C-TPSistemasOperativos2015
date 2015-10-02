@@ -33,6 +33,9 @@ int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
 pthread_mutex_t pcbs;
 pthread_mutex_t cpuss;
 pthread_mutex_t ready;
+pthread_mutex_t bloqueados;
+
+// falta el mutex para la lista de bloqueados
 
 //semaforos de sincronizacion
 
@@ -61,6 +64,7 @@ int main(void) {
 	pthread_mutex_init(&pcbs,NULL);
 	pthread_mutex_init(&cpuss,NULL);
 	pthread_mutex_init(&ready,NULL);
+	pthread_mutex_init(&bloqueados,NULL);
 
 	// Inicialización de Semáforos en 0.
 	sem_init(&solicitud_ejecucion, 1, 0);
@@ -92,6 +96,8 @@ int main(void) {
 	pthread_mutex_destroy(&pcbs);
 	pthread_mutex_destroy(&cpuss);
 	pthread_mutex_destroy(&ready);
+	pthread_mutex_destroy(&&bloqueados);
+
 
 	sem_destroy(&solicitud_ejecucion);
 	sem_destroy(&solicitud_cpuLibre);
@@ -273,10 +279,11 @@ int llega_quantum(t_PCB *PCB){
 
 int llega_entrada_salida(t_PCB *PCB){
 
-
+	pthread_mutex_lock(&bloqueados);
 	// meter procesos en la cola de ready
 	queue_push(procesos_bloqueados,id_create(PCB->id ));
 
+	pthread_mutex_unlock(&bloqueados);
 
 
 	// actualizo el PCB
@@ -313,8 +320,11 @@ void* bloquear_procesos(){
 
 		sem_wait(&solicitud_deBloqueo);
 
+		pthread_mutex_lock(&bloqueados);
 		// sacar un proceso de la cola de "procesos_bloqueados" (modificando la lista)
 		nodo_bloqueado = queue_pop(procesos_bloqueados);
+
+		pthread_mutex_unlock(&bloqueados);
 
 		sleep(nodo_bloqueado->tiempo);
 
@@ -436,7 +446,7 @@ int menu(void) {
 			case 4:
 			   cpu();	        break;*/
 			case 5:
-			   return 0;	        break;
+			   return 0;	    break;
 
 			default: printf("Opción incorrecta. Por favor ingrese una opción del 1 al 4 \n"); break;
 		  }
