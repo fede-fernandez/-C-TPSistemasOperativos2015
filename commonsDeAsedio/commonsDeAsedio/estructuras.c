@@ -40,6 +40,20 @@ void imprimirBufferPCB(void* buffer){
 
 }
 
+void imprimirBufferInstruccion(void* buffer){
+
+	void* proximo = buffer;
+
+	printf("--------BUFFER-----------\n");
+	printf("INSTRUCCION:\n");
+	printf("PID: %d\n",*((int*)proximo));     proximo+=sizeof(int);
+	printf("INST: %c\n",*((char*)proximo));	 proximo+=sizeof(char);
+	printf("PAG: %d\n",*((int*)proximo));		 proximo+=sizeof(int)+sizeof(size_t);
+	printf("TEXT: %s\n",(char*)proximo);
+	printf("-------------------------\n");
+
+}
+
 tipoPCB* recibirPCB(int socketEnviador){
 
 	size_t tamanioBloque;
@@ -87,11 +101,11 @@ tipoInstruccion* recibirInstruccion(int socketEnviador){
 
 	size_t tamanioBloque;
 
-	recibirBloque(&tamanioBloque,socketEnviador);
-
-	void* buffer = malloc(tamanioBloque);
+	void* buffer= recibirBloque(&tamanioBloque,socketEnviador);
 
 	tipoInstruccion instruccionRecibida;
+
+	imprimirBufferInstruccion(buffer);
 
 	deserializarInstruccion(buffer,&instruccionRecibida);
 
@@ -104,10 +118,10 @@ void deserializarInstruccion(void* buffer,tipoInstruccion* instruccion){
 
 	size_t tamanioTexto;
 
-	memcpy(&(instruccion->pid),proximo,sizeof(int));         proximo+=sizeof(int);
-	memcpy(&(instruccion->instruccion),proximo,sizeof(char));	 proximo+=sizeof(char);
-	memcpy(&(instruccion->nroPagina),proximo,sizeof(int));	 proximo+=sizeof(int);
-	memcpy(&tamanioTexto,proximo,sizeof(size_t));			 proximo+=sizeof(size_t);
+	memcpy(&(instruccion->pid),proximo,sizeof(int));         	proximo+=sizeof(int);
+	memcpy(&(instruccion->instruccion),proximo,sizeof(char));	proximo+=sizeof(char);
+	memcpy(&(instruccion->nroPagina),proximo,sizeof(int));	 	proximo+=sizeof(int);
+	memcpy(&tamanioTexto,proximo,sizeof(size_t));			 	proximo+=sizeof(size_t);
 	//memcpy(instruccion->texto,proximo,tamanioTexto);
 
 	instruccion->texto = proximo;
