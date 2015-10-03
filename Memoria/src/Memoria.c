@@ -4,7 +4,10 @@
 #include <commonsDeAsedio/cliente-servidor.h>
 #include <commons/collections/list.h>
 #include <commonsDeAsedio/select.h>
-
+//-----------------------------------------------------------------
+#include <sys/types.h>
+#include <unistd.h>
+//---------------------------------------------------------------
 #define maxConexionesEntrantes 10
 #define puertoSwap 7204
 
@@ -20,34 +23,62 @@ int main(void) {
 
 	int socketCpuEntrante;
 
-	bool memoriaActiva = true,hayCpuParaConexion = false;
+	bool memoriaActiva = true;//,hayCpuParaConexion = false;
 
-	t_list* listaPrincipal = list_create();
-	t_list* listaFiltrada = list_create();
+	//t_list* listaPrincipal = list_create();
+	//t_list* listaFiltrada = list_create();
 
-	t_list* listaRAM;
-	t_list* listaTLB;
+//--------------ACA EMPIEZA FERNILANDIA--------------------------
+	t_list* listaRAM = list_create();
+	t_list* listaTLB = list_create();
+
+	fd_set listaPrincipal;
+	fd_set listaFiltrada;
+
+	FD_ZERO(&listaPrincipal);
+
+
+tipoEstructuraMemoria datosMemoria;
+
+	datosMemoria.listaRAM = listaRAM;
+
+	datosMemoria.listaTLB = listaTLB;
+
+	datosMemoria.socketSWAP = socketParaSwap;
+
+	datosMemoria.maximoSocket = socketParaCpus;
+
+	datosMemoria.configuracion = configuracion;
+
+	datosMemoria.cpusATratar = &listaFiltrada;
+
+//-------------END OF FERNILANDIA-----------------------------------
+
+	asociarAPuerto(socketParaCpus,configuracion->puertoDeEscucha);
 
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-	asociarAPuerto(socketParaCpus,configuracion->puertoDeEscucha);
-
-	asociarAPuerto(socketParaSwap,puertoSwap);//para mi en el archivo de configuracion deberia de
-											 //estar el puerto de memoria para cnectarse a swap
-
 
 	while(memoriaActiva){
 
-		hayCpuParaConexion = filtrarListas(listaPrincipal,listaFiltrada);
+		FD_ZERO(&listaFiltrada);
 
-		if(hayCpuParaConexion){
+		FD_SET(socketParaCpus,&listaFiltrada);
+
+		//hayCpuParaConexion = filtrarListas(listaPrincipal,listaFiltrada);
+
+		select(datosMemoria.maximoSocket,&listaFiltrada,NULL,NULL,NULL);
+
+		if(FD_ISSET(socketParaCpus,&listaFiltrada)){
 			socketCpuEntrante = crearSocketParaAceptarSolicitudes(socketParaCpus);
-			cargarEnLista(listaPrincipal,socketCpuEntrante);
+			FD_SET(socketParaCpus,&listaPrincipal);
+			datosMemoria.maximoSocket = maximoEntre(datosMemoria.maximoSocket,socketCpuEntrante);
 		}
 
-		if(!list_is_empty(listaFiltrada))
-		tratarPeticiones(socketParaCpus,socketParaSwap,listaFiltrada, listaTLB, listaRAM, configuracion);
+		tratarPeticiones(&datosMemoria);
+		//if(!list_is_empty(listaFiltrada))
+		//tratarPeticiones(socketParaCpus,socketParaSwap,listaFiltrada, listaTLB, listaRAM, configuracion);
 
 	}
 

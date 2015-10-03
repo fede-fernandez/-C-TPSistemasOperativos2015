@@ -39,6 +39,15 @@ typedef struct{
 	int retardoDeMemoria;
 }tipoConfigMemoria;
 
+typedef struct{
+	t_list* listaRAM;
+	t_list* listaTLB;
+	int socketSWAP;
+	int maximoSocket;
+	tipoConfigMemoria* configuracion;
+	fd_set* cpusATratar;
+}tipoEstructuraMemoria;
+
 
 tipoConfigMemoria* crearConfigMemoria();
 
@@ -46,19 +55,19 @@ void destruirConfigMemoria(tipoConfigMemoria* estructuraDeConfiguracion);
 
 tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeConfiguracion);
 
-void tratarPeticion(int socketParaCpus,int socketParaSwap,int socketParaLeer, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
+void tratarPeticion(tipoEstructuraMemoria* datosMemoria,int cpuAtendida);
 
-void tratarPeticiones(int socketParaCpus,int socketParaSwap,t_list* listaLectura, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
+void tratarPeticiones(tipoEstructuraMemoria* datosMemoria);
 
 /***************instrucciones*******************/
 /****iniciar N*****/
 int reservarMemoriaEnSwap(tipoInstruccion instruccion, int socketSwap, tipoRespuesta* respuesta);
 
-int reservarMemoriaEnRam(tipoInstruccion instruccion, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
+int reservarMemoriaEnRam(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria);
 
 void cancelarInicializacion(int procesoID);
 
-void reservarMemoriaParaProceso(tipoInstruccion instruccion, int socketCPU, int socketSWAP, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
+void reservarMemoriaParaProceso(tipoInstruccion instruccion,tipoEstructuraMemoria* datosMemoria, int cpuATratar);
 
 /*******leer pagina***********/
 int buscarPaginaEnRam(tipoInstruccion instruccion, char* contenidoDePagina);

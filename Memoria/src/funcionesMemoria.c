@@ -54,13 +54,13 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeC
 
 
 
-void tratarPeticion(int socketParaCpus,int socketParaSwap,int socketParaLeer, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
+void tratarPeticion(tipoEstructuraMemoria* datosMemoria,int cpuAtendida){
 
-	tipoInstruccion* instruccion = recibirInstruccion(socketParaLeer);
+	tipoInstruccion* instruccion = recibirInstruccion(cpuAtendida);
 
 	switch (instruccion->instruccion) {
 		case INICIAR:
-			reservarMemoriaParaProceso(*instruccion, socketParaCpus,socketParaSwap, listaTLB, listaRAM, configuracion);
+			reservarMemoriaParaProceso(*instruccion, datosMemoria,cpuAtendida);
 			break;
 
 		case LEER://h
@@ -80,17 +80,13 @@ void tratarPeticion(int socketParaCpus,int socketParaSwap,int socketParaLeer, t_
 	}
 }
 
-void tratarPeticiones(int socketParaCpus,int socketParaSwap,t_list* listaLectura, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
+void tratarPeticiones(tipoEstructuraMemoria* datosMemoria){
 
 	int var;
-	if(!list_is_empty(listaLectura)){
-	for (var = 0; var <list_size(listaLectura); ++var) {
-
-		int* socketCpuActual = list_get(listaLectura,var);
-
-		tratarPeticion(socketParaCpus,socketParaSwap,socketCpuActual, listaTLB, listaRAM, configuracion);
+	for (var = 1; var <datosMemoria->maximoSocket; ++var) {
+		if(FD_ISSET(var,datosMemoria->cpusATratar))
+		tratarPeticion(datosMemoria,var);
 		}
-	}
 }
 
 /*************instrucciones*******************/
@@ -109,14 +105,14 @@ int reservarMemoriaEnSwap(tipoInstruccion instruccion, int socketSwap, tipoRespu
 
 }
 
-int reservarMemoriaEnRam(tipoInstruccion instruccion, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
-	if(elProcesoTieneEsPacioEnRAM(instruccion, listaRAM, listaTLB, configuracion)){
+int reservarMemoriaEnRam(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria){
+	if(elProcesoTieneEsPacioEnRAM(instruccion, datosMemoria)){
 
 	}
 	return 1;
 }
 
-int elProcesoTieneEsPacioEnRAM(tipoInstruccion instruccion, t_list* listaRAM, t_list* listaTLB, tipoConfigMemoria* configuracion){
+int elProcesoTieneEsPacioEnRAM(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria){
 
 
 
@@ -127,20 +123,20 @@ void cancelarInicializacion(int procesoID){
 
 }
 
-void reservarMemoriaParaProceso(tipoInstruccion instruccion, int socketCPU, int socketSWAP, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
+void reservarMemoriaParaProceso(tipoInstruccion instruccion,tipoEstructuraMemoria* datosMemoria, int cpuATratar){
 
 	tipoRespuesta* respuesta;
 
-	if (reservarMemoriaEnSwap(instruccion, socketSWAP, respuesta)) {
+	if (reservarMemoriaEnSwap(instruccion, datosMemoria->socketSWAP, respuesta)) {
 
-		if (reservarMemoriaEnRam(instruccion, listaTLB, listaRAM, configuracion)) {
+		if (reservarMemoriaEnRam(instruccion, datosMemoria)) {
 
 		}
 		else {
 			//ver algoritmos para pasar procesos de ram a swap y liberar espacio para el nuevo proceso
 		}
 
-		enviarRespuesta(socketCPU, *respuesta);
+		enviarRespuesta(cpuATratar, *respuesta);
 	}
 
 
