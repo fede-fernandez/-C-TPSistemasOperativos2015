@@ -1,3 +1,17 @@
+Para instalar las commonsDeAsedio ejecutar el makefile utilizando
+
+>sudo make install
+
+Si modificaron las commons deben hacer
+
+>make clean
+>make 
+>sudo make install
+
+
+_________________________________________________________-
+
+
 Para agregar la libreria :
 
 Crear shared library
