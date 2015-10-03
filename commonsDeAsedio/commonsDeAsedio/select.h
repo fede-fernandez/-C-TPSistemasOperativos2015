@@ -31,9 +31,9 @@ int maximoEntre(int x, int y);
 
 void limpiarLista(t_list* lista);
 
-void quitarElementoDeLista(t_list* lista,void* elemento);
+void quitarElementoDeLista(t_list* lista,int elemento);
 
-void agregarElementoALista(t_list* lista,void* elemento);
+//void agregarElementoALista(t_list* lista,int elemento);
 
 bool perteneceALista(t_list* lista,int elemento);
 

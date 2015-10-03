@@ -119,13 +119,17 @@ for (var = 0; var < list_size(lista); ++var) {
 
 }
 
-void quitarElementoDeLista(t_list* lista,void* elemento){
+void quitarElementoDeLista(t_list* lista,int elemento){
 
 	int var;
 
+	int* elementoActual;
+
 	for (var = 0; var < list_size(lista); ++var) {
 
-		if(elemento==list_get(lista,var))
+		elementoActual = list_get(lista,var);
+
+		if(elemento==*elementoActual)
 			break;
 	}
 
@@ -133,14 +137,14 @@ void quitarElementoDeLista(t_list* lista,void* elemento){
 
 }
 
-void agregarElementoALista(t_list* lista,void* elemento){
+/*void agregarElementoALista(t_list* lista,int elemento){
 
-	void* buffer = malloc(sizeof(*elemento));
+	int* buffer = malloc(sizeof(int));
 
-	buffer = elemento;
+	*buffer = elemento;
 
 	list_add(lista,buffer);
-}
+}*/
 
 bool perteneceALista(t_list* lista,int elemento){
 
