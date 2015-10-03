@@ -54,11 +54,11 @@ void tratarPeticiones(int socketParaCpus,int socketParaSwap,t_list* listaLectura
 /****iniciar N*****/
 int reservarMemoriaEnSwap(tipoInstruccion instruccion, int socketSwap, tipoRespuesta* respuesta);
 
-int reservarMemoriaEnRam(tipoInstruccion* instruccion, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
+int reservarMemoriaEnRam(tipoInstruccion instruccion, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
 
 void cancelarInicializacion(int procesoID);
 
-void reservarMemoriaParaProceso(tipoInstruccion* instruccion, int socketCPU, int socketSWAP, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
+void reservarMemoriaParaProceso(tipoInstruccion instruccion, int socketCPU, int socketSWAP, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
 
 /*******leer pagina***********/
 int buscarPaginaEnRam(tipoInstruccion instruccion, char* contenidoDePagina);

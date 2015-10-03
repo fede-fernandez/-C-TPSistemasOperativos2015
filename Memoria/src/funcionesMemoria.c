@@ -60,7 +60,7 @@ void tratarPeticion(int socketParaCpus,int socketParaSwap,int socketParaLeer, t_
 
 	switch (instruccion->instruccion) {
 		case INICIAR:
-			reservarMemoriaParaProceso(instruccion, socketParaCpus,socketParaSwap, listaTLB, listaRAM, configuracion);
+			reservarMemoriaParaProceso(*instruccion, socketParaCpus,socketParaSwap, listaTLB, listaRAM, configuracion);
 			break;
 
 		case LEER://h
@@ -95,12 +95,12 @@ void tratarPeticiones(int socketParaCpus,int socketParaSwap,t_list* listaLectura
 
 /*************instrucciones*******************/
 /****iniciar N*****/
-int reservarMemoriaEnSwap(tipoInstruccion* instruccion, int socketSwap, tipoRespuesta respuesta){
+int reservarMemoriaEnSwap(tipoInstruccion instruccion, int socketSwap, tipoRespuesta* respuesta){
 
-	enviarInstruccion(socketSwap, instruccion);
+	enviarInstruccion(socketSwap,instruccion);
 	respuesta = recibirRespuesta(socketSwap);
 
-	if (respuesta.respuesta == PERFECTO) {
+	if (respuesta->respuesta == PERFECTO) {
 		return 1;
 	}
 	else {
@@ -109,14 +109,14 @@ int reservarMemoriaEnSwap(tipoInstruccion* instruccion, int socketSwap, tipoResp
 
 }
 
-int reservarMemoriaEnRam(tipoInstruccion* instruccion, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
+int reservarMemoriaEnRam(tipoInstruccion instruccion, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
 	if(elProcesoTieneEsPacioEnRAM(instruccion, listaRAM, listaTLB, configuracion)){
 
 	}
 	return 1;
 }
 
-int elProcesoTieneEsPacioEnRAM(tipoInstruccion* instruccion, t_list* listaRAM, t_list* listaTLB, tipoConfigMemoria* configuracion){
+int elProcesoTieneEsPacioEnRAM(tipoInstruccion instruccion, t_list* listaRAM, t_list* listaTLB, tipoConfigMemoria* configuracion){
 
 
 
@@ -127,7 +127,7 @@ void cancelarInicializacion(int procesoID){
 
 }
 
-void reservarMemoriaParaProceso(tipoInstruccion* instruccion, int socketCPU, int socketSWAP, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
+void reservarMemoriaParaProceso(tipoInstruccion instruccion, int socketCPU, int socketSWAP, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
 
 	tipoRespuesta* respuesta;
 
