@@ -1,36 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include "funcionesCPU.h"
-#include <commonsDeAsedio/cliente-servidor.h>
 
 
 #define RUTA_DE_ARCHIVO_DE_CONFIGURACION "cfgCPU"
 
+void* CPU();
+
 int main(void) {
 	tipoConfigCPU* configuracion = cargarArchivoDeConfiguracionDeCPU(RUTA_DE_ARCHIVO_DE_CONFIGURACION);
-
-	bool cpuActiva = true;
-
-	int socketParaPlanificador = crearSocket();
-	int socketParaAdministrador = crearSocket();
-	conectarAServidor(socketParaPlanificador,configuracion->ipPlanificador,configuracion->puertoPlanificador);
-	conectarAServidor(socketParaAdministrador,configuracion->ipMemoria,configuracion->puertoMemoria);
-
-
-
-	liberarSocket(socketParaPlanificador);
-	liberarSocket(socketParaAdministrador);
-
+	pthread_t hiloCPU;
+	int i;
+	for(i=0; i < configuracion->cantidadDeHilos; i++)
+	{
+		pthread_create(&hiloCPU, NULL, CPU, NULL);
+	}
 	destruirConfigCPU(configuracion);
 	return EXIT_SUCCESS;
 }
 
-int CPU()
+void* CPU()
 {
 	tipoConfigCPU* configuracion = cargarArchivoDeConfiguracionDeCPU(RUTA_DE_ARCHIVO_DE_CONFIGURACION);
+	int socketParaPlanificador = crearSocket();
+	while(true)
+	{
+		conectarAServidor(socketParaPlanificador,configuracion->ipPlanificador,configuracion->puertoPlanificador);
+	}
 	tipoPCB PCB;
 	ejecutarPrograma(PCB, configuracion->retardo);
-
-	return EXIT_SUCCESS;
+	liberarSocket(socketParaPlanificador);
+	destruirConfigCPU(configuracion);
+	return NULL;
 }

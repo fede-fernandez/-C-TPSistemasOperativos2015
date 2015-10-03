@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <commonsDeAsedio/error.h>
 #include <commonsDeAsedio/estructuras.h>
+#include <commonsDeAsedio/cliente-servidor.h>
+#include <pthread.h>
 
 /************Archivo de Config de CPU************/
 #define IP_PLANIFICADOR "IP_PLANIFICADOR"
