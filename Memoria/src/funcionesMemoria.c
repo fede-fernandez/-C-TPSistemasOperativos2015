@@ -5,7 +5,7 @@
  *      Author: utnso
  */
 #include "funcionesMemoria.h"
-
+#include <commonsDeAsedio/estructuras.h>
 
 tipoConfigMemoria* crearConfigMemoria(){
 	tipoConfigMemoria* cfg = malloc(sizeof(tipoConfigMemoria));
@@ -54,12 +54,33 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeC
 
 
 
-void tratarPeticion(int socketParaCpus,int socketParaSwap,int socketParaLeer){
+void tratarPeticion(int socketParaCpus,int socketParaSwap,int socketParaLeer, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
 
+	tipoInstruccion* instruccion = recibirInstruccion(socketParaLeer);
 
+	switch (instruccion->instruccion) {
+		case INICIAR:
+			reservarMemoriaParaProceso(instruccion, socketParaCpus,socketParaSwap, listaTLB, listaRAM, configuracion);
+			break;
+
+		case LEER://h
+
+			break;
+
+		case ESCRIBIR:
+
+			break;
+
+		case ENTRADA_SALIDA:
+
+			break;
+
+		case FINALIZAR:
+			break;
+	}
 }
 
-void tratarPeticiones(int socketParaCpus,int socketParaSwap,t_list* listaLectura){
+void tratarPeticiones(int socketParaCpus,int socketParaSwap,t_list* listaLectura, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
 
 	int var;
 	if(!list_is_empty(listaLectura)){
@@ -67,52 +88,62 @@ void tratarPeticiones(int socketParaCpus,int socketParaSwap,t_list* listaLectura
 
 		int* socketCpuActual = list_get(listaLectura,var);
 
-		tratarPeticion(socketParaCpus,socketParaSwap,*socketCpuActual);
+		tratarPeticion(socketParaCpus,socketParaSwap,socketCpuActual, listaTLB, listaRAM, configuracion);
 		}
 	}
 }
 
-
 /*************instrucciones*******************/
-
-void ejecutarInstruccion (tipoInstruccion instruccionCPU){
-	switch (instruccionCPU.instruccion) {
-		case 'i'://inciar
-			break;
-		case 'l'://lectura
-			break;
-		case 'e'://escritura
-			break;
-		case 's'://entrada y salida
-			break;
-		case 'f'://finalizar
-			break;
-	}
-}
-
 /****iniciar N*****/
-int reservarMemoriaEnSwap(tipoInstruccion instruccion, int socketSwap){
+int reservarMemoriaEnSwap(tipoInstruccion* instruccion, int socketSwap, tipoRespuesta respuesta){
+
+	enviarInstruccion(socketSwap, instruccion);
+	respuesta = recibirRespuesta(socketSwap);
+
+	if (respuesta.respuesta == PERFECTO) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+
+}
+
+int reservarMemoriaEnRam(tipoInstruccion* instruccion, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
+	if(elProcesoTieneEsPacioEnRAM(instruccion, listaRAM, listaTLB, configuracion)){
+
+	}
 	return 1;
 }
 
-int reservarMemoriaEnRam(tipoInstruccion instruccion){
-	return 1;
+int elProcesoTieneEsPacioEnRAM(tipoInstruccion* instruccion, t_list* listaRAM, t_list* listaTLB, tipoConfigMemoria* configuracion){
+
+
+
+	return 0;
 }
 
 void cancelarInicializacion(int procesoID){
 
 }
 
-void reservarMemoriaParaProceso(tipoInstruccion instruccion, int socketCPU, int socketSWAP){
-	if (reservarMemoriaEnSwap(instruccion, socketSWAP)) {
-		if (reservarMemoriaEnRam(instruccion)) {
+void reservarMemoriaParaProceso(tipoInstruccion* instruccion, int socketCPU, int socketSWAP, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion){
 
-		} else {
+	tipoRespuesta* respuesta;
+
+	if (reservarMemoriaEnSwap(instruccion, socketSWAP, respuesta)) {
+
+		if (reservarMemoriaEnRam(instruccion, listaTLB, listaRAM, configuracion)) {
+
+		}
+		else {
 			//ver algoritmos para pasar procesos de ram a swap y liberar espacio para el nuevo proceso
 		}
-	} else {
-		//cancelarInicializacion(procesoID);
+
+		enviarRespuesta(socketCPU, *respuesta);
 	}
+
+
 
 }
 

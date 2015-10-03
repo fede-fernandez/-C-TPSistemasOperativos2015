@@ -46,21 +46,19 @@ void destruirConfigMemoria(tipoConfigMemoria* estructuraDeConfiguracion);
 
 tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeConfiguracion);
 
-void tratarPeticion(int socketParaCpus,int socketParaSwap,int socketParaLeer);
+void tratarPeticion(int socketParaCpus,int socketParaSwap,int socketParaLeer, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
 
-void tratarPeticiones(int socketParaCpus,int socketParaSwap,t_list* listaLectura);
+void tratarPeticiones(int socketParaCpus,int socketParaSwap,t_list* listaLectura, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
 
 /***************instrucciones*******************/
-void ejecutarInstruccion (tipoInstruccion instruccionCPU);
-
 /****iniciar N*****/
-int reservarMemoriaEnSwap(tipoInstruccion instruccion, int socketSwap);
+int reservarMemoriaEnSwap(tipoInstruccion instruccion, int socketSwap, tipoRespuesta* respuesta);
 
-int reservarMemoriaEnRam(tipoInstruccion instruccion);
+int reservarMemoriaEnRam(tipoInstruccion* instruccion, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
 
 void cancelarInicializacion(int procesoID);
 
-void reservarMemoriaParaProceso(tipoInstruccion instruccion, int socketCPU, int socketSWAP);
+void reservarMemoriaParaProceso(tipoInstruccion* instruccion, int socketCPU, int socketSWAP, t_list* listaTLB, t_list* listaRAM, tipoConfigMemoria* configuracion);
 
 /*******leer pagina***********/
 int buscarPaginaEnRam(tipoInstruccion instruccion, char* contenidoDePagina);

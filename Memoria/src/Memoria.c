@@ -24,6 +24,11 @@ int main(void) {
 
 	t_list* listaPrincipal = list_create();
 	t_list* listaFiltrada = list_create();
+
+	t_list* listaRAM;
+	t_list* listaTLB;
+
+
 /////////////////////////////////////////////////////////////////////////////////////
 
 	asociarAPuerto(socketParaCpus,configuracion->puertoDeEscucha);
@@ -42,7 +47,7 @@ int main(void) {
 		}
 
 		if(!list_is_empty(listaFiltrada))
-		tratarPeticiones(socketParaCpus,socketParaSwap,listaFiltrada);
+		tratarPeticiones(socketParaCpus,socketParaSwap,listaFiltrada, listaTLB, listaRAM, configuracion);
 
 	}
 
