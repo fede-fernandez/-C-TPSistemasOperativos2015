@@ -22,7 +22,7 @@
 //instrucciones
 #define FINALIZAR 'f'
 #define INICIAR 'i'
-#define LECTURA 'l'
+#define LEER 'l'
 #define ESCRIBIR 'e'
 #define ENTRADA_SALIDA 's'
 
@@ -51,31 +51,31 @@ typedef struct{
 }tipoRespuesta;
 
 
-void* serializarPCB(tipoPCB pcb);
+void* serializarPCB(tipoPCB* pcb);
 
 void deserializarPCB(void* bloque, tipoPCB* pcbrecibido);
 
 tipoPCB* recibirPCB(int socketEnviador);
 
-void enviarPCB(int socketCliente,tipoPCB pcb);
+void enviarPCB(int socketCliente,tipoPCB* pcb);
 
 void imprimirBufferPCB(void* buffer);
 
-void* serializarInstruccion(tipoInstruccion instruccion);
+void* serializarInstruccion(tipoInstruccion* instruccion);
 
 void deserializarInstruccion(void* buffer,tipoInstruccion* instruccion);
 
 tipoInstruccion* recibirInstruccion(int socketEnviador);
 
-void enviarInstruccion(int socketCliente,tipoInstruccion instruccion);
+void enviarInstruccion(int socketCliente,tipoInstruccion* instruccion);
 
-void* serializarRespuesta(tipoRespuesta respuesta);
+void* serializarRespuesta(tipoRespuesta* respuesta);
 
 void deserializarRespuesta(void* buffer,tipoRespuesta* respuesta);
 
 tipoRespuesta* recibirRespuesta(int socketEnviador);
 
-void enviarRespuesta(int socketCliente,tipoRespuesta respuesta);
+void enviarRespuesta(int socketCliente,tipoRespuesta* respuesta);
 
 //-------------------LEONEGRO----------------------------------------
 
