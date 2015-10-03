@@ -10,6 +10,7 @@ C_SRCS += \
 ../commonsDeAsedio/estructuras.c \
 ../commonsDeAsedio/mmap.c \
 ../commonsDeAsedio/select.c \
+../commonsDeAsedio/semaforos.c \
 ../commonsDeAsedio/thread.c 
 
 OBJS += \
@@ -19,6 +20,7 @@ OBJS += \
 ./commonsDeAsedio/estructuras.o \
 ./commonsDeAsedio/mmap.o \
 ./commonsDeAsedio/select.o \
+./commonsDeAsedio/semaforos.o \
 ./commonsDeAsedio/thread.o 
 
 C_DEPS += \
@@ -28,6 +30,7 @@ C_DEPS += \
 ./commonsDeAsedio/estructuras.d \
 ./commonsDeAsedio/mmap.d \
 ./commonsDeAsedio/select.d \
+./commonsDeAsedio/semaforos.d \
 ./commonsDeAsedio/thread.d 
 
 

@@ -1,7 +1,7 @@
 /*
  * estructuras.h
  *
- *  Created on: 18/9/2015
+ *  Created on: 3/10/2015
  *      Author: utnso
  */
 
@@ -22,7 +22,7 @@
 //instrucciones
 #define FINALIZAR 'f'
 #define INICIAR 'i'
-#define LECTURA 'l'
+#define LEER 'l'
 #define ESCRIBIR 'e'
 #define ENTRADA_SALIDA 's'
 
@@ -86,5 +86,6 @@ tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion);
 void destruirTipoRespuesta(tipoRespuesta* respuesta);
 
 void destruirTipoInstruccion(tipoInstruccion* instruccion);
+
 
 #endif /* COMMONSDEASEDIO_ESTRUCTURAS_H_ */

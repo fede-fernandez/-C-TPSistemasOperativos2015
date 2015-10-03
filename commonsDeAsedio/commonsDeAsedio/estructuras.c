@@ -1,7 +1,7 @@
 /*
  * estructuras.c
  *
- *  Created on: 18/9/2015
+ *  Created on: 3/10/2015
  *      Author: utnso
  */
 #include "estructuras.h"
@@ -232,3 +232,5 @@ void destruirTipoInstruccion(tipoInstruccion* instruccion){
 	free(instruccion->texto);
 	free(instruccion);
 }
+
+
