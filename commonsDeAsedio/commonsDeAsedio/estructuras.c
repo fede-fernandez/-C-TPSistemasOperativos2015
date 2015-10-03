@@ -60,15 +60,13 @@ tipoPCB* recibirPCB(int socketEnviador){
 
 	void* bloque = recibirBloque(&tamanioBloque,socketEnviador);
 
-	tipoPCB pcbRecibido;
+	tipoPCB* pcbRecibido = malloc(sizeof(tipoPCB));
 
-	imprimirBufferPCB(bloque);
-
-	deserializarPCB(bloque,&pcbRecibido);
+	deserializarPCB(bloque,pcbRecibido);
 
 	free(bloque);
 
-	return &pcbRecibido;
+	return pcbRecibido;
 }
 
 void enviarPCB(int socketCliente,tipoPCB pcb){
@@ -92,9 +90,9 @@ void deserializarPCB(void* bloque, tipoPCB* pcbRecibido){
 	memcpy(&(pcbRecibido->estado),proximo,sizeof(char));	 proximo+=sizeof(char);
 	memcpy(&(pcbRecibido->insPointer),proximo,sizeof(int));	 proximo+=sizeof(int);
 	memcpy(&tamanioRuta,proximo,sizeof(size_t));			 proximo+=sizeof(size_t);
-	//memcpy(pcbRecibido->ruta,proximo,tamanioRuta);
+	pcbRecibido->ruta = malloc(tamanioRuta);
+	memcpy(pcbRecibido->ruta,proximo,tamanioRuta);
 
-	pcbRecibido->ruta = proximo;
 }
 
 tipoInstruccion* recibirInstruccion(int socketEnviador){
@@ -103,13 +101,11 @@ tipoInstruccion* recibirInstruccion(int socketEnviador){
 
 	void* buffer= recibirBloque(&tamanioBloque,socketEnviador);
 
-	tipoInstruccion instruccionRecibida;
+	tipoInstruccion* instruccionRecibida = malloc(sizeof(tipoInstruccion));
 
-	imprimirBufferInstruccion(buffer);
+	deserializarInstruccion(buffer,instruccionRecibida);
 
-	deserializarInstruccion(buffer,&instruccionRecibida);
-
-	return &instruccionRecibida;
+	return instruccionRecibida;
 }
 
 void deserializarInstruccion(void* buffer,tipoInstruccion* instruccion){
@@ -122,9 +118,8 @@ void deserializarInstruccion(void* buffer,tipoInstruccion* instruccion){
 	memcpy(&(instruccion->instruccion),proximo,sizeof(char));	proximo+=sizeof(char);
 	memcpy(&(instruccion->nroPagina),proximo,sizeof(int));	 	proximo+=sizeof(int);
 	memcpy(&tamanioTexto,proximo,sizeof(size_t));			 	proximo+=sizeof(size_t);
-	//memcpy(instruccion->texto,proximo,tamanioTexto);
-
-	instruccion->texto = proximo;
+	instruccion->texto = malloc(tamanioTexto);
+	memcpy(instruccion->texto,proximo,tamanioTexto);
 
 }
 
@@ -185,9 +180,8 @@ void deserializarRespuesta(void* buffer,tipoRespuesta* respuesta){
 
 	memcpy(&(respuesta->respuesta),proximo,sizeof(char));		proximo+=sizeof(char);
 	memcpy(&tamanioInformacion,proximo,sizeof(char));			proximo+=sizeof(size_t);
-	//memcpy(respuesta->informacion,proximo,tamanioInformacion);
-
-	respuesta->informacion = proximo;
+	respuesta->informacion = malloc(tamanioInformacion);
+	memcpy(respuesta->informacion,proximo,tamanioInformacion);
 
 }
 
@@ -208,13 +202,13 @@ tipoRespuesta* recibirRespuesta(int socketEnviador){
 
 	void* buffer = recibirBloque(&tamanioBloque,socketEnviador);
 
-	tipoRespuesta respuesta;
+	tipoRespuesta* respuesta = malloc(sizeof(tipoRespuesta));
 
-	deserializarRespuesta(buffer,&respuesta);
+	deserializarRespuesta(buffer,respuesta);
 
 	free(buffer);
 
-	return &respuesta;
+	return respuesta;
 
 }
 
