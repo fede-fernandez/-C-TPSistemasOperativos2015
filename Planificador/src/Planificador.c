@@ -9,6 +9,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include "funcionesPlanificador.h"
+#include <commonsDeAsedio/cliente-servidor.h>
+#include <commonsDeAsedio/estructuras.h>
 
 
 
@@ -96,7 +98,7 @@ int main(void) {
 	pthread_mutex_destroy(&pcbs);
 	pthread_mutex_destroy(&cpuss);
 	pthread_mutex_destroy(&ready);
-	pthread_mutex_destroy(&&bloqueados);
+	pthread_mutex_destroy(&bloqueados);
 
 
 	sem_destroy(&solicitud_ejecucion);
@@ -228,6 +230,7 @@ void* recibir_rafagas(){
 		recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
 		PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
+
 
 		pthread_mutex_lock(&pcbs);
 

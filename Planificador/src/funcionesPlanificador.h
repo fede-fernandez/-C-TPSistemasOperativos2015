@@ -90,8 +90,5 @@ int diponibilidad(t_CPU * nodo);
 int buscar_por_puerto(t_CPU *nodo );
 //-------------------------------------------------------
 
-t_PCB* recibirPCB(int socketPlanificador);
-
-void enviarPCB(int socketCPU,t_PCB* PCB);
 
 #endif /* FUNCIONESPLANIFICADOR_H_ */
