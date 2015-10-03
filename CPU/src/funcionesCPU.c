@@ -62,7 +62,7 @@ FILE* abrirProgramaParaLectura(char* rutaDelPrograma)
 	if(programa == NULL)
 	{
 		perror("El programa no existe o esta vacio.");
-		return -1;
+		return NULL;
 	}
 	return programa;
 }

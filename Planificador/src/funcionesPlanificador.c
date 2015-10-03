@@ -78,40 +78,6 @@ tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDe
  	}
  }
 
-t_PCB* recibirPCB(int socketPlanificador){
-
-	size_t tamanioBloque = sizeof(t_PCB);
-
-	t_PCB* PCB = malloc(tamanioBloque);
-
-	t_PCB paquete;
-
-	recibirMensajeCompleto(socketPlanificador,paquete,tamanioBloque);
-
-	memcpy(PCB->id,paquete,sizeof(int));
-	memcpy(PCB->pc,paquete+sizeof(int),sizeof(int));
-	memcpy(PCB->estado,paquete+sizeof(int)+sizeof(int),sizeof(char));
-	memcpy(PCB->path,paquete+sizeof(int)+sizeof(int)+sizeof(char),sizeof(char[30]));
-
-	return PCB;
-}
-
-
-
-void enviarPCB(int socketCPU,t_PCB* PCB){
-
-	size_t longitudBloque = sizeof(t_PCB);
-
-	t_PCB paquete;
-	memcpy(paquete,PCB->id,sizeof(int));
-	memcpy(paquete+sizeof(int),PCB->pc,sizeof(int));
-	memcpy(paquete+sizeof(int)+sizeof(int),PCB->estado,sizeof(char));
-	memcpy(paquete+sizeof(int)+sizeof(int)+sizeof(char),PCB->path,sizeof(char[30]));
-
-	enviarMensaje(socketCPU,paquete,sizeof(paquete));
-
-
-}
 
 
 int buscar_por_puerto(t_CPU *nodo){
