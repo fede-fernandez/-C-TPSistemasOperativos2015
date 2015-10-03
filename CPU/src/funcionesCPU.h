@@ -4,6 +4,7 @@
 
 #include <commons/string.h>
 #include <commons/config.h>
+#include <sys/mman.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <commonsDeAsedio/error.h>
@@ -36,8 +37,10 @@ void destruirConfigCPU(tipoConfigCPU* estructuraDeConfiguracion);
 
 
 /************Funciones principales del CPU************/
+int ejecutarPrograma(tipoPCB PCB, int tiempoDeRetardo);
+FILE* abrirProgramaParaLectura(char* rutaDelPrograma);
 int ejecutarInstruccion(char* instruccion, int idDeProceso);
-
+int longitudDeStringArray(char** stringArray);
 
 /*Funciones mAnsisOp*/
 int instruccionIniciar(int numeroDePaginas, int idDeProceso);
@@ -48,7 +51,11 @@ int instruccionFinalizar(int idDeProceso);
 
 
 /*Funciones de control de lineas de codigo mAnsisOp*/
-char* sacarPuntoYComaFinal(char* frase);
+bool esInstruccionIniciar(char* instruccion);
+bool esInstruccionLeer(char* instruccion);
+bool esInstruccionEscribir(char* instruccion);
+bool esInstruccionEntradaSalida(char* instruccion);
+bool esInstruccionFinalizar(char* instruccion);
 char* sacarComillas(char* frase);
 
 
