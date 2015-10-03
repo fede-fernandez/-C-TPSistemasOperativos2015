@@ -21,7 +21,7 @@
 #define ALGORITMO_PLANIFICACION "ALGORITMO_PLANIFICACION"
 #define QUANTUM "QUANTUM"
 
-extern int puertoConCambios=0; // puerto donde hubo cambios
+extern int puertoConCambios; // puerto donde hubo cambios
 
 typedef struct{
 	int puertoEscucha;

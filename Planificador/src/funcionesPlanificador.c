@@ -81,7 +81,7 @@ tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDe
 
 
 int buscar_por_puerto(t_CPU *nodo){
-
+int puertoConCambios;
 	if(nodo->puerto == puertoConCambios){
 
 		return 1;

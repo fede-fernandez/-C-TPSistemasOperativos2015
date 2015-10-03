@@ -55,12 +55,15 @@ sem_t solicitud_deBloqueo; // cantidad de solicitud_deBloqueo
 
 int main(void) {
 
+
 	tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
 
 	puerto = configuracion->puertoEscucha;
 	quantum = configuracion->quantum;
 
 	destruirConfigPlanificador(configuracion);
+
+
 
 	//Declaración de Mutex.
 	pthread_mutex_init(&pcbs,NULL);
@@ -77,6 +80,8 @@ int main(void) {
 	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
 	CPUs = list_create(); // crea lista de CPUs conectadas
 	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
+
+
 
 	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
 	pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
@@ -117,7 +122,7 @@ int correr_path(void){
 
   //limpiar pantalla
 
-	system("clear");
+	//system("clear");
 
 	printf("Ingresar Comando: \n");
 
@@ -203,7 +208,7 @@ void* recibir_rafagas(){
 	t_PCB *PCB_recibido;
 	t_PCB *PCB;
 	char llegada; // "Quantum", "Bloqueado" y "Fin"
-
+	int puertoConCambios=0;
 
 	while(1){
 
