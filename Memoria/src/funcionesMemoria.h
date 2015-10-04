@@ -27,6 +27,8 @@
 #define TLB_HABILITADA "TLB_HABILITADA"
 #define RETARDO_MEMORIA "RETARDO_MEMORIA"
 
+/*******************ESTRUCTURAS*************************/
+
 typedef struct{
 	int puertoDeEscucha;
 	char* ipSWAP;
@@ -48,6 +50,19 @@ typedef struct{
 	fd_set* cpusATratar;
 }tipoEstructuraMemoria;
 
+typedef struct{
+	int instruccion;
+	int numeroDePagina;
+	int posicionEnRAM;
+}tipoTLB;
+
+typedef struct{
+	int instruccion;
+	int numeroDePagina;
+	void* contenido;
+}tipoRAM;
+
+/***************************FUNCIONES*********************************************/
 
 tipoConfigMemoria* crearConfigMemoria();
 
@@ -59,17 +74,30 @@ void tratarPeticion(tipoEstructuraMemoria* datosMemoria,int cpuAtendida);
 
 void tratarPeticiones(tipoEstructuraMemoria* datosMemoria);
 
-/***************instrucciones*******************/
-/****iniciar N*****/
-int reservarMemoriaEnSwap(tipoInstruccion instruccion, int socketSwap, tipoRespuesta* respuesta);
+/**************INSTRUCCIONES*******************/
 
-int reservarMemoriaEnRam(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria);
+//////////////////
+//INICIAR
+/////////////////
 
-void cancelarInicializacion(int procesoID);
+int puedoReservarEnSWAP(tipoInstruccion instruccion, int socketSwap, tipoRespuesta* respuesta);
+
+int puedoReservarEnRAM(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria);
+
+void reservarMemoriaEnRam(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria);
+
+int estaHabilitadaLaTLB(tipoConfigMemoria* configuracion);
+
+int obtenerPosicionEnRAM(t_list* listaRAM, tipoRAM* instanciaRAM);
+
+void reservarMemoriaEnTLB(tipoTLB* instanciaTLB, t_list* listaTLB, tipoConfigMemoria* configuracion);
 
 void reservarMemoriaParaProceso(tipoInstruccion instruccion,tipoEstructuraMemoria* datosMemoria, int cpuATratar);
 
-/*******leer pagina***********/
+//////////////////
+//LEER PAGINA
+/////////////////
+
 int buscarPaginaEnRam(tipoInstruccion instruccion, char* contenidoDePagina);
 
 int buscarPaginaEnSwap(tipoInstruccion instruccion, char* contenidoDePagina, int socketSwap);

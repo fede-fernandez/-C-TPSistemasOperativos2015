@@ -20,11 +20,11 @@
 #define PERFECTO 'p'
 
 //instrucciones
-#define FINALIZAR 'f'
-#define INICIAR 'i'
-#define LEER 'l'
-#define ESCRIBIR 'e'
-#define ENTRADA_SALIDA 's'
+#define FINALIZAR 		'f'
+#define ESCRIBIR 		'e'
+#define LEER 			'l'
+#define INICIAR 		'i'
+#define ENTRADA_SALIDA 	's'
 
 typedef struct{
 	int pid;

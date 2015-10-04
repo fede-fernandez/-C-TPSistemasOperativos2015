@@ -1,11 +1,12 @@
-/*
- * funcionesMemoria.c
- *
- *  Created on: 4/9/2015
- *      Author: utnso
- */
 #include "funcionesMemoria.h"
 #include <commonsDeAsedio/estructuras.h>
+
+
+void destruirConfigMemoria(tipoConfigMemoria* estructuraDeConfiguracion){
+	free(estructuraDeConfiguracion->ipSWAP);
+	free(estructuraDeConfiguracion->TLBHabilitada);
+	free(estructuraDeConfiguracion);
+}
 
 tipoConfigMemoria* crearConfigMemoria(){
 	tipoConfigMemoria* cfg = malloc(sizeof(tipoConfigMemoria));
@@ -15,11 +16,7 @@ tipoConfigMemoria* crearConfigMemoria(){
 	return cfg;
 }
 
-void destruirConfigMemoria(tipoConfigMemoria* estructuraDeConfiguracion){
-	free(estructuraDeConfiguracion->ipSWAP);
-	free(estructuraDeConfiguracion->TLBHabilitada);
-	free(estructuraDeConfiguracion);
-}
+/*********************ESTRUCTURAS*************************/
 
 tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeConfiguracion){
 
@@ -52,7 +49,7 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeC
 	return cfg;
 }
 
-
+/************************FUNCIONES********************************/
 
 void tratarPeticion(tipoEstructuraMemoria* datosMemoria,int cpuAtendida){
 
@@ -89,61 +86,102 @@ void tratarPeticiones(tipoEstructuraMemoria* datosMemoria){
 		}
 }
 
-/*************instrucciones*******************/
-/****iniciar N*****/
-int reservarMemoriaEnSwap(tipoInstruccion instruccion, int socketSwap, tipoRespuesta* respuesta){
+/**************INSTRUCCIONES*******************/
 
+//////////////////
+//INICIAR
+/////////////////
+
+int puedoReservarEnSWAP(tipoInstruccion instruccion, int socketSwap, tipoRespuesta* respuesta){
 	enviarInstruccion(socketSwap,instruccion);
-	respuesta = recibirRespuesta(socketSwap);
+		respuesta = recibirRespuesta(socketSwap);
 
-	if (respuesta->respuesta == PERFECTO) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
+		if (respuesta->respuesta == PERFECTO)return 1;
+		else return 0;
 
 }
 
-int reservarMemoriaEnRam(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria){
-	if(elProcesoTieneEsPacioEnRAM(instruccion, datosMemoria)){
+int puedoReservarEnRAM(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria){
+	int paginasTotales = instruccion.nroPagina + list_size(datosMemoria->listaRAM);
 
+	if(paginasTotales <= datosMemoria->configuracion->cantidadDeMarcos && instruccion.nroPagina <= datosMemoria->configuracion->maximoDeMarcosPorProceso) return 1;
+	else return 0;
+}
+
+void reservarMemoriaEnRam(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria){
+
+	tipoRAM* instanciaDeRAM;
+
+	//RAM
+	int i;
+	for (i = 1; i <= instruccion.nroPagina; ++i) {
+
+		instanciaDeRAM = malloc(sizeof(tipoRAM));
+			instanciaDeRAM->numeroDePagina = i;
+			instanciaDeRAM->instruccion = instruccion.pid;
+
+		list_add(datosMemoria->listaRAM, instanciaDeRAM);
 	}
-	return 1;
+
+	//TLB
+	if(estaHabilitadaLaTLB(datosMemoria->configuracion)){
+
+		tipoTLB* instanciaTLB = malloc(sizeof(tipoTLB));
+			instanciaTLB->instruccion = instruccion.pid;
+			instanciaTLB->numeroDePagina = instruccion.nroPagina;
+			instanciaTLB->posicionEnRAM = obtenerPosicionEnRAM(datosMemoria->listaRAM, instanciaDeRAM);
+
+		reservarMemoriaEnTLB(instanciaTLB, datosMemoria->listaTLB, datosMemoria->configuracion);
+	}
 }
 
-int elProcesoTieneEsPacioEnRAM(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria){
-
-
-
-	return 0;
+int estaHabilitadaLaTLB(tipoConfigMemoria* configuracion){
+	return string_equals_ignore_case(configuracion->TLBHabilitada, "SI");
 }
 
-void cancelarInicializacion(int procesoID){
+int obtenerPosicionEnRAM(t_list* listaRAM, tipoRAM* instanciaRAM){
+	tipoRAM* aux;
+	int i;
+	for(i=0; i < list_size(listaRAM); ++i) {
+		aux = list_get(listaRAM, i);
 
+		if(aux->instruccion == instanciaRAM->instruccion  && aux->numeroDePagina == instanciaRAM->numeroDePagina){
+			break; //ver si funciona porque no lo pude hacer de otra forma, C no me deja
+		}
+	}
+	return i;
+}
+
+void reservarMemoriaEnTLB(tipoTLB* instanciaTLB, t_list* listaTLB, tipoConfigMemoria* configuracion){
+
+	if(list_size(listaTLB)+1 <= configuracion->entradasDeTLB){
+		list_add(listaTLB, instanciaTLB);
+	}
+	else{
+		//aca irian las funciones para actualizar la TLB sacando alguno viejo y poniendo el nuevo
+		//despues se lo tiene que ver
+	}
 }
 
 void reservarMemoriaParaProceso(tipoInstruccion instruccion,tipoEstructuraMemoria* datosMemoria, int cpuATratar){
 
-	tipoRespuesta* respuesta;
+	tipoRespuesta* respuesta = malloc(sizeof(tipoRespuesta));
 
-	if (reservarMemoriaEnSwap(instruccion, datosMemoria->socketSWAP, respuesta)) {
+	if (puedoReservarEnSWAP(instruccion, datosMemoria->socketSWAP, respuesta)) {
 
-		if (reservarMemoriaEnRam(instruccion, datosMemoria)) {
-
-		}
-		else {
+		if (puedoReservarEnRAM(instruccion, datosMemoria))
+			reservarMemoriaEnRam(instruccion, datosMemoria);
+		else{
 			//ver algoritmos para pasar procesos de ram a swap y liberar espacio para el nuevo proceso
 		}
-
-		enviarRespuesta(cpuATratar, *respuesta);
 	}
 
-
-
+	enviarRespuesta(cpuATratar, *respuesta);
 }
 
-/*******leer pagina***********/
+//////////////////
+//LEER PAGINA
+/////////////////
 
 int buscarPaginaEnRam(tipoInstruccion instruccion, char* contenidoDePagina){
 	return 1;
@@ -177,7 +215,9 @@ void leerPagina(tipoInstruccion instruccion, int socketSwap){
 		}
 }
 
-/************ESCRIBIR PAGINAS***************/
+//////////////////
+//ESCRIBIR PAGINA
+/////////////////
 
 /*
 
