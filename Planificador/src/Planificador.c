@@ -18,17 +18,24 @@
 // VARIABLES GLOBALES <-------------------
 
 int contador_de_id_procesos = 0; // para saber cuantos procesos hay en el sistema
+int quantum = 0; // 0 si tiene quantum y el "valor" en caso de que tenga quantum
+
+//---listas y colas
+
 t_list *lista_de_PCB;
 t_queue *procesos_en_ready; // cola de procesos "listos para ejecutar"
 t_list *CPUs; // lista de cpu disponibles
 t_queue *procesos_bloqueados; // cola donde se encolan los procesos para luego mandarlos a dormir
-int socketEscucha; // socket que escuche las conecciones entrantes
-int quantum; // 0 si tiene quantum y el "valor" en caso de que tenga quantum
-fd_set master; // conjunto maestro de descriptores de fichero
-fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
-int fdmax; // número máximo de descriptores de fichero
+
+//----- sockets
 
 int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
+int socketEscucha; // socket que escuche las conecciones entrantes
+fd_set master; // conjunto maestro de descriptores de fichero
+fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
+int fdmax = 0; // número máximo de descriptores de fichero
+
+
 
 //semaforos Mutex---------------
 
@@ -37,8 +44,6 @@ pthread_mutex_t cpuss;
 pthread_mutex_t ready;
 pthread_mutex_t bloqueados;
 
-// falta el mutex para la lista de bloqueados
-
 //semaforos de sincronizacion
 
 sem_t solicitud_ejecucion; // cantidad de solicitud_ejecucion
@@ -46,8 +51,11 @@ sem_t solicitud_cpuLibre; // cantidad de solicitud_cpuLibre
 sem_t solicitud_deBloqueo; // cantidad de solicitud_deBloqueo
 
 //--------------------------------------------------------------------------------------------------
-
-//Las movi al header las estructuras y funciones_create()
+//----Hilos
+pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
+pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
+pthread_t recibir;
+pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de "procesos_bloqueados"
 
 // -------------------------------------------------------------------------------------------------------
 
@@ -56,37 +64,16 @@ sem_t solicitud_deBloqueo; // cantidad de solicitud_deBloqueo
 int main(void) {
 
 
-	tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
+	/*tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
 
 	puerto = configuracion->puertoEscucha;
 	quantum = configuracion->quantum;
 
-	destruirConfigPlanificador(configuracion);
+	destruirConfigPlanificador(configuracion); */
 
+	inicializar_semaforos();
 
-
-	//Declaración de Mutex.
-	pthread_mutex_init(&pcbs,NULL);
-	pthread_mutex_init(&cpuss,NULL);
-	pthread_mutex_init(&ready,NULL);
-	pthread_mutex_init(&bloqueados,NULL);
-
-	// Inicialización de Semáforos en 0.
-	sem_init(&solicitud_ejecucion, 1, 0);
-	sem_init(&solicitud_cpuLibre, 1, 0);
-	sem_init(&solicitud_deBloqueo, 1, 0);
-
-	lista_de_PCB = list_create(); //Crea la lista_de_PCB
-	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
-	CPUs = list_create(); // crea lista de CPUs conectadas
-	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
-
-
-
-	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
-	pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
-	pthread_t recibir;
-	pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de "procesos_bloqueados"
+	crear_lista();
 
 	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso "main"
 	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta testear la funcion "recibir_conexion"
@@ -97,20 +84,9 @@ int main(void) {
 
 	menu();
 
+	liberar_memoria();
 
-	//destruir hilos
-	//destruir listas.todo lo q este en memoria dinamica.
-	pthread_mutex_destroy(&pcbs);
-	pthread_mutex_destroy(&cpuss);
-	pthread_mutex_destroy(&ready);
-	pthread_mutex_destroy(&bloqueados);
-
-
-	sem_destroy(&solicitud_ejecucion);
-	sem_destroy(&solicitud_cpuLibre);
-	sem_destroy(&solicitud_deBloqueo);
-
-	return EXIT_SUCCESS;
+	return 0;
 }
 
 int correr_path(void){
@@ -121,7 +97,6 @@ int correr_path(void){
 
 
   //limpiar pantalla
-
 	//system("clear");
 
 	printf("Ingresar Comando: \n");
@@ -166,11 +141,16 @@ void* recibir_conexion(){
 
 	socketEscucha = crearSocket();
 	asociarAPuerto(socketEscucha,puerto);
-	escucharConexiones(socketEscucha,1); //  me pongo a escuchar conexiones
+
+	FD_ZERO(&master); // borra los conjuntos maestro y temporal
+	FD_ZERO(&read_fds);
 
 	while(1){
 
-		socketCpu = crearSocketParaAceptarSolicitudes(socketEscucha); // es bloqueante ?¿?,
+// me pongo a escuchar conexiones
+		escucharConexiones(socketEscucha,5); //se bloquea hasta q haya cpus nuevas
+
+		socketCpu = crearSocketParaAceptarSolicitudes(socketEscucha); //
 
 		recibirMensaje(socketCpu, &id, sizeof(int));// recibo id de CPU
 
@@ -186,6 +166,8 @@ void* recibir_conexion(){
 		if (socketCpu > fdmax) { // es el mayor
 			fdmax = socketCpu; // guardo el mayor
 		}
+
+		read_fds = master; // actualizo el temporal
 
 		sem_post(&solicitud_cpuLibre);
 	}
@@ -216,6 +198,7 @@ void* recibir_rafagas(){
 
 		// select se bloque hasta que le llegan "mensajitos".
 		select(fdmax+1, &read_fds, NULL, NULL, NULL);
+		printf("# HOLLLLLLLLLLLLLLLLLLAAAAAAAAAAAAAAAAAAAAAAAA#\n");
 		for(puertoConCambios = 0; puertoConCambios <= fdmax; puertoConCambios++) {
 
 			// preguntar a todos los puertos de "read_fds" si recibieron mensajes.
@@ -465,3 +448,43 @@ int menu(void) {
 
 }
 
+void crear_lista(){
+
+	lista_de_PCB = list_create(); //Crea la lista_de_PCB
+	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
+	CPUs = list_create(); // crea lista de CPUs conectadas
+	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
+}
+
+void inicializar_semaforos(){
+
+	//Declaración de Mutex.
+		pthread_mutex_init(&pcbs,NULL);
+		pthread_mutex_init(&cpuss,NULL);
+		pthread_mutex_init(&ready,NULL);
+		pthread_mutex_init(&bloqueados,NULL);
+
+		// Inicialización de Semáforos en 0.
+		sem_init(&solicitud_ejecucion, 1, 0);
+		sem_init(&solicitud_cpuLibre, 1, 0);
+		sem_init(&solicitud_deBloqueo, 1, 0);
+
+}
+
+void liberar_memoria(){
+
+	liberarSocket(socketEscucha);
+
+	//destruir hilos
+	//destruir listas.todo lo q este en memoria dinamica.
+	pthread_mutex_destroy(&pcbs);
+	pthread_mutex_destroy(&cpuss);
+	pthread_mutex_destroy(&ready);
+	pthread_mutex_destroy(&bloqueados);
+
+
+	sem_destroy(&solicitud_ejecucion);
+	sem_destroy(&solicitud_cpuLibre);
+	sem_destroy(&solicitud_deBloqueo);
+
+}
