@@ -48,6 +48,9 @@ typedef struct{
 } t_bloqueados;
 
 
+void inicializar_semaforos();
+void liberar_memoria();
+void crear_lista();
 //-------Funciones HILOS prototipadas----------------
 
 void* recibir_conexion();
