@@ -1,91 +1,97 @@
 /*
- * estructurasPlanificador.c
+ * estructurasPlanificador.h
  *
  *  Created on: 4/9/2015
  *      Author: utnso
  */
 
-//
+#ifndef FUNCIONESPLANIFICADOR_H_
+#define FUNCIONESPLANIFICADOR_H_
 
-#include "funcionesPlanificador.h"
-
-
-
-tipoConfigPlanificador* crearConfigPlanificador(){
-	tipoConfigPlanificador *cfg = malloc(sizeof(tipoConfigPlanificador));
-	cfg->algoritmoDePlanificacion = string_new();
-
-	return cfg;
-}
+#include <commons/string.h>
+#include <commons/config.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <commonsDeAsedio/error.h>
+#include <commonsDeAsedio/cliente-servidor.h>
 
 
-void destruirConfigPlanificador(tipoConfigPlanificador* cfg){
-	free(cfg->algoritmoDePlanificacion);
-	free(cfg);
-}
+#define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
+#define ALGORITMO_PLANIFICACION "ALGORITMO_PLANIFICACION"
+#define QUANTUM "QUANTUM"
 
-tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDeArchivoDeConfiguracion){
-	t_config* archivoConfig = config_create(rutaDeArchivoDeConfiguracion);
+extern int puertoConCambios; // puerto donde hubo cambios
 
-	tipoConfigPlanificador* cfg = crearConfigPlanificador();
+typedef struct{
+	int puertoEscucha;
+	char* algoritmoDePlanificacion;
+	int quantum;
+}tipoConfigPlanificador;
 
-	validarErrorYAbortar(config_has_property(archivoConfig,PUERTO_ESCUCHA)
-			&& config_has_property(archivoConfig,ALGORITMO_PLANIFICACION)
-			&& config_has_property(archivoConfig,QUANTUM),
-			"Las claves del archivo de configuracion no coinciden con las que requiere el Planificador.");
+typedef struct{
+	int id;
+	int pc;
+	char estado;
+	char path[30];
+} t_PCB;
 
-	cfg->puertoEscucha = config_get_int_value(archivoConfig,PUERTO_ESCUCHA);
-	cfg->algoritmoDePlanificacion = string_duplicate(config_get_string_value(archivoConfig,ALGORITMO_PLANIFICACION));
-	cfg->quantum = config_get_int_value(archivoConfig,QUANTUM);
+typedef struct{
+	int id_cpu;
+	int disponibilidad;// "0" NO Esta disponible y, "1" Esta disponible
+	int puerto;
+} t_CPU;
 
-	config_destroy(archivoConfig);
-
-	return cfg;
-}
-
- t_PCB *PCB_create(int id, int pc, char estado, char path[30]) { // esta funcion crea la estructura
-	t_PCB *new = malloc(sizeof(t_PCB));
-    new->id = id;
-    new->pc = pc;
-    new->estado = estado;
-    memset(new->path, '\0', 30);
-    strcpy(new->path,path);
-    return new;
-}
-
- t_CPU *cpu_create(int id_cpu, int disponibilidad, int puerto) { // esta funcion crea la estructura
-	t_CPU *new = malloc(sizeof(t_CPU));
-    new->id_cpu = id_cpu;
-    new->disponibilidad = disponibilidad;
-    new->puerto = puerto;
-    return new;
-}
-
- int *id_create(int id){
-	int*new=malloc(sizeof(int));
-	*new=id;
-	return new;
-
-}
-
- int diponibilidad(t_CPU * nodo){ // condicion para encontrar un puerto disponible
-
- 	if(nodo->disponibilidad == 1){
- 		return 1;
- 	}
- 	else{
- 		return 0;
- 	}
- }
+typedef struct{
+	int id; // id proceso
+	int tiempo;// tiempo que se va a dormir el procesos
+} t_bloqueados;
 
 
+void inicializar_semaforos();
+void liberar_memoria();
+void crear_lista();
+//-------Funciones HILOS prototipadas----------------
 
-int buscar_por_puerto(t_CPU *nodo){
-int puertoConCambios;
-	if(nodo->puerto == puertoConCambios){
+void* recibir_conexion();
 
-		return 1;
-	}
+int llega_quantum(t_PCB *PCB);
 
-	return 0;
-}
+int llega_entrada_salida(t_PCB *PCB);
+
+int llega_de_fin(t_PCB *PCB);
+
+void* recibir_rafagas();
+
+void* bloquear_procesos();
+
+void* ejecutar_proceso();
+//-------------------------------------------------------------------
+
+int menu(void) ;
+
+int correr_path(void);
+//-------------------------------------------------------------------
+
+tipoConfigPlanificador* crearConfigPlanificador();
+
+void destruirConfigPlanificador(tipoConfigPlanificador* estructuraDeConfiguracion);
+
+tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDeArchivoDeConfiguracion);
+
+//-----------------------------------------------------------------------
+t_PCB* PCB_create(int id, int pc, char estado, char path[30]);
+
+int *id_create(int id);
+
+t_CPU *cpu_create(int id_cpu, int disponibilidad, int puerto);
+//------------------------------------------------------------------------
+
+//-------------------------------------------------------
+int diponibilidad(t_CPU * nodo);
+
+int buscar_por_puerto(t_CPU *nodo );
+//-------------------------------------------------------
+
+
+#endif /* FUNCIONESPLANIFICADOR_H_ */
