@@ -53,7 +53,12 @@ void liberar_memoria();
 void crear_lista();
 //-------Funciones HILOS prototipadas----------------
 
-void* recibir_conexion();
+
+void* recibir_cpu();
+
+int recibir_conexion();
+
+int recibir_rafagas();
 
 int llega_quantum(t_PCB *PCB);
 
@@ -61,7 +66,7 @@ int llega_entrada_salida(t_PCB *PCB);
 
 int llega_de_fin(t_PCB *PCB);
 
-void* recibir_rafagas();
+
 
 void* bloquear_procesos();
 
