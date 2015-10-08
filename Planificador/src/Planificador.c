@@ -418,11 +418,14 @@ void* ejecutar_proceso(){
 int menu(void) {
 
 	int opcion;
+	char opchar[2];
 
 	while(1) // el menu tiene que estar presente siempre
 
 	{
 		 // limpiar pantalla
+
+		memset(opchar, '\0', 2);
 
 		opcion = 0;
 
@@ -445,9 +448,11 @@ int menu(void) {
 			printf("#     5) Salir                                                 #\n");
 			printf("#                                                              #\n");
 			printf("################################################################\n");
-			printf("################################################################\n");
+			printf("################################################################\n\n\n");
 
-		 scanf("%d",&opcion);
+			scanf("%s", opchar);
+
+			opcion = atoi(opchar);
 
 		 switch (opcion) {
 			case 1:
@@ -461,7 +466,7 @@ int menu(void) {
 			case 5:
 			   return 0;	    break;
 
-			default: printf("Opción incorrecta. Por favor ingrese una opción del 1 al 4 \n"); break;
+			default: printf("Opción incorrecta. Por favor ingrese una opción del 1 al 4 \n \n \n"); break;
 		  }
 
 	}
@@ -495,7 +500,7 @@ void inicializar_semaforos(){
 
 void liberar_memoria(){
 
-	liberarSocket(socketEscucha);
+
 
 	//destruir hilos
 	//destruir listas.todo lo q este en memoria dinamica.
@@ -508,5 +513,23 @@ void liberar_memoria(){
 	sem_destroy(&solicitud_ejecucion);
 	sem_destroy(&solicitud_cpuLibre);
 	sem_destroy(&solicitud_deBloqueo);
+
+	liberarSocket(socketEscucha);
+
+}
+
+void liberar_puertos(){
+
+	t_CPU* nodo_cpu;
+	int tamano;
+	int i;
+
+	tamano = list_size(CPUs);
+
+	for(i = 0; i <= tamano; i++) {
+
+		nodo_cpu =list_get(CPUs, i);
+		liberarSocket(nodo_cpu->puerto);
+	}
 
 }
