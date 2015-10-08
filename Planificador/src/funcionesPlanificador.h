@@ -51,6 +51,7 @@ typedef struct{
 void inicializar_semaforos();
 void liberar_memoria();
 void crear_lista();
+void liberar_puertos();
 //-------Funciones HILOS prototipadas----------------
 
 
