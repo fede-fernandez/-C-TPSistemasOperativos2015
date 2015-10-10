@@ -21,7 +21,7 @@ tipoRespuesta* ejecutarInstruccion(tipoInstruccion* instruccion,t_list* listaDeH
 			respuesta = reservarEspacio(listaDeHuecos,instruccion->pid,instruccion->nroPagina,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,configuracion->nombreDeSWAP);
 			break;
 
-		case LECTURA:
+		case LEER:
 			respuesta = leerPagina(listaDeHuecos,instruccion->pid,instruccion->nroPagina,configuracion->tamanioDePagina,configuracion->nombreDeSWAP);
 			break;
 
