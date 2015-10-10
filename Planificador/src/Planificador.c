@@ -18,17 +18,24 @@
 // VARIABLES GLOBALES <-------------------
 
 int contador_de_id_procesos = 0; // para saber cuantos procesos hay en el sistema
+int quantum = 0; // 0 si tiene quantum y el "valor" en caso de que tenga quantum
+
+//---listas y colas
+
 t_list *lista_de_PCB;
 t_queue *procesos_en_ready; // cola de procesos "listos para ejecutar"
 t_list *CPUs; // lista de cpu disponibles
 t_queue *procesos_bloqueados; // cola donde se encolan los procesos para luego mandarlos a dormir
-int socketEscucha; // socket que escuche las conecciones entrantes
-int quantum; // 0 si tiene quantum y el "valor" en caso de que tenga quantum
-fd_set master; // conjunto maestro de descriptores de fichero
-fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
-int fdmax; // número máximo de descriptores de fichero
+
+//----- sockets
 
 int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
+int socketEscucha; // socket que escuche las conecciones entrantes
+fd_set master; // conjunto maestro de descriptores de fichero
+fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
+int fdmax = 0; // número máximo de descriptores de fichero
+
+
 
 //semaforos Mutex---------------
 
@@ -37,8 +44,6 @@ pthread_mutex_t cpuss;
 pthread_mutex_t ready;
 pthread_mutex_t bloqueados;
 
-// falta el mutex para la lista de bloqueados
-
 //semaforos de sincronizacion
 
 sem_t solicitud_ejecucion; // cantidad de solicitud_ejecucion
@@ -46,8 +51,10 @@ sem_t solicitud_cpuLibre; // cantidad de solicitud_cpuLibre
 sem_t solicitud_deBloqueo; // cantidad de solicitud_deBloqueo
 
 //--------------------------------------------------------------------------------------------------
-
-//Las movi al header las estructuras y funciones_create()
+//----Hilos
+pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
+pthread_t recibir;
+pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de "procesos_bloqueados"
 
 // -------------------------------------------------------------------------------------------------------
 
@@ -56,61 +63,28 @@ sem_t solicitud_deBloqueo; // cantidad de solicitud_deBloqueo
 int main(void) {
 
 
-	tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
+	/*tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
 
 	puerto = configuracion->puertoEscucha;
 	quantum = configuracion->quantum;
 
-	destruirConfigPlanificador(configuracion);
+	destruirConfigPlanificador(configuracion); */
 
+	inicializar_semaforos();
 
-
-	//Declaración de Mutex.
-	pthread_mutex_init(&pcbs,NULL);
-	pthread_mutex_init(&cpuss,NULL);
-	pthread_mutex_init(&ready,NULL);
-	pthread_mutex_init(&bloqueados,NULL);
-
-	// Inicialización de Semáforos en 0.
-	sem_init(&solicitud_ejecucion, 1, 0);
-	sem_init(&solicitud_cpuLibre, 1, 0);
-	sem_init(&solicitud_deBloqueo, 1, 0);
-
-	lista_de_PCB = list_create(); //Crea la lista_de_PCB
-	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
-	CPUs = list_create(); // crea lista de CPUs conectadas
-	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
-
-
-
-	pthread_t escucha; //Hilo que va a manejar las conecciones de las distintas CPU
-	pthread_t ejecucion; //Hilo que va a mandar a ejecutar "procesos listos" a distintas CPUs
-	pthread_t recibir;
-	pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de "procesos_bloqueados"
+	crear_lista();
 
 	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso "main"
-	pthread_create(&escucha, NULL, recibir_conexion, NULL); // falta testear la funcion "recibir_conexion"
 	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta testear la funcion "ejecutar_proceso"
-	pthread_create(&recibir, NULL, recibir_rafagas, NULL); // falta testear la funcion "recibir_rafagas"
+	pthread_create(&recibir, NULL, recibir_cpu, NULL); // falta testear la funcion "recibir_rafagas"
 	pthread_create(&bloquear, NULL, bloquear_procesos, NULL); //falta testear la funcion "bloquear_procesos"
 
 
 	menu();
 
+	liberar_memoria();
 
-	//destruir hilos
-	//destruir listas.todo lo q este en memoria dinamica.
-	pthread_mutex_destroy(&pcbs);
-	pthread_mutex_destroy(&cpuss);
-	pthread_mutex_destroy(&ready);
-	pthread_mutex_destroy(&bloqueados);
-
-
-	sem_destroy(&solicitud_ejecucion);
-	sem_destroy(&solicitud_cpuLibre);
-	sem_destroy(&solicitud_deBloqueo);
-
-	return EXIT_SUCCESS;
+	return 0;
 }
 
 int correr_path(void){
@@ -121,7 +95,6 @@ int correr_path(void){
 
 
   //limpiar pantalla
-
 	//system("clear");
 
 	printf("Ingresar Comando: \n");
@@ -156,21 +129,67 @@ int correr_path(void){
 //-------------------------------------FUNCIONES HILOS--------------------------------------------------------------------
 
 
-//---------------HILO encargado de recibir conexiones de CPUs   -------------------------
+//------------HILO ENCARGADO DE RECIBIR CONEXIONES Y MENSAJES DE CPUs----------------------------------------------------
+void* recibir_cpu(){
 
-void* recibir_conexion(){
+	FD_ZERO(&master); // borra los conjuntos maestro y temporal
+	FD_ZERO(&read_fds);
+
+	int puertoConCambios=0;
+
+	socketEscucha = crearSocket();
+	asociarAPuerto(socketEscucha,puerto);
+
+	// me pongo a escuchar conexiones
+	escucharConexiones(socketEscucha,5); //se bloquea hasta q haya cpus nuevas
+
+	FD_SET(socketEscucha, &master); // Agrega socketEscucha al master set
+
+	if (socketEscucha > fdmax) { // es el mayor
+		fdmax = socketEscucha; // guardo el mayor
+	}
+
+	recibir_conexion();
+
+	while(1){
+
+		read_fds = master; // backup de mi descriptores de archivo.
+
+		// select se bloque hasta que le llegan "mensajitos".
+		select(fdmax+1, &read_fds, NULL, NULL, NULL);
+
+		for(puertoConCambios = 0; puertoConCambios <= fdmax; puertoConCambios++) {
+
+			// preguntar a todos los puertos de "read_fds" si recibieron mensajes.
+			if (FD_ISSET(puertoConCambios, &read_fds)) { //pregunta si "puertoConCambios" está en el conjunto y si hubo cambio.
+
+				break; // encontramos el puerto donde hubo cambios, "puertoConCambios" es el puerto con cambios.
+				// salgo del for.
+			}
+		}
+
+		if(puertoConCambios == socketEscucha){ // pregunto si hay conexiones nuevas
+
+			recibir_conexion();
+		}else{
+
+			recibir_rafagas();
+		}
+
+
+	}
+
+}
+
+//---------------funcion encargado de recibir conexiones de CPUs   -------------------------
+int recibir_conexion(){
 
 
 	int socketCpu;
 	int id;
 
-	socketEscucha = crearSocket();
-	asociarAPuerto(socketEscucha,puerto);
-	escucharConexiones(socketEscucha,1); //  me pongo a escuchar conexiones
 
-	while(1){
-
-		socketCpu = crearSocketParaAceptarSolicitudes(socketEscucha); // es bloqueante ?¿?,
+		socketCpu = crearSocketParaAceptarSolicitudes(socketEscucha); //
 
 		recibirMensaje(socketCpu, &id, sizeof(int));// recibo id de CPU
 
@@ -187,8 +206,10 @@ void* recibir_conexion(){
 			fdmax = socketCpu; // guardo el mayor
 		}
 
-		sem_post(&solicitud_cpuLibre);
-	}
+		read_fds = master; // actualizo el temporal
+
+		sem_post(&solicitud_cpuLibre); // desperta a al hilo "ejecutar_proceso"
+
 
 	return 0;
 }
@@ -198,77 +219,60 @@ void* recibir_conexion(){
 //-----------------------------------------------------------------------------------------------------------
 
 
+//------- funcion encargado de recibir las rafagas de las CPU que vienen de: quantum/entrada_salida/fin---------
+int recibir_rafagas(){
 
-//------- HILO encargado de recibir las rafagas de las CPU que vienen de: quantum/entrada_salida/fin---------
-
-
-void* recibir_rafagas(){
 
 	t_CPU *nodo_cpu;
 	t_PCB *PCB_recibido;
 	t_PCB *PCB;
 	char llegada; // "Quantum", "Bloqueado" y "Fin"
-	int puertoConCambios=0;
 
-	while(1){
+	pthread_mutex_lock(&cpuss);
 
-		read_fds = master; // backup de mi descriptores de archivo.
+	//una vez que encontramos el puerto, lo saco con "puertoConCambios" al nodo de la lista
+	nodo_cpu= list_find(CPUs,(void*)(buscar_por_puerto)); // "puertoConCambios" es la variable gloval, esta en el .h
 
-		// select se bloque hasta que le llegan "mensajitos".
-		select(fdmax+1, &read_fds, NULL, NULL, NULL);
-		for(puertoConCambios = 0; puertoConCambios <= fdmax; puertoConCambios++) {
+	// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
+	recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
-			// preguntar a todos los puertos de "read_fds" si recibieron mensajes.
-			if (FD_ISSET(puertoConCambios, &read_fds)) { //pregunta si "puertoConCambios" está en el conjunto y si hubo cambio.
-
-				break; // encontramos el puerto donde hubo cambios, "puertoConCambios" es el puerto con cambios.
-				// salgo del for.
-			}
-		}
-
-		pthread_mutex_lock(&cpuss);
-
-		//una vez que encontramos el puerto, lo saco con "puertoConCambios" al nodo de la lista
-		nodo_cpu= list_find(CPUs,(void*)(buscar_por_puerto)); // "puertoConCambios" es la variable gloval, esta en el .h
-
-		// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
-		recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
-
-		PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
+	PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
 
 
-		pthread_mutex_lock(&pcbs);
+	pthread_mutex_lock(&pcbs);
 
-		// buscar id de proceso en "lista_de_PCB"
-		PCB =list_get(lista_de_PCB, PCB_recibido->id - 1);
+	// buscar id de proceso en "lista_de_PCB"
+	PCB =list_get(lista_de_PCB, PCB_recibido->id - 1);
 
-		*PCB = *PCB_recibido; // actualizo PCB ---> la magia de c =)
+	*PCB = *PCB_recibido; // actualizo PCB ---> la magia de c =)
 
 
 
-		switch (llegada) {
-		  case   'Q':
-		      llega_quantum(PCB);	       break; // va a meter ese proceso a la cola de redy y actualizar PCB
-		  case   'B':
-			  llega_entrada_salida(PCB);   break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
-		  case   'F':
-		      llega_de_fin(PCB);	       break; // unicamente actualiza el PCB del proceso llegante
+	switch (llegada) {
+	  case   'Q':
+	      llega_quantum(PCB);	       break; // va a meter ese proceso a la cola de redy y actualizar PCB
+	  case   'B':
+		  llega_entrada_salida(PCB);   break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
+	  case   'F':
+	      llega_de_fin(PCB);	       break; // unicamente actualiza el PCB del proceso llegante
 
-		}
-
-		pthread_mutex_unlock(&pcbs);
-
-		// agregar esa CPU como disponible();
-		nodo_cpu->disponibilidad = 1;
-
-		pthread_mutex_unlock(&cpuss);
-
-		free(PCB_recibido);
-
-		sem_post(&solicitud_cpuLibre); // desperta a al hilo "ejecutar_proceso"
 	}
 
+	pthread_mutex_unlock(&pcbs);
+
+	// agregar esa CPU como disponible();
+	nodo_cpu->disponibilidad = 1;
+
+	pthread_mutex_unlock(&cpuss);
+
+	free(PCB_recibido);
+
+	sem_post(&solicitud_cpuLibre); // desperta a al hilo "ejecutar_proceso"
+
+	return 0;
+
 }
+
 
 int llega_quantum(t_PCB *PCB){
 
@@ -281,6 +285,8 @@ int llega_quantum(t_PCB *PCB){
 	// actualizo el PCB
 	PCB->estado = 'R'; // le cambio el valor que esta en memoria dinamica
 
+	sem_post(&solicitud_ejecucion);
+
 	return 0;
 
 }
@@ -292,7 +298,6 @@ int llega_entrada_salida(t_PCB *PCB){
 	queue_push(procesos_bloqueados,id_create(PCB->id ));
 
 	pthread_mutex_unlock(&bloqueados);
-
 
 	// actualizo el PCB
 	PCB->estado = 'B'; // le cambio el valor que esta en memoria dinamica
@@ -413,11 +418,14 @@ void* ejecutar_proceso(){
 int menu(void) {
 
 	int opcion;
+	char opchar[2];
 
 	while(1) // el menu tiene que estar presente siempre
 
 	{
 		 // limpiar pantalla
+
+		memset(opchar, '\0', 2);
 
 		opcion = 0;
 
@@ -440,9 +448,11 @@ int menu(void) {
 			printf("#     5) Salir                                                 #\n");
 			printf("#                                                              #\n");
 			printf("################################################################\n");
-			printf("################################################################\n");
+			printf("################################################################\n\n\n");
 
-		 scanf("%d",&opcion);
+			scanf("%s", opchar);
+
+			opcion = atoi(opchar);
 
 		 switch (opcion) {
 			case 1:
@@ -456,7 +466,7 @@ int menu(void) {
 			case 5:
 			   return 0;	    break;
 
-			default: printf("Opción incorrecta. Por favor ingrese una opción del 1 al 4 \n"); break;
+			default: printf("Opción incorrecta. Por favor ingrese una opción del 1 al 4 \n \n \n"); break;
 		  }
 
 	}
@@ -465,3 +475,61 @@ int menu(void) {
 
 }
 
+void crear_lista(){
+
+	lista_de_PCB = list_create(); //Crea la lista_de_PCB
+	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
+	CPUs = list_create(); // crea lista de CPUs conectadas
+	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
+}
+
+void inicializar_semaforos(){
+
+	//Declaración de Mutex.
+		pthread_mutex_init(&pcbs,NULL);
+		pthread_mutex_init(&cpuss,NULL);
+		pthread_mutex_init(&ready,NULL);
+		pthread_mutex_init(&bloqueados,NULL);
+
+		// Inicialización de Semáforos en 0.
+		sem_init(&solicitud_ejecucion, 1, 0);
+		sem_init(&solicitud_cpuLibre, 1, 0);
+		sem_init(&solicitud_deBloqueo, 1, 0);
+
+}
+
+void liberar_memoria(){
+
+
+
+	//destruir hilos
+	//destruir listas.todo lo q este en memoria dinamica.
+	pthread_mutex_destroy(&pcbs);
+	pthread_mutex_destroy(&cpuss);
+	pthread_mutex_destroy(&ready);
+	pthread_mutex_destroy(&bloqueados);
+
+
+	sem_destroy(&solicitud_ejecucion);
+	sem_destroy(&solicitud_cpuLibre);
+	sem_destroy(&solicitud_deBloqueo);
+
+	liberarSocket(socketEscucha);
+
+}
+
+void liberar_puertos(){
+
+	t_CPU* nodo_cpu;
+	int tamano;
+	int i;
+
+	tamano = list_size(CPUs);
+
+	for(i = 0; i <= tamano; i++) {
+
+		nodo_cpu =list_get(CPUs, i);
+		liberarSocket(nodo_cpu->puerto);
+	}
+
+}
