@@ -79,13 +79,8 @@ tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDe
  }
 
 
+void liberar_pcb(t_PCB *PCB){
 
-int buscar_por_puerto(t_CPU *nodo){
-int puertoConCambios;
-	if(nodo->puerto == puertoConCambios){
+	free(PCB);
 
-		return 1;
-	}
-
-	return 0;
 }
