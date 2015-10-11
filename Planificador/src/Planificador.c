@@ -84,6 +84,7 @@ int main(void) {
 
 	liberar_memoria();
 
+	printf("fin =) ");
 	return 0;
 }
 
@@ -114,7 +115,6 @@ int correr_path(void){
 	queue_push(procesos_en_ready,id_create(contador_de_id_procesos));
 
 	pthread_mutex_unlock(&ready);
-
 
 	printf("Proceso %s en ejecucion....\n", path);
 
@@ -236,7 +236,7 @@ int recibir_rafagas(){
 	// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
 	recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
-	PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
+	//PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
 
 
 	pthread_mutex_lock(&pcbs);
@@ -374,6 +374,7 @@ void* ejecutar_proceso(){
 
 	int *id;
 	t_PCB *nodo_pcb;
+	t_PCB pcb;
 	t_CPU * nodo_cpu;
 
 	while(1){
@@ -393,17 +394,19 @@ void* ejecutar_proceso(){
 
 		nodo_pcb->estado = 'E'; // le cambio el valor que esta en memoria dinamica
 
+		pcb = *nodo_pcb;
+
+		pthread_mutex_unlock(&pcbs);
+
 		pthread_mutex_lock(&cpuss);
 
 		//buscar_CPU_disponible. Esta funcion me devuelve un puerto libre
 		nodo_cpu=list_find(CPUs,(void*)diponibilidad); // siempre tiene q haber un puerto libre, o explota el programa
 
-		// mandar_PCB_al_cpu();
-
-		pthread_mutex_unlock(&pcbs);
+		//enviarPCB(nodo_cpu->puerto,pcb);
 
 		// seteo esa cpu como ocupada
-		nodo_cpu->puerto = 0;
+		nodo_cpu->disponibilidad = 0;
 
 		pthread_mutex_unlock(&cpuss);
 
@@ -457,12 +460,12 @@ int menu(void) {
 		 switch (opcion) {
 			case 1:
 			   correr_path();	break; // las demas funciones las puedo desarrollar a lo ultimo
-			/*case 2:
-			   finalizar_PID(); break;
+			//case 2:
+			   //finalizar_PID(); break;
 			case 3:
 			   ps();	        break;
-			case 4:
-			   cpu();	        break;*/
+			//case 4:
+			   //cpu();	        break;
 			case 5:
 			   return 0;	    break;
 
@@ -473,6 +476,29 @@ int menu(void) {
 
  return 0;
 
+}
+
+void ps(){
+
+	int i=0;
+	t_PCB *PCB;
+	int tamano;
+	char timer[1];
+
+	pthread_mutex_lock(&pcbs);
+
+	tamano = list_size(lista_de_PCB);
+
+
+	for(i = 0; i < tamano; i++) {
+
+		PCB =list_get(lista_de_PCB, i);
+		printf("mProc %d: %s --> %c \n", PCB->id,PCB->path,PCB->estado);
+	}
+
+	pthread_mutex_unlock(&pcbs);
+
+	scanf("%s",timer);
 }
 
 void crear_lista(){
@@ -501,6 +527,10 @@ void inicializar_semaforos(){
 void liberar_memoria(){
 
 
+	liberarSocket(socketEscucha);
+
+	list_destroy_and_destroy_elements(CPUs,(void*)liberar_pcb);
+
 
 	//destruir hilos
 	//destruir listas.todo lo q este en memoria dinamica.
@@ -514,7 +544,7 @@ void liberar_memoria(){
 	sem_destroy(&solicitud_cpuLibre);
 	sem_destroy(&solicitud_deBloqueo);
 
-	liberarSocket(socketEscucha);
+
 
 }
 
@@ -526,10 +556,11 @@ void liberar_puertos(){
 
 	tamano = list_size(CPUs);
 
-	for(i = 0; i <= tamano; i++) {
+	for(i = 0; i < tamano; i++) {
 
 		nodo_cpu =list_get(CPUs, i);
 		liberarSocket(nodo_cpu->puerto);
+		free(nodo_cpu);
 	}
 
 }
