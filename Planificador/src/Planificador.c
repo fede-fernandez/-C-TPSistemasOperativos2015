@@ -35,7 +35,7 @@ fd_set master; // conjunto maestro de descriptores de fichero
 fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
 int fdmax = 0; // número máximo de descriptores de fichero
 
-
+int puertoConCambios; // puerto donde hubo cambios
 
 //semaforos Mutex---------------
 
@@ -135,8 +135,6 @@ void* recibir_cpu(){
 	FD_ZERO(&master); // borra los conjuntos maestro y temporal
 	FD_ZERO(&read_fds);
 
-	int puertoConCambios=0;
-
 	socketEscucha = crearSocket();
 	asociarAPuerto(socketEscucha,puerto);
 
@@ -152,6 +150,8 @@ void* recibir_cpu(){
 	recibir_conexion();
 
 	while(1){
+
+		puertoConCambios=0;
 
 		read_fds = master; // backup de mi descriptores de archivo.
 
@@ -236,7 +236,7 @@ int recibir_rafagas(){
 	// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
 	recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
-	//PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
+	PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
 
 
 	pthread_mutex_lock(&pcbs);
@@ -508,6 +508,18 @@ void crear_lista(){
 	CPUs = list_create(); // crea lista de CPUs conectadas
 	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
 }
+
+
+int buscar_por_puerto(t_CPU *nodo){
+
+	if(nodo->puerto == puertoConCambios){
+
+		return 1;
+	}
+
+	return 0;
+}
+
 
 void inicializar_semaforos(){
 
