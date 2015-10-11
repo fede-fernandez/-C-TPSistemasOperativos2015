@@ -21,7 +21,7 @@
 #define ALGORITMO_PLANIFICACION "ALGORITMO_PLANIFICACION"
 #define QUANTUM "QUANTUM"
 
-extern int puertoConCambios; // puerto donde hubo cambios
+
 
 typedef struct{
 	int puertoEscucha;
@@ -52,6 +52,8 @@ void inicializar_semaforos();
 void liberar_memoria();
 void crear_lista();
 void liberar_puertos();
+
+void liberar_pcb(t_PCB *PCB);
 //-------Funciones HILOS prototipadas----------------
 
 
@@ -77,6 +79,8 @@ void* ejecutar_proceso();
 int menu(void) ;
 
 int correr_path(void);
+
+void ps();
 //-------------------------------------------------------------------
 
 tipoConfigPlanificador* crearConfigPlanificador();
