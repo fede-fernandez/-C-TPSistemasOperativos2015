@@ -49,7 +49,7 @@ typedef struct{
 
 
 void inicializar_semaforos();
-void liberar_memoria();
+int liberar_memoria();
 void crear_lista();
 void liberar_puertos();
 
@@ -102,6 +102,10 @@ int diponibilidad(t_CPU * nodo);
 
 int buscar_por_puerto(t_CPU *nodo );
 //-------------------------------------------------------
+
+void enviarPCB2(int socketCliente,t_PCB pcb);
+
+t_PCB recibirPCB2(int socketEnviador);
 
 
 #endif /* FUNCIONESPLANIFICADOR_H_ */
