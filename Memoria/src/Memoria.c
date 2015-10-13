@@ -52,6 +52,8 @@ tipoEstructuraMemoria datosMemoria;
 
 	datosMemoria.cpusATratar = &listaFiltrada;
 
+	setearEstructuraMemoria(&datosMemoria);
+
 //-------------END OF FERNILANDIA-----------------------------------
 
 	asociarAPuerto(socketParaCpus,configuracion->puertoDeEscucha);
@@ -68,7 +70,7 @@ tipoEstructuraMemoria datosMemoria;
 
 		//hayCpuParaConexion = filtrarListas(listaPrincipal,listaFiltrada);
 
-		select(datosMemoria.maximoSocket,&listaFiltrada,NULL,NULL,NULL);
+		select(datosMemoria.maximoSocket+1,&listaFiltrada,NULL,NULL,NULL);
 
 		if(FD_ISSET(socketParaCpus,&listaFiltrada)){
 			socketCpuEntrante = crearSocketParaAceptarSolicitudes(socketParaCpus);

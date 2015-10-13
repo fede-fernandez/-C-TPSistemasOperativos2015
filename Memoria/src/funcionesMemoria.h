@@ -62,6 +62,10 @@ typedef struct{
 	void* contenido;
 }tipoRAM;
 
+tipoEstructuraMemoria* datosMemoria;
+
+void setearEstructuraMemoria(tipoEstructuraMemoria*);
+
 /***************************FUNCIONES*********************************************/
 
 tipoConfigMemoria* crearConfigMemoria();
@@ -70,9 +74,9 @@ void destruirConfigMemoria(tipoConfigMemoria* estructuraDeConfiguracion);
 
 tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeConfiguracion);
 
-void tratarPeticion(tipoEstructuraMemoria* datosMemoria,int cpuAtendida);
+void tratarPeticion(int cpuAtendida);
 
-void tratarPeticiones(tipoEstructuraMemoria* datosMemoria);
+void tratarPeticiones();
 
 /**************INSTRUCCIONES*******************/
 
@@ -80,19 +84,21 @@ void tratarPeticiones(tipoEstructuraMemoria* datosMemoria);
 //INICIAR
 /////////////////
 
-int puedoReservarEnSWAP(tipoInstruccion instruccion, int socketSwap, tipoRespuesta* respuesta);
+int obtenerUltimaPagina(int pid);
 
-int puedoReservarEnRAM(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria);
+int puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta* respuesta);
 
-void reservarMemoriaEnRam(tipoInstruccion instruccion, tipoEstructuraMemoria* datosMemoria);
+int puedoReservarEnRAM(tipoInstruccion instruccion);
 
-int estaHabilitadaLaTLB(tipoConfigMemoria* configuracion);
+void reservarMemoriaEnRam(tipoInstruccion instruccion);
 
-int obtenerPosicionEnRAM(t_list* listaRAM, tipoRAM* instanciaRAM);
+int estaHabilitadaLaTLB();
 
-void reservarMemoriaEnTLB(tipoTLB* instanciaTLB, t_list* listaTLB, tipoConfigMemoria* configuracion);
+int obtenerPosicionEnRAM(tipoRAM* instanciaRAM);
 
-void reservarMemoriaParaProceso(tipoInstruccion instruccion,tipoEstructuraMemoria* datosMemoria, int cpuATratar);
+void reservarMemoriaEnTLB(tipoTLB* instanciaTLB);
+
+void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar);
 
 //////////////////
 //LEER PAGINA
@@ -102,10 +108,10 @@ int buscarPaginaEnRam(tipoInstruccion instruccion, char* contenidoDePagina);
 
 int buscarPaginaEnSwap(tipoInstruccion instruccion, char* contenidoDePagina, int socketSwap);
 
-void enviarPaginaACPU(tipoInstruccion instruccion, char* contenidoDePagina);
+void enviarPaginaACPU(char* contenidoDePagina,int socketCpu);
 
 void pedirPaginaDesdeSwapARam(tipoInstruccion instruccion, char* contenidoDePagina, int socketSwap);
 
-void leerPagina(tipoInstruccion instruccion, int socketSwap);
+void leerPagina(tipoInstruccion instruccion,int socketCpu);
 
 #endif /* FUNCIONESMEMORIA_H_ */
