@@ -39,10 +39,12 @@ void destruirConfigCPU(tipoConfigCPU* estructuraDeConfiguracion);
 
 
 /************Funciones principales del CPU************/
-int ejecutarPrograma(tipoPCB PCB, int tiempoDeRetardo);
+int ejecutarPrograma(tipoPCB* PCB, int quantum, int tiempoDeRetardo);
 FILE* abrirProgramaParaLectura(char* rutaDelPrograma);
 int ejecutarInstruccion(char* instruccion, int idDeProceso);
 int longitudDeStringArray(char** stringArray);
+tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto);
+
 
 /*Funciones mAnsisOp*/
 int instruccionIniciar(int numeroDePaginas, int idDeProceso);
