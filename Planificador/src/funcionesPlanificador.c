@@ -84,3 +84,35 @@ void liberar_pcb(t_PCB *PCB){
 	free(PCB);
 
 }
+
+
+void enviarPCB2(int socketReceptor,t_PCB pcb){
+
+	enviarMensaje(socketReceptor,&pcb.id,sizeof(int));
+	enviarMensaje(socketReceptor,&pcb.pc,sizeof(int));
+	enviarMensaje(socketReceptor,&pcb.estado,sizeof(char));
+	enviarMensaje(socketReceptor,&pcb.path,sizeof(char[30]));
+
+}
+
+t_PCB recibirPCB2(int socketEnviador){
+
+	t_PCB pcb;
+	int id;
+	int pc;
+	char estado;
+	char path[30];
+
+	recibirMensaje(socketEnviador, &id, sizeof(int));
+	recibirMensaje(socketEnviador, &pc, sizeof(int));
+	recibirMensaje(socketEnviador, &estado, sizeof(char));
+	recibirMensaje(socketEnviador, &path, sizeof(path));
+
+	pcb.id = id;
+	pcb.pc = pc;
+	pcb.estado = estado;
+    memset(pcb.path, '\0', 30);
+    strcpy(pcb.path,path);
+
+	return pcb;
+}

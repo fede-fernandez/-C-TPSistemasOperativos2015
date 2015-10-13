@@ -13,8 +13,6 @@
 #include <commonsDeAsedio/estructuras.h>
 
 
-
-
 // VARIABLES GLOBALES <-------------------
 
 int contador_de_id_procesos = 0; // para saber cuantos procesos hay en el sistema
@@ -120,7 +118,7 @@ int correr_path(void){
 
 	sem_post(&solicitud_ejecucion);
 
-	sleep(1);
+	//sleep(1);
 
 	return 0;
 }
@@ -193,6 +191,7 @@ int recibir_conexion(){
 
 		recibirMensaje(socketCpu, &id, sizeof(int));// recibo id de CPU
 
+
 		pthread_mutex_lock(&cpuss);
 
 		list_add(CPUs, cpu_create(id,1,socketCpu)); // guardo en la lista
@@ -224,7 +223,7 @@ int recibir_rafagas(){
 
 
 	t_CPU *nodo_cpu;
-	t_PCB *PCB_recibido;
+	t_PCB PCB_recibido;
 	t_PCB *PCB;
 	char llegada; // "Quantum", "Bloqueado" y "Fin"
 
@@ -236,15 +235,15 @@ int recibir_rafagas(){
 	// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
 	recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
-	PCB_recibido = recibirPCB(nodo_cpu->puerto); // recibe el PCB
+	PCB_recibido = recibirPCB2(nodo_cpu->puerto); // recibe el PCB
 
 
 	pthread_mutex_lock(&pcbs);
 
 	// buscar id de proceso en "lista_de_PCB"
-	PCB =list_get(lista_de_PCB, PCB_recibido->id - 1);
+	PCB =list_get(lista_de_PCB, PCB_recibido.id - 1);
 
-	*PCB = *PCB_recibido; // actualizo PCB ---> la magia de c =)
+	*PCB = PCB_recibido; // actualizo PCB ---> la magia de c =)
 
 
 
@@ -264,8 +263,6 @@ int recibir_rafagas(){
 	nodo_cpu->disponibilidad = 1;
 
 	pthread_mutex_unlock(&cpuss);
-
-	free(PCB_recibido);
 
 	sem_post(&solicitud_cpuLibre); // desperta a al hilo "ejecutar_proceso"
 
@@ -337,14 +334,12 @@ void* bloquear_procesos(){
 		// sacar un proceso de la cola de "procesos_bloqueados" (modificando la lista)
 		nodo_bloqueado = queue_pop(procesos_bloqueados);
 
-		pthread_mutex_unlock(&bloqueados);
-
 		sleep(nodo_bloqueado->tiempo);
 
 		pthread_mutex_lock(&pcbs);
 
-		// una vez transcurrido ese tiempo buscar con la id en "lista_de_PCB" y sacar su PCB (sin modificar la lista)
-		nodo_pcb =list_get(lista_de_PCB, nodo_bloqueado->id - 1); // se modifica la lista ?? (no se tiene q modificar!)
+		// una vez transcurrido ese tiempo buscar con la id en "lista_de_PCB" y sacar su PCB
+		nodo_pcb =list_get(lista_de_PCB, nodo_bloqueado->id - 1);
 
 		// modificar su estado de: bloqueado a--> listo y meter de nuevo en "lista_de_PCB"
 		nodo_pcb->estado = 'R'; // le cambio el valor que esta en memoria dinamica
@@ -357,7 +352,7 @@ void* bloquear_procesos(){
 
 		pthread_mutex_unlock(&ready);
 
-		free(nodo_bloqueado); // saco el nodo de memoria dinamica
+		pthread_mutex_unlock(&bloqueados);
 
 		sem_post(&solicitud_ejecucion);
 
@@ -404,6 +399,7 @@ void* ejecutar_proceso(){
 		nodo_cpu=list_find(CPUs,(void*)diponibilidad); // siempre tiene q haber un puerto libre, o explota el programa
 
 		//enviarPCB(nodo_cpu->puerto,pcb);
+		enviarPCB2(nodo_cpu->puerto,pcb);
 
 		// seteo esa cpu como ocupada
 		nodo_cpu->disponibilidad = 0;
@@ -536,13 +532,13 @@ void inicializar_semaforos(){
 
 }
 
-void liberar_memoria(){
+int liberar_memoria(){
 
 
 	liberarSocket(socketEscucha);
 
-	list_destroy_and_destroy_elements(CPUs,(void*)liberar_pcb);
 
+	list_destroy_and_destroy_elements(CPUs,(void*)liberar_pcb);
 
 	//destruir hilos
 	//destruir listas.todo lo q este en memoria dinamica.
@@ -556,7 +552,7 @@ void liberar_memoria(){
 	sem_destroy(&solicitud_cpuLibre);
 	sem_destroy(&solicitud_deBloqueo);
 
-
+return 0;
 
 }
 
