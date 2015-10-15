@@ -49,6 +49,7 @@ typedef struct{
 	tipoConfigMemoria* configuracion;
 	fd_set* cpusATratar;
 	t_list* administradorPaginas;
+	bool* memoriaActiva;
 }tipoEstructuraMemoria;
 
 typedef struct{

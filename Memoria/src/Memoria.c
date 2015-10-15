@@ -55,6 +55,8 @@ tipoEstructuraMemoria datosMemoria;
 
 	datosMemoria.administradorPaginas = listaAdministracionPaginas;
 
+	datosMemoria.memoriaActiva = &memoriaActiva;
+
 	setearEstructuraMemoria(&datosMemoria);
 
 //-------------END OF FERNILANDIA-----------------------------------
@@ -84,7 +86,6 @@ tipoEstructuraMemoria datosMemoria;
 		tratarPeticiones(&datosMemoria);
 		//if(!list_is_empty(listaFiltrada))
 		//tratarPeticiones(socketParaCpus,socketParaSwap,listaFiltrada, listaTLB, listaRAM, configuracion);
-
 	}
 
 	destruirConfigMemoria(configuracion);
