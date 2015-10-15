@@ -66,7 +66,7 @@ void tratarPeticion(int cpuAtendida){
 			reservarMemoriaParaProceso(*instruccion,cpuAtendida);
 			break;
 
-		case LEER://h
+		case LEER:
 
 			break;
 
@@ -113,6 +113,9 @@ int puedoReservarEnRAM(tipoInstruccion instruccion){
 
 	if(paginasTotales <= datosMemoria->configuracion->cantidadDeMarcos && instruccion.nroPagina <= datosMemoria->configuracion->maximoDeMarcosPorProceso) return 1;
 	else return 0;
+
+
+	//algoritmo fifo LRU
 }
 
 void reservarMemoriaEnRam(tipoInstruccion instruccion){
@@ -139,7 +142,7 @@ void reservarMemoriaEnRam(tipoInstruccion instruccion){
 
 		reservarMemoriaEnTLB(instanciaTLB);
 	}
-	}
+}
 
 
 
@@ -321,5 +324,13 @@ void* serializarRespuestaCpu(tipoRespuesta respuesta){
 	return buffer;
 }
  */
+
+
+void* tuvieja;
+
+int tamanio = sizeof(*tuvieja);
+
+
+
 
 

@@ -51,16 +51,24 @@ typedef struct{
 }tipoEstructuraMemoria;
 
 typedef struct{
-	int instruccion;
+	int pid;
 	int numeroDePagina;
 	int posicionEnRAM;
 }tipoTLB;
 
 typedef struct{
-	int instruccion;
+	int pid;
 	int numeroDePagina;
-	void* contenido;
+	bool modificado;
+	char* contenido;
 }tipoRAM;
+
+typedef struct{
+	int pid;
+	int paginasPedidas;
+	int paginasAsignadas;
+}tipoAdministracionPaginas;
+
 
 tipoEstructuraMemoria* datosMemoria;
 
