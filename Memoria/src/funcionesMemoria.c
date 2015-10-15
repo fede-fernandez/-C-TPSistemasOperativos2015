@@ -1,14 +1,13 @@
 #include "funcionesMemoria.h"
 #include <commonsDeAsedio/estructuras.h>
 
-
-void destruirConfigMemoria(tipoConfigMemoria* estructuraDeConfiguracion){
+void destruirConfigMemoria(tipoConfigMemoria* estructuraDeConfiguracion) {
 	free(estructuraDeConfiguracion->ipSWAP);
 	free(estructuraDeConfiguracion->TLBHabilitada);
 	free(estructuraDeConfiguracion);
 }
 
-tipoConfigMemoria* crearConfigMemoria(){
+tipoConfigMemoria* crearConfigMemoria() {
 	tipoConfigMemoria* cfg = malloc(sizeof(tipoConfigMemoria));
 	cfg->ipSWAP = string_new();
 	cfg->TLBHabilitada = string_new();
@@ -18,38 +17,44 @@ tipoConfigMemoria* crearConfigMemoria(){
 
 /*********************ESTRUCTURAS*************************/
 
-tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeConfiguracion){
+tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(
+		char* rutaDelArchivoDeConfiguracion) {
 
 	t_config* archivoCfg = config_create(rutaDelArchivoDeConfiguracion);
 	tipoConfigMemoria* cfg = crearConfigMemoria();
 
-	validarErrorYAbortar(config_has_property(archivoCfg,PUERTO_ESCUCHA)
-			&& config_has_property(archivoCfg,IP_SWAP)
-			&& config_has_property(archivoCfg,PUERTO_SWAP)
-			&& config_has_property(archivoCfg,MAXIMO_MARCOS_POR_PROCESO)
-			&& config_has_property(archivoCfg,CANTIDAD_MARCOS)
-			&& config_has_property(archivoCfg,TAMANIO_MARCO)
-			&& config_has_property(archivoCfg,ENTRADAS_TLB)
-			&& config_has_property(archivoCfg,TLB_HABILITADA)
-			&& config_has_property(archivoCfg,RETARDO_MEMORIA),
+	validarErrorYAbortar(
+			config_has_property(archivoCfg, PUERTO_ESCUCHA)
+					&& config_has_property(archivoCfg, IP_SWAP)
+					&& config_has_property(archivoCfg, PUERTO_SWAP)
+					&& config_has_property(archivoCfg,
+					MAXIMO_MARCOS_POR_PROCESO)
+					&& config_has_property(archivoCfg, CANTIDAD_MARCOS)
+					&& config_has_property(archivoCfg, TAMANIO_MARCO)
+					&& config_has_property(archivoCfg, ENTRADAS_TLB)
+					&& config_has_property(archivoCfg, TLB_HABILITADA)
+					&& config_has_property(archivoCfg, RETARDO_MEMORIA),
 			"Las claves del archivo de configuracion no coinciden con las que requiere el Administrador de Memoria.");
 
-	cfg->puertoDeEscucha = config_get_int_value(archivoCfg,PUERTO_ESCUCHA);
-	cfg->ipSWAP = string_duplicate(config_get_string_value(archivoCfg,IP_SWAP));
-	cfg->puertoSWAP = config_get_int_value(archivoCfg,PUERTO_SWAP);
-	cfg->maximoDeMarcosPorProceso = config_get_int_value(archivoCfg,MAXIMO_MARCOS_POR_PROCESO);
-	cfg->cantidadDeMarcos = config_get_int_value(archivoCfg,CANTIDAD_MARCOS);
-	cfg->tamanioDeMarco = config_get_int_value(archivoCfg,TAMANIO_MARCO);
-	cfg->entradasDeTLB = config_get_int_value(archivoCfg,ENTRADAS_TLB);
-	cfg->TLBHabilitada = string_duplicate(config_get_string_value(archivoCfg,TLB_HABILITADA));
-	cfg->retardoDeMemoria = config_get_int_value(archivoCfg,RETARDO_MEMORIA);
+	cfg->puertoDeEscucha = config_get_int_value(archivoCfg, PUERTO_ESCUCHA);
+	cfg->ipSWAP = string_duplicate(
+			config_get_string_value(archivoCfg, IP_SWAP));
+	cfg->puertoSWAP = config_get_int_value(archivoCfg, PUERTO_SWAP);
+	cfg->maximoDeMarcosPorProceso = config_get_int_value(archivoCfg,
+	MAXIMO_MARCOS_POR_PROCESO);
+	cfg->cantidadDeMarcos = config_get_int_value(archivoCfg, CANTIDAD_MARCOS);
+	cfg->tamanioDeMarco = config_get_int_value(archivoCfg, TAMANIO_MARCO);
+	cfg->entradasDeTLB = config_get_int_value(archivoCfg, ENTRADAS_TLB);
+	cfg->TLBHabilitada = string_duplicate(
+			config_get_string_value(archivoCfg, TLB_HABILITADA));
+	cfg->retardoDeMemoria = config_get_int_value(archivoCfg, RETARDO_MEMORIA);
 
 	config_destroy(archivoCfg);
 
 	return cfg;
 }
 
-void setearEstructuraMemoria(tipoEstructuraMemoria* datos){
+void setearEstructuraMemoria(tipoEstructuraMemoria* datos) {
 
 	datosMemoria = datos;
 
@@ -57,39 +62,40 @@ void setearEstructuraMemoria(tipoEstructuraMemoria* datos){
 
 /************************FUNCIONES********************************/
 
-void tratarPeticion(int cpuAtendida){
+void tratarPeticion(int cpuAtendida) {
 
 	tipoInstruccion* instruccion = recibirInstruccion(cpuAtendida);
 
 	switch (instruccion->instruccion) {
-		case INICIAR:
-			reservarMemoriaParaProceso(*instruccion,cpuAtendida);
-			break;
+	case INICIAR:
+		reservarMemoriaParaProceso(*instruccion, cpuAtendida);
+		break;
 
-		case LEER:
+	case LEER:
 
-			break;
+		break;
 
-		case ESCRIBIR:
+	case ESCRIBIR:
 
-			break;
+		break;
 
-		case ENTRADA_SALIDA:
+	case ENTRADA_SALIDA:
 
-			break;
+		break;
 
-		case FINALIZAR:
-			break;
+	case FINALIZAR:
+		quitarProceso(*instruccion, cpuAtendida);
+		break;
 	}
 }
 
-void tratarPeticiones(){
+void tratarPeticiones() {
 
 	int var;
-	for (var = 1; var <datosMemoria->maximoSocket; ++var) {
-		if(FD_ISSET(var,datosMemoria->cpusATratar))
-		tratarPeticion(var);
-		}
+	for (var = 1; var < datosMemoria->maximoSocket; ++var) {
+		if (FD_ISSET(var, datosMemoria->cpusATratar))
+			tratarPeticion(var);
+	}
 }
 
 /**************INSTRUCCIONES*******************/
@@ -97,240 +103,232 @@ void tratarPeticiones(){
 //////////////////
 //INICIAR
 /////////////////
-
-int puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta* respuesta){
-	enviarInstruccion(datosMemoria->socketSWAP,instruccion);
-		respuesta = recibirRespuesta(datosMemoria->socketSWAP);
-
-		if (respuesta->respuesta == PERFECTO)return 1;
-		else return 0;
-
-}
-
-int puedoReservarEnRAM(tipoInstruccion instruccion){
-
-	int paginasTotales = instruccion.nroPagina + list_size(datosMemoria->listaRAM);
-
-	if(paginasTotales <= datosMemoria->configuracion->cantidadDeMarcos && instruccion.nroPagina <= datosMemoria->configuracion->maximoDeMarcosPorProceso) return 1;
-	else return 0;
-
-
-	//algoritmo fifo LRU
-}
-
-void reservarMemoriaEnRam(tipoInstruccion instruccion){
-
-	//RAM
-	//int i;
-	if(puedoReservarEnRAM(instruccion)==1){
-
-		tipoRAM* instanciaDeRAM = malloc(datosMemoria->configuracion->tamanioDeMarco);
-
-	instanciaDeRAM->instruccion = instruccion.pid;
-
-	instanciaDeRAM->numeroDePagina = obtenerUltimaPagina(instruccion.pid)+1;
-
-	list_add(datosMemoria->listaRAM,instanciaDeRAM);
-
-	//TLB
-	if(estaHabilitadaLaTLB(datosMemoria->configuracion)){
-
-		tipoTLB* instanciaTLB = malloc(sizeof(tipoTLB));
-			instanciaTLB->instruccion = instruccion.pid;
-			instanciaTLB->numeroDePagina = instruccion.nroPagina;
-			instanciaTLB->posicionEnRAM = obtenerPosicionEnRAM(instanciaDeRAM);
-
-		reservarMemoriaEnTLB(instanciaTLB);
-	}
-}
-
-
-
-	/*for (i = 1; i <= instruccion.nroPagina; ++i) {
-
-		instanciaDeRAM = malloc(sizeof(tipoRAM));
-			instanciaDeRAM->numeroDePagina = i;
-			instanciaDeRAM->instruccion = instruccion.pid;
-
-		list_add(datosMemoria->listaRAM, instanciaDeRAM);
-	}/*///Creo que esta mal
-
-
-}
-
-int obtenerUltimaPagina(int pid){
-
-	int var,contador;
-
-	tipoRAM* instanciaRamActual;
-
-	for (var = list_size(datosMemoria->listaRAM)-1;var>=0; ++var) {
-
-		instanciaRamActual = list_get(datosMemoria->listaRAM,var);
-
-		if(instanciaRamActual->instruccion==pid)
-			break;
-	}
-
-	return instanciaRamActual->numeroDePagina;
-}
-
-int estaHabilitadaLaTLB(){
-	return string_equals_ignore_case(datosMemoria->configuracion->TLBHabilitada, "SI");
-}
-
-int obtenerPosicionEnRAM(tipoRAM* instanciaRAM){
-	tipoRAM* aux;
-	int i;
-	for(i=0; i < list_size(datosMemoria->listaRAM); ++i) {
-		aux = list_get(datosMemoria->listaRAM, i);
-
-		if(aux->instruccion == instanciaRAM->instruccion  && aux->numeroDePagina == instanciaRAM->numeroDePagina){
-			break; //ver si funciona porque no lo pude hacer de otra forma, C no me deja
-		}
-	}
-	return i;
-}
-
-void reservarMemoriaEnTLB(tipoTLB* instanciaTLB){
-
-	if(list_size(datosMemoria->listaTLB)< datosMemoria->configuracion->entradasDeTLB){
-		list_add(datosMemoria->listaTLB, instanciaTLB);
-	}
-	else{
-		//aca irian las funciones para actualizar la TLB sacando alguno viejo y poniendo el nuevo
-		//despues se lo tiene que ver
-	}
-}
-
-void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar){
+void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 
 	tipoRespuesta* respuesta;
 
-	if (puedoReservarEnSWAP(instruccion,respuesta)) {
+	if (puedoReservarEnSWAP(instruccion, respuesta)) {
 
-		if (puedoReservarEnRAM(instruccion))
-			reservarMemoriaEnRam(instruccion);
-		else{
-			//ver algoritmos para pasar procesos de ram a swap y liberar espacio para el nuevo proceso
-		}
+		tipoAdministracionPaginas* instanciaDeAdministracion;
+
+		instanciaDeAdministracion->pid = instruccion.pid;
+
+		instanciaDeAdministracion->paginasAsignadas = 0;
+
+		instanciaDeAdministracion->paginasPedidas = instruccion.nroPagina;
+
+		list_add(datosMemoria->administradorPaginas, instanciaDeAdministracion);
 	}
 
 	enviarRespuesta(cpuATratar, *respuesta);
+}
+
+bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta* respuesta) {
+
+	return instruccionASwapRealizada(instruccion, respuesta);
 }
 
 //////////////////
 //LEER PAGINA
 /////////////////
 
-int buscarPaginaEnRam(tipoInstruccion instruccion, char* contenidoDePagina){
+void enviarPaginaPedidaACpu(tipoInstruccion instruccion, int cpuATratar) {
 
-	int var;
-
-	tipoRAM* instanciaRamActual;
-
-	for (var = 0; var < list_size(datosMemoria->listaRAM); ++var) {//Necesito que me digan si esto buscaba la posicion de la pagina o q
-
-		instanciaRamActual = list_get(datosMemoria->listaRAM,var);
-
-		if(instanciaRamActual->contenido==contenidoDePagina&&instanciaRamActual->instruccion==instruccion.pid&&instanciaRamActual->numeroDePagina==instruccion.nroPagina)
-			break;
-	}
-	return var;
-}
-
-int buscarPaginaEnSwap(tipoInstruccion instruccion,char* contenidoDePagina, int socketSwap){
-	//Para que mierda es esta funcion??
-	return 1;
-}
-
-void enviarPaginaACPU(char* contenidoDePagina,int socketCpu){
-
-tipoRespuesta respuestaCpu;
-
-respuestaCpu.informacion = contenidoDePagina;
-
-respuestaCpu.respuesta = PERFECTO;
-
-enviarRespuesta(socketCpu,respuestaCpu);
-
-}
-
-void pedirPaginaDesdeSwapARam(tipoInstruccion instruccion, char* contenidoDePagina, int socketSwap){
-
-}
-
-void leerPagina(tipoInstruccion instruccion,int socketCpu){
+	tipoRespuesta* respuesta;
 
 	char* contenidoDePagina;
 
-	if (buscarPaginaEnRam(instruccion, contenidoDePagina)) {
-		enviarPaginaACPU(contenidoDePagina,socketCpu);
+	int posicionDePagEnRam = -1;
 
-	} else if (buscarPaginaEnSwap(instruccion, contenidoDePagina, datosMemoria->socketSWAP)) {
-			pedirPaginaDesdeSwapARam(instruccion, contenidoDePagina, datosMemoria->socketSWAP);
-			enviarPaginaACPU(contenidoDePagina,socketCpu);//La verdad no se que queria hacer brian aca pero hay codigo repetido!!
-			//gorenlpm, hace los scripts
-		} else {
-			//informar el error de alguna forma
+	int posicionDePagEnTLB = dondeEstaEnTLB(instruccion.nroPagina,instruccion.pid);
+
+	if (posicionDePagEnTLB >= 0) {
+
+		respuesta->respuesta = PERFECTO;
+
+		respuesta->informacion = list_get(datosMemoria->listaRAM,posicionDePagEnRam);
+
+	}
+
+	else {
+
+		posicionDePagEnRam = dondeEstaEnRam(instruccion.nroPagina,instruccion.pid);
+
+		if (posicionDePagEnRam >= 0) {
+
+			respuesta->respuesta = PERFECTO;
+
+			respuesta->informacion = list_get(datosMemoria->listaRAM,posicionDePagEnRam);
+
+			//agregar a la tlb :'(
 		}
+
+		else
+			traerPaginaDesdeSwap(instruccion, respuesta);
+
+	}
+
+	if (respuesta->respuesta == MANQUEADO)
+		destruirProceso(instruccion.pid);
+
+	enviarRespuesta(cpuATratar, *respuesta);
+
+}
+
+int dondeEstaEnRam(int nroPagina, int pid) {
+
+	int var, posicionDePagina = -1;
+
+	tipoRAM* estructuraRamActual;
+
+	for (var = 0; var < list_size(datosMemoria->listaRAM); ++var) {
+
+		estructuraRamActual = list_get(datosMemoria->listaRAM, var);
+
+		if (estructuraRamActual->numeroDePagina == nroPagina&& estructuraRamActual->pid == pid) {
+
+			posicionDePagina = var;
+
+			break;
+		}
+	}
+
+	return posicionDePagina;
+
+}
+
+int dondeEstaEnTLB(int nroPagina, int pid) {
+
+	int var, posicionDePagina = -1;
+
+	tipoTLB* estructuraTLBActual;
+
+	for (var = 0; var < list_size(datosMemoria->listaTLB); ++var) {
+
+		estructuraTLBActual = list_get(datosMemoria->listaRAM, var);
+
+		if (estructuraTLBActual->numeroDePagina == nroPagina&& estructuraTLBActual->pid == pid) {
+
+			posicionDePagina = estructuraTLBActual->posicionEnRAM;
+
+			break;
+		}
+	}
+
+	return posicionDePagina;
+}
+
+void traerPaginaDesdeSwap( tipoInstruccion instruccion, tipoRespuesta respuesta) {
+
+	//ejecutar algoritmos locos
+
+}
+
+void quitarPaginasDeTLB(int pid) {
+	int var, posicionEnTLB;
+	for (var = 0; var < cantidadDePaginasAsignadas(pid); ++var) {
+
+		posicionEnTLB = dondeEstaEnTLB(var, pid);
+
+		if (posicionEnTLB >= 0)
+			list_remove(datosMemoria->listaTLB,posicionEnTLB);
+	}
+
+}
+int cantidadDePaginasAsignadas(int pid){
+
+	int var,cantidadDePaginasAsignadas = 0;
+
+	tipoAdministracionPaginas* instanciaAdministracionActual;
+
+	for (var = 0; var < list_size(datosMemoria->administradorPaginas); ++var) {
+
+	instanciaAdministracionActual = list_get(datosMemoria->administradorPaginas,var);
+
+	if(instanciaAdministracionActual->pid==pid){
+
+		cantidadDePaginasAsignadas = instanciaAdministracionActual->paginasAsignadas;
+
+		break;
+		}
+	}
+
+	return cantidadDePaginasAsignadas;
+
+}
+
+void quitarPaginasDeRAM(int pid) {
+	int var;
+
+	for (var = 0; var < cantidadDePaginasAsignadas(pid); ++var) {
+
+		liberarEstructuraRAM(dondeEstaEnRam(var, pid));
+	}
+}
+
+void liberarEstructuraRAM(int posicionEnRam){
+
+	tipoRAM* instanciaRamActual = list_get(datosMemoria->listaRAM,posicionEnRam);
+
+	free(instanciaRamActual->contenido);
+
+	list_remove(datosMemoria->listaRAM,posicionEnRam);
 }
 
 //////////////////
 //ESCRIBIR PAGINA
 /////////////////
 
-/*
+////////////////////
+//FINALIZAR PROCESO
+////////////////////
 
-tipoInstruccion recibirInstruccionCpu(int socketCpu){
+bool instruccionASwapRealizada(tipoInstruccion instruccion,
+		tipoRespuesta* respuesta) {
 
-	size_t tamanioBloque;
+	enviarInstruccion(datosMemoria->socketSWAP, instruccion);
+	respuesta = recibirRespuesta(datosMemoria->socketSWAP);
 
-	recibirBloque(&tamanioBloque,socketCpu);
-
-	void* buffer = malloc(tamanioBloque);
-
-	recibirMensajeCompleto(socketCpu,buffer,tamanioBloque);
-
-	tipoInstruccion instruccionRecibida = deserializarInstruccion(tamanioBloque, buffer);
-
-	return instruccionRecibida;
+	return (respuesta->respuesta == PERFECTO);
 }
 
-tipoInstruccion deserializarInstruccion(size_t tamanioBloque,void* buffer){
+void quitarProceso(tipoInstruccion instruccion, int cpuaATratar) {
 
-	tipoInstruccion* instruccion;
+	tipoRespuesta* respuesta;
 
-	memcpy(buffer,instruccion->instruccion,sizeof(char));tamanioBloque-=sizeof(char);
-	memcpy(buffer+sizeof(char),(int*)instruccion->pid,sizeof(int));tamanioBloque-=sizeof(int);
-	deserializarIntYCadena((int*)instruccion->nroPagina,instruccion->texto,tamanioBloque,buffer+sizeof(char)+sizeof(int));
+	instruccionASwapRealizada(instruccion, respuesta);
 
-	return *instruccion;
+	if (respuesta->respuesta == PERFECTO) {
+
+		destruirProceso(instruccion.pid);
+	}
+
+	enviarRespuesta(cpuaATratar, *respuesta);
 }
 
-void* serializarRespuestaCpu(tipoRespuesta respuesta){
+void destruirProceso(int pid) {
 
-	size_t tamanioInformacion = strlen(respuesta.informacion);
+	quitarPaginasDeRAM(pid);
 
-	size_t tamanioBloque = tamanioInformacion+sizeof(char);
+	quitarPaginasDeTLB(pid);
 
-	void* buffer = malloc(tamanioBloque+sizeof(int));
-
-	memcpy(buffer,&tamanioBloque,sizeof(size_t));
-	memcpy(buffer+sizeof(size_t),&respuesta.respuesta,sizeof(char));
-	memcpy(buffer+sizeof(size_t)+sizeof(char),&tamanioInformacion,sizeof(size_t));
-	memcpy(buffer+2*sizeof(size_t)+sizeof(char),&respuesta.informacion,tamanioInformacion);
-
-	return buffer;
+	quitarAdministracionDePaginas(pid);
 }
- */
 
+void quitarAdministracionDePaginas(int pid){
 
-void* tuvieja;
+	int var;
 
-int tamanio = sizeof(*tuvieja);
+	tipoAdministracionPaginas* instanciaAdministracionPagina;
 
+	for (var = 0; var < list_size(datosMemoria->administradorPaginas); ++var) {
 
+		instanciaAdministracionPagina = list_get(datosMemoria->administradorPaginas,var);
 
-
+		if(instanciaAdministracionPagina->pid==pid){
+			list_remove(datosMemoria->administradorPaginas,var);
+			break;
+		}
+	}
+}
 

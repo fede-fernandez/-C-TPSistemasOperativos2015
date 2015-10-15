@@ -31,6 +31,7 @@ int main(void) {
 //--------------ACA EMPIEZA FERNILANDIA--------------------------
 	t_list* listaRAM = list_create();
 	t_list* listaTLB = list_create();
+	t_list* listaAdministracionPaginas = list_create();
 
 	fd_set listaPrincipal;
 	fd_set listaFiltrada;
@@ -51,6 +52,8 @@ tipoEstructuraMemoria datosMemoria;
 	datosMemoria.configuracion = configuracion;
 
 	datosMemoria.cpusATratar = &listaFiltrada;
+
+	datosMemoria.administradorPaginas = listaAdministracionPaginas;
 
 	setearEstructuraMemoria(&datosMemoria);
 

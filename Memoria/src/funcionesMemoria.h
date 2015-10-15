@@ -48,6 +48,7 @@ typedef struct{
 	int maximoSocket;
 	tipoConfigMemoria* configuracion;
 	fd_set* cpusATratar;
+	t_list* administradorPaginas;
 }tipoEstructuraMemoria;
 
 typedef struct{
@@ -94,7 +95,7 @@ void tratarPeticiones();
 
 int obtenerUltimaPagina(int pid);
 
-int puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta* respuesta);
+bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta* respuesta);
 
 int puedoReservarEnRAM(tipoInstruccion instruccion);
 
@@ -121,5 +122,14 @@ void enviarPaginaACPU(char* contenidoDePagina,int socketCpu);
 void pedirPaginaDesdeSwapARam(tipoInstruccion instruccion, char* contenidoDePagina, int socketSwap);
 
 void leerPagina(tipoInstruccion instruccion,int socketCpu);
+
+
+/////////////////////
+//FINALIZAR PROCESO
+/////////////////////
+
+bool instruccionASwapRealizada(tipoInstruccion instruccion,tipoRespuesta* respuesta);
+
+void quitarProceso(tipoInstruccion instruccion,int cpuaATratar);
 
 #endif /* FUNCIONESMEMORIA_H_ */
