@@ -82,7 +82,7 @@ int main(void) {
 
 	liberar_memoria();
 
-	printf("fin =) ");
+	printf("finn =) ");
 	return 0;
 }
 
@@ -376,7 +376,7 @@ void* ejecutar_proceso(){
 
 		sem_wait(&solicitud_ejecucion);
 
-		sem_wait(&solicitud_cpuLibre);;
+		sem_wait(&solicitud_cpuLibre);
 
 		pthread_mutex_lock(&ready);
 		id = queue_pop(procesos_en_ready); //sacar_primer_elemento_de_la_cola
@@ -497,13 +497,6 @@ void ps(){
 	scanf("%s",timer);
 }
 
-void crear_lista(){
-
-	lista_de_PCB = list_create(); //Crea la lista_de_PCB
-	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
-	CPUs = list_create(); // crea lista de CPUs conectadas
-	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
-}
 
 
 int buscar_por_puerto(t_CPU *nodo){
@@ -516,6 +509,15 @@ int buscar_por_puerto(t_CPU *nodo){
 	return 0;
 }
 
+// ---------------libero memoria y inicializo cosas
+
+void crear_lista(){
+
+	lista_de_PCB = list_create(); //Crea la lista_de_PCB
+	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
+	CPUs = list_create(); // crea lista de CPUs conectadas
+	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
+}
 
 void inicializar_semaforos(){
 
