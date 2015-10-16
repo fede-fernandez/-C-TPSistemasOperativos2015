@@ -46,21 +46,21 @@ tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfigura
 int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketParaPlanificador, int socketParaMemoria)
 {
 	int tipoDeSalida = 0; //Si es 1, corta la ejecución del while que ejecuta instrucciones
+	int instructionPointer = PCB->insPointer;
 	FILE* programa = abrirProgramaParaLectura(PCB->ruta);
 	char* programaEnMemoria = mmap(0, sizeof(programa), PROT_READ, MAP_SHARED, fileno(programa), 0);
 	char** instrucciones = string_split(programaEnMemoria, "\n");
 
 	if(quantum == 0) //FIFO
 	{
-		while(PCB.insPointer < longitudDeStringArray(instrucciones))
+		while(instructionPointer < longitudDeStringArray(instrucciones))
 		{
 			tipoDeSalida = ejecutarInstruccion(instrucciones[PCB->insPointer], PCB->pid, socketParaPlanificador, socketParaMemoria);
 			sleep(tiempoDeRetardo);
-			*PCB->insPointer = PCB->insPointer + 1;
+			instructionPointer++;
 			if(tipoDeSalida == 1)
 			{
-				fclose(programa);
-				return tipoDeSalida;
+				break;
 			}
 		}
 	}
@@ -72,18 +72,21 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketP
 		{
 			tipoDeSalida = ejecutarInstruccion(instrucciones[PCB->insPointer], PCB->pid, socketParaPlanificador, socketParaMemoria);
 			sleep(tiempoDeRetardo);
-			*PCB->insPointer = PCB->insPointer + 1;
+			instructionPointer++;
 			clock++;
 			if(tipoDeSalida == 1)
 			{
-				fclose(programa);
-				return tipoDeSalida;
+				break;
 			}
 		}
 		enviarMensaje(socketParaPlanificador, 'Q', sizeof(char));
 	}
-	return tipoDeSalida;
+	tipoPCB PCBRespuesta;
+	PCBRespuesta = *PCB;
+	PCBRespuesta.insPointer = instructionPointer;
+	enviarPCB(socketParaPlanificador, PCBRespuesta);
 	fclose(programa);
+	return tipoDeSalida;
 }
 
 FILE* abrirProgramaParaLectura(char* rutaDelPrograma)

@@ -51,12 +51,8 @@ void* CPU(int idCPU)
 		tipoPCB* PCB;
 		PCB = recibirPCB(socketParaPlanificador);
 
-
 		//Me llega una tarea del planificador
-		tipoPCB PCBRespuesta;
-		PCBRespuesta = *PCB;
-		ejecutarPrograma(PCBRespuesta, quantum, configuracion->retardo, socketParaPlanificador, socketParaMemoria);
-		enviarPCB(socketParaPlanificador, PCBRespuesta);
+		ejecutarPrograma(PCB, quantum, configuracion->retardo, socketParaPlanificador, socketParaMemoria);
 	}
 	liberarSocket(socketParaMemoria);
 	liberarSocket(socketParaPlanificador);
