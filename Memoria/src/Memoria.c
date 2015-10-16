@@ -9,13 +9,12 @@
 #include <unistd.h>
 //---------------------------------------------------------------
 #define maxConexionesEntrantes 10
-#define puertoSwap 7204
 
 int main(void) {
 
 //////////////////////////INICIALIZACION DE VARIABLES////////////////////////////////
 
-	tipoConfigMemoria* configuracion = cargarArchivoDeConfiguracionDeMemoria("cfgMemoria");
+	tipoConfigMemoria* configuracion = cargarArchivoDeConfiguracionDeMemoria("/home/alexis/git/tp-2015-2c-los-javimancos/Memoria/cfgMemoria");
 
 	int socketParaCpus = crearSocket();
 
@@ -23,10 +22,7 @@ int main(void) {
 
 	int socketCpuEntrante;
 
-	bool memoriaActiva = true;//,hayCpuParaConexion = false;
-
-	//t_list* listaPrincipal = list_create();
-	//t_list* listaFiltrada = list_create();
+	bool memoriaActiva = true;
 
 //--------------ACA EMPIEZA FERNILANDIA--------------------------
 	t_list* listaRAM = list_create();
@@ -63,6 +59,10 @@ tipoEstructuraMemoria datosMemoria;
 
 	asociarAPuerto(socketParaCpus,configuracion->puertoDeEscucha);
 
+	conectarAServidor(socketParaSwap,configuracion->ipSWAP,configuracion->puertoSWAP);
+
+	escucharConexiones(socketParaCpus,maxConexionesEntrantes);
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 
@@ -73,8 +73,6 @@ tipoEstructuraMemoria datosMemoria;
 
 		FD_SET(socketParaCpus,&listaFiltrada);
 
-		//hayCpuParaConexion = filtrarListas(listaPrincipal,listaFiltrada);
-
 		select(datosMemoria.maximoSocket+1,&listaFiltrada,NULL,NULL,NULL);
 
 		if(FD_ISSET(socketParaCpus,&listaFiltrada)){
@@ -84,8 +82,7 @@ tipoEstructuraMemoria datosMemoria;
 		}
 
 		tratarPeticiones(&datosMemoria);
-		//if(!list_is_empty(listaFiltrada))
-		//tratarPeticiones(socketParaCpus,socketParaSwap,listaFiltrada, listaTLB, listaRAM, configuracion);
+
 	}
 
 	destruirConfigMemoria(configuracion);
