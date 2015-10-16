@@ -80,6 +80,7 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketP
 				return tipoDeSalida;
 			}
 		}
+		enviarMensaje(socketParaPlanificador, 'Q', sizeof(char));
 	}
 	return tipoDeSalida;
 	fclose(programa);
@@ -254,7 +255,7 @@ int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProces
 
 int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, int socketParaPlanificador)
 {
-	enviarMensaje(socketParaPlanificador, 'B', sizeof(char*));
+	enviarMensaje(socketParaPlanificador, 'B', sizeof(char));
 	enviarMensaje(socketParaPlanificador, tiempoDeEspera, sizeof(tiempoDeEspera));
 	//Logear
 	printf("Se ejecuto la instruccion ENTRADA-SALIDA Tiempo de espera: %i segundos, pID: %i", tiempoDeEspera, idDeProceso);
@@ -264,7 +265,7 @@ int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, int socketPara
 int instruccionFinalizar(int idDeProceso, int socketParaPlanificador, int socketParaMemoria)
 {
 	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'f', 0, "", socketParaMemoria);
-	enviarMensaje(socketParaPlanificador, 'F', sizeof(char*));
+	enviarMensaje(socketParaPlanificador, 'F', sizeof(char));
 	//Logear
 	printf("Se ejecuto la instruccion FINALIZAR, pID: %i", idDeProceso);
 	return 1;
@@ -272,7 +273,6 @@ int instruccionFinalizar(int idDeProceso, int socketParaPlanificador, int socket
 
 tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto, int socketParaMemoria)
 {
-
 	tipoInstruccion instruccionAMemoria;
 	instruccionAMemoria.pid = idDeProceso;
 	instruccionAMemoria.instruccion = instruccion;
