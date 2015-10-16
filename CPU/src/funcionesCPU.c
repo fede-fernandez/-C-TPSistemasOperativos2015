@@ -1,7 +1,8 @@
 #include "funcionesCPU.h"
 
 
-tipoConfigCPU* crearConfigCPU(){
+tipoConfigCPU* crearConfigCPU()
+{
 	tipoConfigCPU* cfg = malloc(sizeof(tipoConfigCPU));
 	cfg->ipPlanificador = string_new();
 	cfg->ipMemoria = string_new();
@@ -9,14 +10,15 @@ tipoConfigCPU* crearConfigCPU(){
 	return cfg;
 }
 
-void destruirConfigCPU(tipoConfigCPU* cfg){
+void destruirConfigCPU(tipoConfigCPU* cfg)
+{
 	free(cfg->ipPlanificador);
 	free(cfg->ipMemoria);
 	free(cfg);
 }
 
-tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfiguracionDelCPU){
-
+tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfiguracionDelCPU)
+{
 	t_config* archivoCfg = config_create(rutaDelArchivoDeConfiguracionDelCPU);
 	tipoConfigCPU* cfg = crearConfigCPU();
 
@@ -41,20 +43,46 @@ tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfigura
 	return cfg;
 }
 
-int ejecutarPrograma(tipoPCB* PCB, int quantum, int tiempoDeRetardo)
+int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketParaPlanificador, int socketParaMemoria)
 {
+	int tipoDeSalida = 0; //Si es 1, corta la ejecución del while que ejecuta instrucciones
 	FILE* programa = abrirProgramaParaLectura(PCB->ruta);
 	char* programaEnMemoria = mmap(0, sizeof(programa), PROT_READ, MAP_SHARED, fileno(programa), 0);
 	char** instrucciones = string_split(programaEnMemoria, "\n");
 
-	while(PCB->insPointer < longitudDeStringArray(instrucciones))
+	if(quantum == 0) //FIFO
 	{
-		ejecutarInstruccion(instrucciones[PCB->insPointer], PCB->pid);
-		sleep(tiempoDeRetardo);
-		PCB->insPointer++;
+		while(PCB.insPointer < longitudDeStringArray(instrucciones))
+		{
+			tipoDeSalida = ejecutarInstruccion(instrucciones[PCB->insPointer], PCB->pid, socketParaPlanificador, socketParaMemoria);
+			sleep(tiempoDeRetardo);
+			*PCB->insPointer = PCB->insPointer + 1;
+			if(tipoDeSalida == 1)
+			{
+				fclose(programa);
+				return tipoDeSalida;
+			}
+		}
 	}
+
+	else //ROUND ROBIN
+	{
+		int clock = 0;
+		while(clock < quantum)
+		{
+			tipoDeSalida = ejecutarInstruccion(instrucciones[PCB->insPointer], PCB->pid, socketParaPlanificador, socketParaMemoria);
+			sleep(tiempoDeRetardo);
+			*PCB->insPointer = PCB->insPointer + 1;
+			clock++;
+			if(tipoDeSalida == 1)
+			{
+				fclose(programa);
+				return tipoDeSalida;
+			}
+		}
+	}
+	return tipoDeSalida;
 	fclose(programa);
-	return PCB->insPointer;
 }
 
 FILE* abrirProgramaParaLectura(char* rutaDelPrograma)
@@ -68,7 +96,7 @@ FILE* abrirProgramaParaLectura(char* rutaDelPrograma)
 	return programa;
 }
 
-int ejecutarInstruccion(char* instruccion, int idDeProceso)
+int ejecutarInstruccion(char* instruccion, int idDeProceso, int socketParaPlanificador, int socketParaMemoria)
 {
 	enum estadoDeLectura {INICIAL, EN_VALOR, EN_ORACION} estadoActual = INICIAL;
 	int contadorDesdePalabra = 0;
@@ -129,26 +157,26 @@ int ejecutarInstruccion(char* instruccion, int idDeProceso)
 	}
 	if(esInstruccionIniciar(nombreDeInstruccion))
 	{
-		instruccionIniciar(atoi(valorDeInstruccion), idDeProceso);
+		instruccionIniciar(atoi(valorDeInstruccion), idDeProceso, socketParaMemoria);
 	}
 	if(esInstruccionLeer(nombreDeInstruccion))
 	{
-		instruccionLeer(atoi(valorDeInstruccion), idDeProceso);
+		instruccionLeer(atoi(valorDeInstruccion), idDeProceso, socketParaMemoria);
 	}
 	if(esInstruccionEscribir(nombreDeInstruccion))
 	{
-		instruccionEscribir(atoi(valorDeInstruccion), valorDeInstruccion2, idDeProceso);
+		instruccionEscribir(atoi(valorDeInstruccion), valorDeInstruccion2, idDeProceso, socketParaMemoria);
 	}
 	if(esInstruccionEntradaSalida(nombreDeInstruccion))
 	{
-		instruccionEntradaSalida(atoi(valorDeInstruccion), idDeProceso);
+		instruccionEntradaSalida(atoi(valorDeInstruccion), idDeProceso, socketParaPlanificador);
 	}
 	if(esInstruccionFinalizar(nombreDeInstruccion))
 	{
-		instruccionFinalizar(idDeProceso);
+		instruccionFinalizar(idDeProceso, socketParaPlanificador, socketParaMemoria);
 	}
 	free(nombreDeInstruccion);
-	return 0;
+	return ' ';
 }
 
 int longitudDeStringArray(char** stringArray){
@@ -195,27 +223,27 @@ char* sacarComillas(char* frase)
 }
 
 
-int instruccionIniciar(int numeroDePaginas, int idDeProceso)
+int instruccionIniciar(int numeroDePaginas, int idDeProceso, int socketParaMemoria)
 {
-	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'i', numeroDePaginas, "");
+	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'i', numeroDePaginas, "", socketParaMemoria);
 	//Si falla envio a planificador.
 	//Si funciona, logeo.
 	printf("Se ejecuto la instruccion INICIAR Pagina: %i, pID: %i\n", numeroDePaginas, idDeProceso);
 	return 0;
 }
 
-int instruccionLeer(int numeroDePagina, int idDeProceso)
+int instruccionLeer(int numeroDePagina, int idDeProceso, int socketParaMemoria)
 {
-	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'l', numeroDePagina, "");
+	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'l', numeroDePagina, "", socketParaMemoria);
 	printf("%s", respuestaDeMemoria->informacion);
 	//Logeo
 	printf("Se ejecuto la instruccion LEER Pagina: %i, pID: %i", numeroDePagina, idDeProceso);
 	return 0;
 }
 
-int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso)
+int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso, int socketParaMemoria)
 {
-	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'e', numeroDePagina, textoAEscribir);
+	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'e', numeroDePagina, textoAEscribir, socketParaMemoria);
 	//memoria tiene que reemplazar todo el contenido de la pagina
 	//memoria me puede mandar lo que le pedi para escribir, aunque lo tenga yo en la variable
 	//todavia no decidimos cual usar
@@ -224,33 +252,32 @@ int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProces
 	return 0;
 }
 
-int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso)
+int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, int socketParaPlanificador)
 {
-	//Envio socket a Proceso Planificador con el pcb, cambiando
-	//el estado a BLOQUEADO y el tiempo que voy a estarlo
-	//retorno 1 porque tengo que usar break en el while del lector de instrucciones
-	//le tengo que enviar el PCB? o una estructura extra tipoRespuestaPlanificador? no esta hecha, porque PCB no tiene un campo de tiempo bloqueado
+	enviarMensaje(socketParaPlanificador, 'B', sizeof(char*));
+	enviarMensaje(socketParaPlanificador, tiempoDeEspera, sizeof(tiempoDeEspera));
+	//Logear
 	printf("Se ejecuto la instruccion ENTRADA-SALIDA Tiempo de espera: %i segundos, pID: %i", tiempoDeEspera, idDeProceso);
 	return 1;
 }
 
-int instruccionFinalizar(int idDeProceso)
+int instruccionFinalizar(int idDeProceso, int socketParaPlanificador, int socketParaMemoria)
 {
-	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'f', 0, "");
-	//Logeo e aviso al planificador, que le envio?
+	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'f', 0, "", socketParaMemoria);
+	enviarMensaje(socketParaPlanificador, 'F', sizeof(char*));
+	//Logear
 	printf("Se ejecuto la instruccion FINALIZAR, pID: %i", idDeProceso);
 	return 1;
 }
 
-tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto)
+tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto, int socketParaMemoria)
 {
-	int socketParaMemoria = crearSocket();
+
 	tipoInstruccion instruccionAMemoria;
 	instruccionAMemoria.pid = idDeProceso;
 	instruccionAMemoria.instruccion = instruccion;
 	instruccionAMemoria.nroPagina = numeroDePagina;
 	instruccionAMemoria.texto = texto;
-	//conectarAServidor(socketMemoria, configuracion->ipMemoria, configuracion->puertoPlanificador);
 	enviarInstruccion(socketParaMemoria, instruccionAMemoria);
 	return recibirRespuesta(socketParaMemoria);
 }

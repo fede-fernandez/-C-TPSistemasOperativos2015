@@ -39,19 +39,19 @@ void destruirConfigCPU(tipoConfigCPU* estructuraDeConfiguracion);
 
 
 /************Funciones principales del CPU************/
-int ejecutarPrograma(tipoPCB* PCB, int quantum, int tiempoDeRetardo);
+int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketParaPlanificador, int socketParaMemoria);
 FILE* abrirProgramaParaLectura(char* rutaDelPrograma);
-int ejecutarInstruccion(char* instruccion, int idDeProceso);
+int ejecutarInstruccion(char* instruccion, int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
 int longitudDeStringArray(char** stringArray);
 tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto);
 
 
 /*Funciones mAnsisOp*/
-int instruccionIniciar(int numeroDePaginas, int idDeProceso);
-int instruccionLeer(int numeroDePagina, int idDeProceso);
-int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso);
-int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso);
-int instruccionFinalizar(int idDeProceso);
+int instruccionIniciar(int numeroDePaginas, int idDeProceso, int socketParaMemoria);
+int instruccionLeer(int numeroDePagina, int idDeProceso, int socketParaMemoria);
+int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso, int socketParaMemoria);
+int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, int socketParaPlanificador);
+int instruccionFinalizar(int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
 
 
 /*Funciones de control de lineas de codigo mAnsisOp*/

@@ -20,7 +20,6 @@ int main(void) {
 
 void* CPU(int idCPU)
 {
-	tipoPCB* PCB;
 	int quantum = 0;
 	tipoConfigCPU* configuracion = cargarArchivoDeConfiguracionDeCPU(RUTA_DE_ARCHIVO_DE_CONFIGURACION);
 
@@ -35,8 +34,7 @@ void* CPU(int idCPU)
 
 	//Me trato de conectar con Memoria
 	int socketParaMemoria = crearSocket();
-	conectarAServidor(socketParaMemoria, "FALTA LA IP COMO LA CONSIGO?", 7777);
-	//falta IP y puerto;
+	conectarAServidor(socketParaMemoria, configuracion->ipMemoria, configuracion->puertoMemoria);
 	char* mensajeParaMemoria = "Respondeme";
 	enviarMensaje(socketParaMemoria, mensajeParaMemoria, sizeof(mensajeParaMemoria));
 
@@ -47,18 +45,20 @@ void* CPU(int idCPU)
 		//Se cae este hilo, aviso a planificador
 	}
 
-	//Me quedo en espera del mensaje del Planificador
+	//Espero a recibir tarea del planificador
 	while(true)
 	{
+		tipoPCB* PCB;
 		PCB = recibirPCB(socketParaPlanificador);
-		if(PCB != NULL)
-		{
-			break; //Ni idea si esto rompe la espera
-		}
-	}
 
-	//Me llega una tarea del planificador
-	ejecutarPrograma(&PCB, quantum, configuracion->retardo);
+
+		//Me llega una tarea del planificador
+		tipoPCB PCBRespuesta;
+		PCBRespuesta = *PCB;
+		ejecutarPrograma(PCBRespuesta, quantum, configuracion->retardo, socketParaPlanificador, socketParaMemoria);
+		enviarPCB(socketParaPlanificador, PCBRespuesta);
+	}
+	liberarSocket(socketParaMemoria);
 	liberarSocket(socketParaPlanificador);
 	destruirConfigCPU(configuracion);
 	return NULL;
