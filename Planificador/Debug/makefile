@@ -8,7 +8,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include commonsDeAsedio/subdir.mk
+-include src/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -23,22 +23,26 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: libcommonsDeAsedio.so
+all: Planificador
+
+dependents:
+	-cd /home/alexis/git/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug && $(MAKE) clean all
 
 # Tool invocations
-libcommonsDeAsedio.so: $(OBJS) $(USER_OBJS)
+Planificador: $(OBJS) $(USER_OBJS) /home/alexis/git/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug/libcommonsDeAsedio.so
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -shared -o "libcommonsDeAsedio.so" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L"/home/alexis/git/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug" -o "Planificador" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(LIBRARIES)$(OBJS)$(C_DEPS) libcommonsDeAsedio.so
+	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) Planificador
 	-@echo ' '
 
 .PHONY: all clean dependents
 .SECONDARY:
+/home/alexis/git/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug/libcommonsDeAsedio.so:
 
 -include ../makefile.targets
