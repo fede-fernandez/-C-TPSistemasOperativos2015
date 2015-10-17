@@ -43,6 +43,17 @@ tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfigura
 	return cfg;
 }
 
+FILE* abrirProgramaParaLectura(char* rutaDelPrograma)
+{
+	FILE* programa = fopen(rutaDelPrograma, "r");
+	if(programa == NULL)
+	{
+		perror("El programa no existe o esta vacio.");
+		return NULL;
+	}
+	return programa;
+}
+
 int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketParaPlanificador, int socketParaMemoria)
 {
 	int tipoDeSalida = 0; //Si es 1, corta la ejecución del while que ejecuta instrucciones
@@ -79,7 +90,8 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketP
 				break;
 			}
 		}
-		enviarMensaje(socketParaPlanificador, 'Q', sizeof(char));
+		char tipoSalidaParaPlanificador = 'Q';
+		enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
 	}
 	tipoPCB PCBRespuesta;
 	PCBRespuesta = *PCB;
@@ -87,17 +99,6 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketP
 	enviarPCB(socketParaPlanificador, PCBRespuesta);
 	fclose(programa);
 	return tipoDeSalida;
-}
-
-FILE* abrirProgramaParaLectura(char* rutaDelPrograma)
-{
-	FILE* programa = fopen(rutaDelPrograma, "r");
-	if(programa == NULL)
-	{
-		perror("El programa no existe o esta vacio.");
-		return NULL;
-	}
-	return programa;
 }
 
 int ejecutarInstruccion(char* instruccion, int idDeProceso, int socketParaPlanificador, int socketParaMemoria)
@@ -159,28 +160,29 @@ int ejecutarInstruccion(char* instruccion, int idDeProceso, int socketParaPlanif
 			break;
 		}
 	}
+	int instruccionBloqueante = 0;
 	if(esInstruccionIniciar(nombreDeInstruccion))
 	{
-		instruccionIniciar(atoi(valorDeInstruccion), idDeProceso, socketParaMemoria);
+		instruccionBloqueante = instruccionIniciar(atoi(valorDeInstruccion), idDeProceso, socketParaMemoria);
 	}
 	if(esInstruccionLeer(nombreDeInstruccion))
 	{
-		instruccionLeer(atoi(valorDeInstruccion), idDeProceso, socketParaMemoria);
+		instruccionBloqueante = instruccionLeer(atoi(valorDeInstruccion), idDeProceso, socketParaMemoria);
 	}
 	if(esInstruccionEscribir(nombreDeInstruccion))
 	{
-		instruccionEscribir(atoi(valorDeInstruccion), valorDeInstruccion2, idDeProceso, socketParaMemoria);
+		instruccionBloqueante = instruccionEscribir(atoi(valorDeInstruccion), valorDeInstruccion2, idDeProceso, socketParaMemoria);
 	}
 	if(esInstruccionEntradaSalida(nombreDeInstruccion))
 	{
-		instruccionEntradaSalida(atoi(valorDeInstruccion), idDeProceso, socketParaPlanificador);
+		instruccionBloqueante = instruccionEntradaSalida(atoi(valorDeInstruccion), idDeProceso, socketParaPlanificador);
 	}
 	if(esInstruccionFinalizar(nombreDeInstruccion))
 	{
-		instruccionFinalizar(idDeProceso, socketParaPlanificador, socketParaMemoria);
+		instruccionBloqueante = instruccionFinalizar(idDeProceso, socketParaPlanificador, socketParaMemoria);
 	}
 	free(nombreDeInstruccion);
-	return ' ';
+	return instruccionBloqueante;
 }
 
 int longitudDeStringArray(char** stringArray){
@@ -227,51 +229,76 @@ char* sacarComillas(char* frase)
 }
 
 
-int instruccionIniciar(int numeroDePaginas, int idDeProceso, int socketParaMemoria)
+int instruccionIniciar(int numeroDePaginas, int idDeProceso, int socketParaPlanificador,int socketParaMemoria)
 {
 	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'i', numeroDePaginas, "", socketParaMemoria);
-	//Si falla envio a planificador.
-	//Si funciona, logeo.
+
+	if(respuestaDeMemoria->respuesta == 'M') //Si fallo la operacion
+	{
+		char tipoSalidaParaPlanificador = 'F';
+		enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
+	}
+
+	//LOGEAR
 	printf("Se ejecuto la instruccion INICIAR Pagina: %i, pID: %i\n", numeroDePaginas, idDeProceso);
 	return 0;
 }
 
-int instruccionLeer(int numeroDePagina, int idDeProceso, int socketParaMemoria)
+int instruccionLeer(int numeroDePagina, int idDeProceso, int socketParaPlanificador, int socketParaMemoria)
 {
 	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'l', numeroDePagina, "", socketParaMemoria);
-	printf("%s", respuestaDeMemoria->informacion);
-	//Logeo
+
+	if(respuestaDeMemoria->respuesta == 'M') //Si fallo la operacion
+	{
+		char tipoSalidaParaPlanificador = 'F';
+		enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
+	}
+
+	printf("\n%s\n", respuestaDeMemoria->informacion);
+
+	//LOGEAR
 	printf("Se ejecuto la instruccion LEER Pagina: %i, pID: %i", numeroDePagina, idDeProceso);
 	return 0;
 }
 
-int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso, int socketParaMemoria)
+int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso, int socketParaPlanificador,int socketParaMemoria)
 {
 	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'e', numeroDePagina, textoAEscribir, socketParaMemoria);
-	//memoria tiene que reemplazar todo el contenido de la pagina
-	//memoria me puede mandar lo que le pedi para escribir, aunque lo tenga yo en la variable
-	//todavia no decidimos cual usar
-	//esta funcion puede fallar? que hago si falla?
+
+	if(respuestaDeMemoria->respuesta == 'M') //Si fallo la operacion
+	{
+		char tipoSalidaParaPlanificador = 'F';
+		enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
+	}
+
+	//LOGEAR
 	printf("Se ejecuto la instruccion ESCRIBIR Pagina: %i, Contenido: %s, pID: %i", numeroDePagina, textoAEscribir, idDeProceso);
 	return 0;
 }
 
 int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, int socketParaPlanificador)
 {
-	enviarMensaje(socketParaPlanificador, 'B', sizeof(char));
-	enviarMensaje(socketParaPlanificador, tiempoDeEspera, sizeof(tiempoDeEspera));
-	//Logear
+	int* tiempoEspera = tiempoDeEspera;
+	char tipoSalidaParaPlanificador = 'B';
+
+	enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
+	enviarMensaje(socketParaPlanificador, &tiempoEspera, sizeof(tiempoDeEspera));
+
+	//LOGEAR
 	printf("Se ejecuto la instruccion ENTRADA-SALIDA Tiempo de espera: %i segundos, pID: %i", tiempoDeEspera, idDeProceso);
-	return 1;
+	return 1; //Devuelve 1, operacion bloqueante
 }
 
 int instruccionFinalizar(int idDeProceso, int socketParaPlanificador, int socketParaMemoria)
 {
 	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'f', 0, "", socketParaMemoria);
-	enviarMensaje(socketParaPlanificador, 'F', sizeof(char));
-	//Logear
+
+	char tipoSalidaParaPlanificador = 'F';
+	enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
+
+	//LOGEAR
 	printf("Se ejecuto la instruccion FINALIZAR, pID: %i", idDeProceso);
-	return 1;
+	return 1; //Devuelve 1, operacion bloqueante
 }
 
 tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto, int socketParaMemoria)

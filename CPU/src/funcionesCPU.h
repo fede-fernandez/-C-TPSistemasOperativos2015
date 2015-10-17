@@ -47,9 +47,9 @@ tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int 
 
 
 /*Funciones mAnsisOp*/
-int instruccionIniciar(int numeroDePaginas, int idDeProceso, int socketParaMemoria);
-int instruccionLeer(int numeroDePagina, int idDeProceso, int socketParaMemoria);
-int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso, int socketParaMemoria);
+int instruccionIniciar(int numeroDePaginas, int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
+int instruccionLeer(int numeroDePagina, int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
+int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
 int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, int socketParaPlanificador);
 int instruccionFinalizar(int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
 
