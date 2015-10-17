@@ -15,6 +15,7 @@
 #include <commonsDeAsedio/error.h>
 #include <commonsDeAsedio/cliente-servidor.h>
 #include <commonsDeAsedio/estructuras.h>
+#include <commons/collections/list.h>
 
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
@@ -50,6 +51,7 @@ typedef struct{
 	fd_set* cpusATratar;
 	t_list* administradorPaginas;
 	bool* memoriaActiva;
+	int socketCpus;
 }tipoEstructuraMemoria;
 
 typedef struct{

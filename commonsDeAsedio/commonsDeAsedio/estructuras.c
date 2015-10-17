@@ -187,18 +187,24 @@ void deserializarRespuesta(void* buffer,tipoRespuesta* respuesta){
 
 void enviarRespuesta(int socketCliente,tipoRespuesta respuesta){
 
-	size_t tamanioBloque = 2*sizeof(size_t)+sizeof(char)+strlen(respuesta.informacion);
+	/*size_t tamanioBloque = 2*(sizeof(size_t)+sizeof(char))+strlen(respuesta.informacion);
 
 	void* buffer = serializarRespuesta(respuesta);
 
 	enviarMensaje(socketCliente,buffer,tamanioBloque);
 
-	free(buffer);
+	free(buffer);*/
+
+	size_t tamanioInfo = strlen(respuesta.informacion)+sizeof(char);
+
+	enviarMensaje(socketCliente,&respuesta.respuesta,sizeof(char));
+	enviarMensaje(socketCliente,&tamanioInfo,sizeof(size_t));
+	enviarMensaje(socketCliente,respuesta.informacion,tamanioInfo);
 }
 
 tipoRespuesta* recibirRespuesta(int socketEnviador){
 
-	size_t tamanioBloque;
+	/*size_t tamanioBloque;
 
 	void* buffer = recibirBloque(&tamanioBloque,socketEnviador);
 
@@ -207,6 +213,17 @@ tipoRespuesta* recibirRespuesta(int socketEnviador){
 	deserializarRespuesta(buffer,respuesta);
 
 	free(buffer);
+
+	return respuesta;*/
+
+	size_t tamanioInfo;
+
+	tipoRespuesta* respuesta = malloc(sizeof(tipoRespuesta));
+
+	recibirMensajeCompleto(socketEnviador,&(respuesta->respuesta),sizeof(char));
+	recibirMensajeCompleto(socketEnviador,&tamanioInfo,sizeof(size_t));
+	respuesta->informacion = malloc(tamanioInfo);
+	recibirMensajeCompleto(socketEnviador,&(respuesta->informacion),tamanioInfo);
 
 	return respuesta;
 

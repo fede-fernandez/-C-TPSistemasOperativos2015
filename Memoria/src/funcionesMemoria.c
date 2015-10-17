@@ -58,6 +58,11 @@ void setearEstructuraMemoria(tipoEstructuraMemoria* datos) {
 
 	datosMemoria = datos;
 
+	datosMemoria->administradorPaginas = list_create();
+
+	datosMemoria->listaRAM = list_create();
+
+	datosMemoria->listaTLB = list_create();
 }
 
 /************************FUNCIONES********************************/
@@ -72,15 +77,11 @@ void tratarPeticion(int cpuAtendida) {
 		break;
 
 	case LEER:
-
-		enviarPaginaPedidaACpu(instruccion,cpuAtendida);
-
+		enviarPaginaPedidaACpu(*instruccion,cpuAtendida);
 		break;
 
 	case ESCRIBIR:
-
-
-
+			escribirPagina(*instruccion,cpuAtendida);
 		break;
 
 	case FINALIZAR:
@@ -92,8 +93,8 @@ void tratarPeticion(int cpuAtendida) {
 void tratarPeticiones() {
 
 	int var;
-	for (var = 1; var < datosMemoria->maximoSocket; ++var) {
-		if (FD_ISSET(var, datosMemoria->cpusATratar))
+	for (var = 1; var <= datosMemoria->maximoSocket; ++var) {
+		if (FD_ISSET(var, datosMemoria->cpusATratar)&&var!=datosMemoria->socketCpus)
 			tratarPeticion(var);
 	}
 }
@@ -105,11 +106,15 @@ void tratarPeticiones() {
 /////////////////
 void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 
-	tipoRespuesta* respuesta;
+	tipoRespuesta respuesta;
 
-	if (puedoReservarEnSWAP(instruccion, respuesta)) {
+	if (puedoReservarEnSWAP(instruccion, &respuesta)) {
 
-		tipoAdministracionPaginas* instanciaDeAdministracion;
+		printf("pude reservar en swap!!\n");
+
+		tipoAdministracionPaginas* instanciaDeAdministracion = malloc(sizeof(tipoAdministracionPaginas));
+
+		printf("pedi instancia de admin\n");
 
 		instanciaDeAdministracion->pid = instruccion.pid;
 
@@ -117,10 +122,14 @@ void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 
 		instanciaDeAdministracion->paginasPedidas = instruccion.nroPagina;
 
+		printf("cree instancia de administracion..\n");
+
 		list_add(datosMemoria->administradorPaginas, instanciaDeAdministracion);
+
+		printf("agregue pagina a admin de paginas");
 	}
 
-	enviarRespuesta(cpuATratar, *respuesta);
+	enviarRespuesta(cpuATratar, respuesta);
 }
 
 bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta* respuesta) {
@@ -233,7 +242,6 @@ int traerPaginaDesdeSwap( tipoInstruccion instruccion, tipoRespuesta* respuesta)
 	//ejecutar algoritmos locos
 
 	return PERFECTO;
-
 }
 
 void quitarPaginasDeTLB(int pid) {
@@ -383,11 +391,18 @@ else{
 //FINALIZAR PROCESO
 ////////////////////
 
-bool instruccionASwapRealizada(tipoInstruccion instruccion,
-		tipoRespuesta* respuesta) {
+bool instruccionASwapRealizada(tipoInstruccion instruccion,tipoRespuesta* respuesta) {
 
 	enviarInstruccion(datosMemoria->socketSWAP, instruccion);
+
 	respuesta = recibirRespuesta(datosMemoria->socketSWAP);
+
+	printf("recibi respuesta de swap\n");
+
+	printf("el estado de respuesta es %c\n",respuesta->respuesta);
+
+	if(respuesta->respuesta==NULL)
+		printf("No se puede leer estado de respuesta\n");
 
 	return (respuesta->respuesta == PERFECTO);
 }
