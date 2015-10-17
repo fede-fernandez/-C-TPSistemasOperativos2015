@@ -82,7 +82,7 @@ int main(void) {
 
 	liberar_memoria();
 
-	printf("finn =) ");
+	printf("fin =) ");
 	return 0;
 }
 
@@ -246,12 +246,12 @@ int recibir_rafagas(){
 	*PCB = PCB_recibido; // actualizo PCB ---> la magia de c =)
 
 
-
+	printf("holaaaa =) ");
 	switch (llegada) {
 	  case   'Q':
 	      llega_quantum(PCB);	       break; // va a meter ese proceso a la cola de redy y actualizar PCB
 	  case   'B':
-		  llega_entrada_salida(PCB);   break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
+		  llega_entrada_salida(PCB,nodo_cpu->puerto);   break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
 	  case   'F':
 	      llega_de_fin(PCB);	       break; // unicamente actualiza el PCB del proceso llegante
 
@@ -288,11 +288,17 @@ int llega_quantum(t_PCB *PCB){
 
 }
 
-int llega_entrada_salida(t_PCB *PCB){
+int llega_entrada_salida(t_PCB *PCB,int socketCpu){
+
+
+	int T;
 
 	pthread_mutex_lock(&bloqueados);
+
+	recibirMensaje(socketCpu, &T, sizeof(int));
+
 	// meter procesos en la cola de ready
-	queue_push(procesos_bloqueados,id_create(PCB->id ));
+	queue_push(procesos_bloqueados,bloquedito_create(PCB->id,T));
 
 	pthread_mutex_unlock(&bloqueados);
 
@@ -374,6 +380,7 @@ void* ejecutar_proceso(){
 
 	while(1){
 
+
 		sem_wait(&solicitud_ejecucion);
 
 		sem_wait(&solicitud_cpuLibre);
@@ -397,6 +404,7 @@ void* ejecutar_proceso(){
 
 		//buscar_CPU_disponible. Esta funcion me devuelve un puerto libre
 		nodo_cpu=list_find(CPUs,(void*)diponibilidad); // siempre tiene q haber un puerto libre, o explota el programa
+
 
 		//enviarPCB(nodo_cpu->puerto,pcb);
 		enviarPCB2(nodo_cpu->puerto,pcb);
@@ -429,8 +437,8 @@ int menu(void) {
 		opcion = 0;
 
 			printf("################################################################\n");
-			printf("#     --------> **************************** <-------------    #\n");
-			printf("#     --------> *****  LOS  JAVIMANCOS ***** <-------------    #\n");
+			printf("#     --------> *****                  ***** <-------------    #\n");
+			printf("#   *****             LOS  JAVIMANCOS         ***** -------    #\n");
 			printf("#--------------------------------------------------------------#\n");
 			printf("#                                                              #\n");
 			printf("#  Ingrese una opción para continuar:                          #\n");
@@ -509,7 +517,7 @@ int buscar_por_puerto(t_CPU *nodo){
 	return 0;
 }
 
-// ---------------libero memoria y inicializo cosas
+//----------------------Iniciallizo y libero memoria
 
 void crear_lista(){
 
@@ -518,6 +526,7 @@ void crear_lista(){
 	CPUs = list_create(); // crea lista de CPUs conectadas
 	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
 }
+
 
 void inicializar_semaforos(){
 

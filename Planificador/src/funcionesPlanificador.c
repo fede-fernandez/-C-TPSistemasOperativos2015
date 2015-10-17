@@ -68,6 +68,15 @@ tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDe
 
 }
 
+ t_bloqueados *bloquedito_create(int id, int tiempo){
+
+		t_bloqueados *new = malloc(sizeof(t_bloqueados));
+	    new->id = id;
+	    new->tiempo = tiempo;
+
+	    return new;
+ }
+
  int diponibilidad(t_CPU * nodo){ // condicion para encontrar un puerto disponible
 
  	if(nodo->disponibilidad == 1){
@@ -88,31 +97,32 @@ void liberar_pcb(t_PCB *PCB){
 
 void enviarPCB2(int socketReceptor,t_PCB pcb){
 
-	enviarMensaje(socketReceptor,&pcb.id,sizeof(int));
-	enviarMensaje(socketReceptor,&pcb.pc,sizeof(int));
-	enviarMensaje(socketReceptor,&pcb.estado,sizeof(char));
-	enviarMensaje(socketReceptor,&pcb.path,sizeof(char[30]));
+	tipoPCB pcb_alexis;
+
+	pcb_alexis.pid = pcb.id;
+
+	pcb_alexis.insPointer = pcb.pc;
+	pcb_alexis.estado = pcb.estado;
+
+    strcpy(pcb_alexis.ruta,pcb.path);
+
+	enviarPCB(socketReceptor,pcb_alexis);
 
 }
 
 t_PCB recibirPCB2(int socketEnviador){
 
 	t_PCB pcb;
-	int id;
-	int pc;
-	char estado;
-	char path[30];
 
-	recibirMensaje(socketEnviador, &id, sizeof(int));
-	recibirMensaje(socketEnviador, &pc, sizeof(int));
-	recibirMensaje(socketEnviador, &estado, sizeof(char));
-	recibirMensaje(socketEnviador, &path, sizeof(path));
+	tipoPCB* pcb_alexis;
 
-	pcb.id = id;
-	pcb.pc = pc;
-	pcb.estado = estado;
+	pcb_alexis =recibirPCB(socketEnviador);
+
+	pcb.id = pcb_alexis->pid;
+	pcb.pc = pcb_alexis->insPointer;
+	pcb.estado = pcb_alexis->estado;
     memset(pcb.path, '\0', 30);
-    strcpy(pcb.path,path);
+    strcpy(pcb.path,pcb_alexis->ruta);
 
 	return pcb;
 }
