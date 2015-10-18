@@ -15,6 +15,7 @@
 #include <string.h>
 #include <commonsDeAsedio/error.h>
 #include <commonsDeAsedio/cliente-servidor.h>
+#include <commonsDeAsedio/estructuras.h>
 
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
@@ -65,7 +66,7 @@ int recibir_rafagas();
 
 int llega_quantum(t_PCB *PCB);
 
-int llega_entrada_salida(t_PCB *PCB);
+int llega_entrada_salida(t_PCB *PCB,int socketCpu);
 
 int llega_de_fin(t_PCB *PCB);
 
@@ -95,6 +96,8 @@ t_PCB* PCB_create(int id, int pc, char estado, char path[30]);
 int *id_create(int id);
 
 t_CPU *cpu_create(int id_cpu, int disponibilidad, int puerto);
+
+t_bloqueados *bloquedito_create(int id, int tiempo);
 //------------------------------------------------------------------------
 
 //-------------------------------------------------------
