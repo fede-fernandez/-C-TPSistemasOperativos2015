@@ -97,32 +97,32 @@ void liberar_pcb(t_PCB *PCB){
 
 void enviarPCB2(int socketReceptor,t_PCB pcb){
 
-	tipoPCB pcb_alexis;
-
-	pcb_alexis.pid = pcb.id;
-
-	pcb_alexis.insPointer = pcb.pc;
-	pcb_alexis.estado = pcb.estado;
-
-    strcpy(pcb_alexis.ruta,pcb.path);
-
-	enviarPCB(socketReceptor,pcb_alexis);
+	enviarMensaje(socketReceptor,&pcb.id,sizeof(int));
+	enviarMensaje(socketReceptor,&pcb.pc,sizeof(int));
+	enviarMensaje(socketReceptor,&pcb.estado,sizeof(char));
+	enviarMensaje(socketReceptor,&pcb.path,sizeof(char[30]));
 
 }
 
 t_PCB recibirPCB2(int socketEnviador){
 
 	t_PCB pcb;
+	int id;
+	int pc;
+	char estado;
+	char path[30];
 
-	tipoPCB* pcb_alexis;
+	recibirMensaje(socketEnviador, &id, sizeof(int));
+	recibirMensaje(socketEnviador, &pc, sizeof(int));
+	recibirMensaje(socketEnviador, &estado, sizeof(char));
+	recibirMensaje(socketEnviador, &path, sizeof(path));
 
-	pcb_alexis =recibirPCB(socketEnviador);
-
-	pcb.id = pcb_alexis->pid;
-	pcb.pc = pcb_alexis->insPointer;
-	pcb.estado = pcb_alexis->estado;
+	pcb.id = id;
+	pcb.pc = pc;
+	pcb.estado = estado;
     memset(pcb.path, '\0', 30);
-    strcpy(pcb.path,pcb_alexis->ruta);
+    strcpy(pcb.path,path);
 
 	return pcb;
 }
+

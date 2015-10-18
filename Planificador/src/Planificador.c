@@ -246,7 +246,7 @@ int recibir_rafagas(){
 	*PCB = PCB_recibido; // actualizo PCB ---> la magia de c =)
 
 
-	printf("holaaaa =) ");
+
 	switch (llegada) {
 	  case   'Q':
 	      llega_quantum(PCB);	       break; // va a meter ese proceso a la cola de redy y actualizar PCB
@@ -289,21 +289,24 @@ int llega_quantum(t_PCB *PCB){
 }
 
 int llega_entrada_salida(t_PCB *PCB,int socketCpu){
-
+	printf("HASTA ACA ANDA BIEN !!!!NBNB1 \n\n");
 
 	int T;
 
-	pthread_mutex_lock(&bloqueados);
 
 	recibirMensaje(socketCpu, &T, sizeof(int));
 
-	// meter procesos en la cola de ready
+	// meter procesos en la cola de bloqueados
+	pthread_mutex_lock(&bloqueados);
 	queue_push(procesos_bloqueados,bloquedito_create(PCB->id,T));
-
+	printf("HASTA ACA ANDA BIEN !!!! :) \n\n");
 	pthread_mutex_unlock(&bloqueados);
 
 	// actualizo el PCB
 	PCB->estado = 'B'; // le cambio el valor que esta en memoria dinamica
+
+
+	sem_post(&solicitud_deBloqueo);
 
 	return 0;
 
@@ -339,6 +342,7 @@ void* bloquear_procesos(){
 		pthread_mutex_lock(&bloqueados);
 		// sacar un proceso de la cola de "procesos_bloqueados" (modificando la lista)
 		nodo_bloqueado = queue_pop(procesos_bloqueados);
+		pthread_mutex_unlock(&bloqueados);
 
 		sleep(nodo_bloqueado->tiempo);
 
@@ -358,10 +362,10 @@ void* bloquear_procesos(){
 
 		pthread_mutex_unlock(&ready);
 
-		pthread_mutex_unlock(&bloqueados);
+		free(nodo_bloqueado);
 
 		sem_post(&solicitud_ejecucion);
-
+		printf("holaaaa =) ");
 	}
 
 	return 0;
