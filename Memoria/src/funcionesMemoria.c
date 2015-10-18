@@ -187,7 +187,29 @@ void enviarPaginaPedidaACpu(tipoInstruccion instruccion, int cpuATratar) {
 
 			}
 
-				else destruirProceso(instruccion.pid);
+				else{
+
+					tipoInstruccion instruccionDeBorrado;
+
+					instruccionDeBorrado.instruccion = FINALIZAR;
+
+					instruccionDeBorrado.pid = instruccion.pid;
+
+					instruccionDeBorrado.nroPagina = 0;
+
+					instruccionDeBorrado.texto = "";
+
+					tipoRespuesta* respuestaSwap;
+
+					enviarInstruccion(datosMemoria->socketSWAP,instruccionDeBorrado);
+
+					if(respuestaSwap->respuesta==PERFECTO)
+					destruirProceso(instruccion.pid);
+
+					respuesta->respuesta = MANQUEADO;
+
+					respuesta->informacion = "";
+				}
 
 	enviarRespuesta(cpuATratar, *respuesta);
 
@@ -364,6 +386,21 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 	else {
 
+		tipoInstruccion instruccionDeBorrado;
+
+		instruccionDeBorrado.instruccion = FINALIZAR;
+
+		instruccionDeBorrado.pid = instruccion.pid;
+
+		instruccionDeBorrado.nroPagina = 0;
+
+		instruccionDeBorrado.texto = "";
+
+		tipoRespuesta* respuestaSwap;
+
+		enviarInstruccion(datosMemoria->socketSWAP,instruccionDeBorrado);
+
+		if(respuestaSwap->respuesta==PERFECTO)
 		destruirProceso(instruccion.pid);
 
 		respuesta->respuesta = MANQUEADO;
@@ -391,7 +428,6 @@ bool instruccionASwapRealizada(tipoInstruccion instruccion,tipoRespuesta* respue
 	printf("el estado de respuesta es %c\n",respuesta->respuesta);
 
 	printf("La info de respuesta es: %s\n",respuesta->informacion);
-
 
 	if(respuesta->respuesta==NULL)
 		printf("No se puede leer estado de respuesta\n");
