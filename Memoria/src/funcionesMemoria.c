@@ -106,7 +106,7 @@ void tratarPeticiones() {
 /////////////////
 void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 
-	tipoRespuesta respuesta;
+	tipoRespuesta respuesta;// = malloc(sizeof(tipoRespuesta));
 
 	if (puedoReservarEnSWAP(instruccion, &respuesta)) {
 
@@ -126,7 +126,7 @@ void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 
 		list_add(datosMemoria->administradorPaginas, instanciaDeAdministracion);
 
-		printf("agregue pagina a admin de paginas");
+		printf("agregue pagina a admin de paginas\n");
 	}
 
 	enviarRespuesta(cpuATratar, respuesta);
@@ -143,52 +143,51 @@ bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta* respuesta) 
 
 void enviarPaginaPedidaACpu(tipoInstruccion instruccion, int cpuATratar) {
 
-	tipoRespuesta* respuesta;
-
-	char* contenidoDePagina;
+	tipoRespuesta* respuesta = malloc(sizeof(tipoRespuesta));
 
 	int posicionDePagEnRam = -1;
 
-	tipoRAM* instanciaRamActual;
+	bool traidoDeSwap = false,estaEnTLB = true;
 
-	int posicionDePagEnTLB = dondeEstaEnTLB(instruccion.nroPagina,instruccion.pid);
+	if(estaHabilitadaLaTLB())
+	posicionDePagEnRam = dondeEstaEnTLB(instruccion.nroPagina,instruccion.pid);
 
-	if (posicionDePagEnTLB >= 0) {
-
-		respuesta->respuesta = PERFECTO;
-
-		instanciaRamActual = list_get(datosMemoria->listaRAM,posicionDePagEnTLB);
-
-		respuesta->informacion = instanciaRamActual->contenido;
-
-	}
-
-	else {
+	if (posicionDePagEnRam<0) {
 
 		posicionDePagEnRam = dondeEstaEnRam(instruccion.nroPagina,instruccion.pid);
 
-		if (posicionDePagEnRam >= 0) {
-
-			respuesta->respuesta = PERFECTO;
-
-			instanciaRamActual = list_get(datosMemoria->listaRAM,posicionDePagEnTLB);
-
-			respuesta->informacion = instanciaRamActual->contenido;
-
-			//agregar a la tlb :'(
-		}
-
-		else{
-
-			 posicionDePagEnRam = traerPaginaDesdeSwap(instruccion, respuesta);
-
-		//agregar a la tlb :'(
-
-		}
+		estaEnTLB = false;
 	}
 
-	if (respuesta->respuesta == MANQUEADO)
-		destruirProceso(instruccion.pid);
+	if(posicionDePagEnRam<0) {
+
+		 posicionDePagEnRam = traerPaginaDesdeSwap(instruccion, respuesta);
+
+		 traidoDeSwap = true;
+		}
+
+	if(posicionDePagEnRam>=0){
+
+				if(!traidoDeSwap){
+
+					respuesta->respuesta = PERFECTO;
+
+					tipoRAM* instanciaRamActual = list_get(datosMemoria->listaRAM,posicionDePagEnRam);
+
+					respuesta->informacion = malloc(strlen(instanciaRamActual->contenido)+sizeof(char));
+
+					respuesta->informacion = instanciaRamActual->contenido;
+				}
+
+				if(!estaEnTLB){
+
+					//agregar a la tlb :'(
+
+				}
+
+			}
+
+				else destruirProceso(instruccion.pid);
 
 	enviarRespuesta(cpuATratar, *respuesta);
 
@@ -237,7 +236,7 @@ int dondeEstaEnTLB(int nroPagina, int pid) {
 	return posicionDePagina;
 }
 
-int traerPaginaDesdeSwap( tipoInstruccion instruccion, tipoRespuesta* respuesta) {
+int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta) {
 
 	//ejecutar algoritmos locos
 
@@ -245,6 +244,7 @@ int traerPaginaDesdeSwap( tipoInstruccion instruccion, tipoRespuesta* respuesta)
 }
 
 void quitarPaginasDeTLB(int pid) {
+
 	int var, posicionEnTLB;
 	for (var = 0; var < cantidadDePaginasAsignadas(pid); ++var) {
 
@@ -278,6 +278,7 @@ int cantidadDePaginasAsignadas(int pid){
 }
 
 void quitarPaginasDeRAM(int pid) {
+
 	int var;
 
 	for (var = 0; var < cantidadDePaginasAsignadas(pid); ++var) {
@@ -299,93 +300,81 @@ void liberarEstructuraRAM(int posicionEnRam){
 //ESCRIBIR PAGINA
 /////////////////
 
+bool estaHabilitadaLaTLB(){
+
+	return string_equals_ignore_case(datosMemoria->configuracion->TLBHabilitada,"SI");
+}
+
 void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
-	tipoRespuesta* respuesta;
+	tipoRespuesta* respuesta = malloc(sizeof(tipoRespuesta));
 
-if(strlen(instruccion.texto)<datosMemoria->configuracion->tamanioDeMarco){
-
-		tipoRAM* instanciaRamActual;
+	if(strlen(instruccion.texto)<datosMemoria->configuracion->tamanioDeMarco){
 
 		int posicionDePagEnRam = -1;
 
-		int posicionDePagEnTLB = dondeEstaEnTLB(instruccion.nroPagina,instruccion.pid);
+		bool traidoDeSwap = false,estaEnTLB = true;
 
-		if (posicionDePagEnTLB >= 0) {
+		if(estaHabilitadaLaTLB())
+		posicionDePagEnRam = dondeEstaEnTLB(instruccion.nroPagina,instruccion.pid);
 
-			respuesta->respuesta = PERFECTO;
-
-			instanciaRamActual = list_get(datosMemoria->listaRAM,posicionDePagEnTLB);
-
-			free(instanciaRamActual->contenido);
-
-			instanciaRamActual->contenido = malloc(datosMemoria->configuracion->tamanioDeMarco);
-
-			instanciaRamActual->contenido = instruccion.texto;
-
-			respuesta->informacion = instanciaRamActual->contenido;
-
-			instanciaRamActual->modificado = true;
-		}
-
-		else {
+		if (posicionDePagEnRam<0) {
 
 			posicionDePagEnRam = dondeEstaEnRam(instruccion.nroPagina,instruccion.pid);
 
-			if (posicionDePagEnRam >= 0) {
-
-				respuesta->respuesta = PERFECTO;
-
-				instanciaRamActual = list_get(datosMemoria->listaRAM,posicionDePagEnTLB);
-
-				free(instanciaRamActual->contenido);
-
-				instanciaRamActual->contenido = malloc(datosMemoria->configuracion->tamanioDeMarco);
-
-				instanciaRamActual->contenido = instruccion.texto;
-
-				respuesta->informacion = instanciaRamActual->contenido;
-
-				instanciaRamActual->modificado = true;
-
-				//agregar a la tlb :'(
-			}
-
-			else
-
-			posicionDePagEnRam = traerPaginaDesdeSwap(instruccion, respuesta);
-
-			instanciaRamActual = list_get(datosMemoria->listaRAM,posicionDePagEnRam);
-
-			free(instanciaRamActual->contenido);
-
-			instanciaRamActual->contenido = malloc(datosMemoria->configuracion->tamanioDeMarco);
-
-			instanciaRamActual->contenido = instruccion.texto;
-
-			respuesta->informacion = instanciaRamActual->contenido;
-
-			instanciaRamActual->modificado = true;
-
-			//agregar a la tlb :'(
+			estaEnTLB = false;
 		}
 
-		if (respuesta->respuesta == MANQUEADO)
-			destruirProceso(instruccion.pid);
+		if(posicionDePagEnRam<0) {
 
+			 posicionDePagEnRam = traerPaginaDesdeSwap(instruccion, respuesta);
+
+			 traidoDeSwap = true;
+			}
+
+		if(posicionDePagEnRam>=0){
+
+					if(!traidoDeSwap){
+
+						respuesta->respuesta = PERFECTO;
+
+						posicionDePagEnRam = traerPaginaDesdeSwap(instruccion, respuesta);
+
+						tipoRAM* instanciaRamActual = list_get(datosMemoria->listaRAM,posicionDePagEnRam);
+
+						free(instanciaRamActual->contenido);
+
+						instanciaRamActual->contenido = malloc(datosMemoria->configuracion->tamanioDeMarco);
+
+						instanciaRamActual->contenido = instruccion.texto;
+
+						respuesta->informacion = instanciaRamActual->contenido;
+
+						instanciaRamActual->modificado = true;
+					}
+
+					if(!estaEnTLB){
+
+						//agregar a la tlb :'(
+
+					}
+
+				}
+	}
+
+	else {
+
+		destruirProceso(instruccion.pid);
+
+		respuesta->respuesta = MANQUEADO;
+
+		respuesta->informacion = "";
+	}
+
+		enviarRespuesta(cpuATratar, *respuesta);
 }
 
-else{
 
-	respuesta->respuesta = MANQUEADO;
-
-	respuesta->informacion = "";
-
-	destruirProceso(instruccion.pid);
-}
-
-	enviarRespuesta(cpuATratar, *respuesta);
-}
 
 ////////////////////
 //FINALIZAR PROCESO
@@ -400,6 +389,9 @@ bool instruccionASwapRealizada(tipoInstruccion instruccion,tipoRespuesta* respue
 	printf("recibi respuesta de swap\n");
 
 	printf("el estado de respuesta es %c\n",respuesta->respuesta);
+
+	printf("La info de respuesta es: %s\n",respuesta->informacion);
+
 
 	if(respuesta->respuesta==NULL)
 		printf("No se puede leer estado de respuesta\n");

@@ -17,7 +17,7 @@ int main(void) {
 
 //////////////////////////INICIALIZACION DE VARIABLES////////////////////////////////
 
-	tipoConfigMemoria* configuracion = cargarArchivoDeConfiguracionDeMemoria("/home/alexis/git/tp-2015-2c-los-javimancos/Memoria/Debug/cfgMemoria");
+	tipoConfigMemoria* configuracion = cargarArchivoDeConfiguracionDeMemoria(/*"cfgMemoria");/*/"/home/alexis/git/tp-2015-2c-los-javimancos/Memoria/Debug/cfgMemoria");
 
 	int socketParaCpus = crearSocket();
 
@@ -28,9 +28,9 @@ int main(void) {
 	bool memoriaActiva = true;
 
 //--------------ACA EMPIEZA FERNILANDIA--------------------------
-	t_list* listaRAM = list_create();
-	t_list* listaTLB = list_create();
-	t_list* listaAdministracionPaginas = list_create();
+	//t_list* listaRAM = list_create();
+	//t_list* listaTLB = list_create();
+	//t_list* listaAdministracionPaginas = list_create();
 
 	fd_set listaPrincipal;
 	fd_set listaFiltrada;

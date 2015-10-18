@@ -96,43 +96,48 @@ void tratarPeticiones();
 //INICIAR
 /////////////////
 
-int obtenerUltimaPagina(int pid);
+void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar);
 
 bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta* respuesta);
-
-int puedoReservarEnRAM(tipoInstruccion instruccion);
-
-void reservarMemoriaEnRam(tipoInstruccion instruccion);
-
-int estaHabilitadaLaTLB();
-
-int obtenerPosicionEnRAM(tipoRAM* instanciaRAM);
-
-void reservarMemoriaEnTLB(tipoTLB* instanciaTLB);
-
-void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar);
 
 //////////////////
 //LEER PAGINA
 /////////////////
 
-int buscarPaginaEnRam(tipoInstruccion instruccion, char* contenidoDePagina);
+void enviarPaginaPedidaACpu(tipoInstruccion instruccion, int cpuATratar);
 
-int buscarPaginaEnSwap(tipoInstruccion instruccion, char* contenidoDePagina, int socketSwap);
+void liberarEstructuraRAM(int posicionEnRam);
 
-void enviarPaginaACPU(char* contenidoDePagina,int socketCpu);
+void quitarPaginasDeRAM(int pid);
 
-void pedirPaginaDesdeSwapARam(tipoInstruccion instruccion, char* contenidoDePagina, int socketSwap);
+int cantidadDePaginasAsignadas(int pid);
 
-void leerPagina(tipoInstruccion instruccion,int socketCpu);
+void quitarPaginasDeTLB(int pid);
 
+int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta);
+
+int dondeEstaEnRam(int nroPagina, int pid);
+
+int dondeEstaEnTLB(int nroPagina, int pid);
+
+//////////////////
+//ESCRIBIR PAGINA
+/////////////////
+
+bool estaHabilitadaLaTLB();
+
+void escribirPagina(tipoInstruccion instruccion,int cpuATratar);
 
 /////////////////////
 //FINALIZAR PROCESO
 /////////////////////
 
-bool instruccionASwapRealizada(tipoInstruccion instruccion,tipoRespuesta* respuesta);
+bool instruccionASwapRealizada(tipoInstruccion instruccion,tipoRespuesta* respuesta) ;
 
-void quitarProceso(tipoInstruccion instruccion,int cpuaATratar);
+void quitarProceso(tipoInstruccion instruccion, int cpuaATratar);
+
+void destruirProceso(int pid);
+
+void quitarAdministracionDePaginas(int pid);
 
 #endif /* FUNCIONESMEMORIA_H_ */
