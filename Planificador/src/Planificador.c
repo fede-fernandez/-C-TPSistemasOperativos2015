@@ -73,9 +73,9 @@ int main(void) {
 	crear_lista();
 
 	//Este hilo va a escuchar y aceptar las conexiones, con las CPU de forma paralela a la ejecucion de este proceso "main"
-	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL); // falta testear la funcion "ejecutar_proceso"
-	pthread_create(&recibir, NULL, recibir_cpu, NULL); // falta testear la funcion "recibir_rafagas"
-	pthread_create(&bloquear, NULL, bloquear_procesos, NULL); //falta testear la funcion "bloquear_procesos"
+	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL);
+	pthread_create(&recibir, NULL, recibir_cpu, NULL);
+	pthread_create(&bloquear, NULL, bloquear_procesos, NULL);
 
 
 	menu();
@@ -438,24 +438,26 @@ int menu(void) {
 
 		opcion = 0;
 
+
+		    printf("################################################################\n");
 			printf("################################################################\n");
-			printf("#     --------> *****                  ***** <-------------    #\n");
-			printf("#   *****             LOS  JAVIMANCOS         ***** -------    #\n");
-			printf("#--------------------------------------------------------------#\n");
-			printf("#                                                              #\n");
-			printf("#  Ingrese una opción para continuar:                          #\n");
-			printf("#                                                              #\n");
-			printf("#                                                              #\n");
-			printf("#     1) Correr Path                                           #\n");
-			printf("#                                                              #\n");
-			printf("#     2) Finalizar PID                                         #\n");
-			printf("#                                                              #\n");
-			printf("#     3) ps                                                    #\n");
-			printf("#                                                              #\n");
-			printf("#     4) cpu                                                   #\n");
-			printf("#                                                              #\n");
-			printf("#     5) Salir                                                 #\n");
-			printf("#                                                              #\n");
+			printf("##     --------> *****                  ***** <------------   ##\n");
+			printf("##   *****             LOS  JAVIMANCOS         ***** -------  ##\n");
+			printf("##------------------------------------------------------------##\n");
+			printf("##                                                            ##\n");
+			printf("##      Ingrese una opción para continuar:                    ##\n");
+			printf("##                                                            ##\n");
+			printf("##                                                            ##\n");
+			printf("##          1) Correr Path                                    ##\n");
+			printf("##                                                            ##\n");
+			printf("##          2) Finalizar PID                                  ##\n");
+			printf("##                                                            ##\n");
+			printf("##          3) ps                                             ##\n");
+			printf("##                                                            ##\n");
+			printf("##          4) cpu                                            ##\n");
+			printf("##                                                            ##\n");
+			printf("##          5) Salir                                          ##\n");
+			printf("##                                                            ##\n");
 			printf("################################################################\n");
 			printf("################################################################\n\n\n");
 
