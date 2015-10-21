@@ -21,7 +21,7 @@ int main(void) {
 
 
 	destruirConfigCPU(configuracion);
-	return EXIT_SUCCESS;
+	return 0;
 }
 
 //Hilo CPU

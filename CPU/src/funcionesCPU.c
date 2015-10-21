@@ -93,6 +93,8 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketP
 		char tipoSalidaParaPlanificador = 'Q';
 		enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
 	}
+
+	//Salida a Planificador del PCB actualizado
 	tipoPCB PCBRespuesta;
 	PCBRespuesta = *PCB;
 	PCBRespuesta.insPointer = instructionPointer;
@@ -101,6 +103,7 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketP
 	return tipoDeSalida;
 }
 
+//Lector de codigo
 int ejecutarInstruccion(char* instruccion, int idDeProceso, int socketParaPlanificador, int socketParaMemoria)
 {
 	enum estadoDeLectura {INICIAL, EN_VALOR, EN_ORACION} estadoActual = INICIAL;
@@ -228,10 +231,10 @@ char* sacarComillas(char* frase)
 			return frase;
 }
 
-
-int instruccionIniciar(int numeroDePaginas, int idDeProceso, int socketParaPlanificador,int socketParaMemoria)
+//Funcion Iniciar CantidadDePaginas;
+int instruccionIniciar(int cantidadDePaginas, int idDeProceso, int socketParaPlanificador,int socketParaMemoria)
 {
-	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'i', numeroDePaginas, "", socketParaMemoria);
+	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'i', cantidadDePaginas, "", socketParaMemoria);
 
 	if(respuestaDeMemoria->respuesta == 'M') //Si fallo la operacion
 	{
@@ -240,10 +243,11 @@ int instruccionIniciar(int numeroDePaginas, int idDeProceso, int socketParaPlani
 	}
 
 	//LOGEAR
-	printf("Se ejecuto la instruccion INICIAR Pagina: %i, pID: %i\n", numeroDePaginas, idDeProceso);
+	printf("Se ejecuto la instruccion INICIAR Pagina: %i, pID: %i\n", cantidadDePaginas, idDeProceso);
 	return 0;
 }
 
+//Funcion Leer NumeroDePagina;
 int instruccionLeer(int numeroDePagina, int idDeProceso, int socketParaPlanificador, int socketParaMemoria)
 {
 	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'l', numeroDePagina, "", socketParaMemoria);
@@ -261,6 +265,7 @@ int instruccionLeer(int numeroDePagina, int idDeProceso, int socketParaPlanifica
 	return 0;
 }
 
+//Funcion Escribir NumeroDePagina Contenido;
 int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso, int socketParaPlanificador,int socketParaMemoria)
 {
 	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'e', numeroDePagina, textoAEscribir, socketParaMemoria);
@@ -276,6 +281,7 @@ int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProces
 	return 0;
 }
 
+//Funcion Entrada-Salida Tiempo;
 int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, int socketParaPlanificador)
 {
 	int* tiempoEspera = tiempoDeEspera;
@@ -289,6 +295,7 @@ int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, int socketPara
 	return 1; //Devuelve 1, operacion bloqueante
 }
 
+//Funcion Finalizar;
 int instruccionFinalizar(int idDeProceso, int socketParaPlanificador, int socketParaMemoria)
 {
 	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'f', 0, "", socketParaMemoria);
@@ -301,6 +308,7 @@ int instruccionFinalizar(int idDeProceso, int socketParaPlanificador, int socket
 	return 1; //Devuelve 1, operacion bloqueante
 }
 
+//Envio de Instruccion a Memoria. Recepcion de Respuesta de Memoria
 tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto, int socketParaMemoria)
 {
 	tipoInstruccion instruccionAMemoria;
