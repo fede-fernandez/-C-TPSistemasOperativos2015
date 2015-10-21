@@ -163,15 +163,15 @@ int ejecutarInstruccion(char* instruccion, int idDeProceso, int socketParaPlanif
 	int instruccionBloqueante = 0;
 	if(esInstruccionIniciar(nombreDeInstruccion))
 	{
-		instruccionBloqueante = instruccionIniciar(atoi(valorDeInstruccion), idDeProceso, socketParaMemoria);
+		instruccionBloqueante = instruccionIniciar(atoi(valorDeInstruccion), idDeProceso, socketParaPlanificador, socketParaMemoria);
 	}
 	if(esInstruccionLeer(nombreDeInstruccion))
 	{
-		instruccionBloqueante = instruccionLeer(atoi(valorDeInstruccion), idDeProceso, socketParaMemoria);
+		instruccionBloqueante = instruccionLeer(atoi(valorDeInstruccion), idDeProceso, socketParaPlanificador, socketParaMemoria);
 	}
 	if(esInstruccionEscribir(nombreDeInstruccion))
 	{
-		instruccionBloqueante = instruccionEscribir(atoi(valorDeInstruccion), valorDeInstruccion2, idDeProceso, socketParaMemoria);
+		instruccionBloqueante = instruccionEscribir(atoi(valorDeInstruccion), valorDeInstruccion2, idDeProceso, socketParaPlanificador,socketParaMemoria);
 	}
 	if(esInstruccionEntradaSalida(nombreDeInstruccion))
 	{
@@ -236,7 +236,7 @@ int instruccionIniciar(int numeroDePaginas, int idDeProceso, int socketParaPlani
 	if(respuestaDeMemoria->respuesta == 'M') //Si fallo la operacion
 	{
 		char tipoSalidaParaPlanificador = 'F';
-		enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
+		enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(char));
 	}
 
 	//LOGEAR
@@ -251,7 +251,7 @@ int instruccionLeer(int numeroDePagina, int idDeProceso, int socketParaPlanifica
 	if(respuestaDeMemoria->respuesta == 'M') //Si fallo la operacion
 	{
 		char tipoSalidaParaPlanificador = 'F';
-		enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
+		enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(char));
 	}
 
 	printf("\n%s\n", respuestaDeMemoria->informacion);
@@ -268,7 +268,7 @@ int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProces
 	if(respuestaDeMemoria->respuesta == 'M') //Si fallo la operacion
 	{
 		char tipoSalidaParaPlanificador = 'F';
-		enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
+		enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(char));
 	}
 
 	//LOGEAR
@@ -281,8 +281,8 @@ int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, int socketPara
 	int* tiempoEspera = tiempoDeEspera;
 	char tipoSalidaParaPlanificador = 'B';
 
-	enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
-	enviarMensaje(socketParaPlanificador, &tiempoEspera, sizeof(tiempoDeEspera));
+	enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(char));
+	enviarMensaje(socketParaPlanificador, &tiempoEspera, sizeof(int));
 
 	//LOGEAR
 	printf("Se ejecuto la instruccion ENTRADA-SALIDA Tiempo de espera: %i segundos, pID: %i", tiempoDeEspera, idDeProceso);
@@ -294,7 +294,7 @@ int instruccionFinalizar(int idDeProceso, int socketParaPlanificador, int socket
 	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, 'f', 0, "", socketParaMemoria);
 
 	char tipoSalidaParaPlanificador = 'F';
-	enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
+	enviarMensaje(socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(char));
 
 	//LOGEAR
 	printf("Se ejecuto la instruccion FINALIZAR, pID: %i", idDeProceso);
