@@ -5,7 +5,7 @@
 #define RUTA_DE_ARCHIVO_DE_CONFIGURACION_CPU "cfgCPU"
 #define RUTA_DE_ARCHIVO_DE_LOGS_CPU "logsCPU"
 
-void* CPU();
+
 
 
 //Estructura Hilo CPU
@@ -16,7 +16,8 @@ typedef struct
 	t_log* logCPU;
 }t_hiloCPU;
 
-/////////////////////REVISAR ESTRUCTURAS ASIGNACION DE STRINGS
+void* unCPU(t_hiloCPU* datosCPU);
+
 
 int main(void)
 {
@@ -30,16 +31,18 @@ int main(void)
 	//CPU->logCPU = log_create(RUTA_DE_ARCHIVO_DE_LOGS_CPU, "CPU", 1, LOG_LEVEL_TRACE);
 
 	//Crea tantos "CPUs" (hilos), especificado en el archivo de configuracion
-	pthread_t hiloCPU;
+	pthread_t* hiloCPU[datosCPU->configuracionCPU->cantidadDeHilos];
 	int i;
+	int errorDeHilo;
 	for(i = 0; i < datosCPU->configuracionCPU->cantidadDeHilos; i++)
 	{
 		datosCPU->idCPU = i;
-		pthread_create(&hiloCPU, NULL, unCPU, &datosCPU); //datosCPU lo tengo q pasar sin & para que funcione, pero tira warning si lo hago
+		errorDeHilo = pthread_create(&hiloCPU[i], NULL, unCPU, datosCPU);
+		pthread_join(hiloCPU[i], NULL);
 	}
 
 
-	free(CPU);
+	free(datosCPU);
 	return 0;
 }
 

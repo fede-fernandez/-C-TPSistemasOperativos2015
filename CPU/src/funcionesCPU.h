@@ -44,7 +44,7 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketP
 FILE* abrirProgramaParaLectura(char* rutaDelPrograma);
 int ejecutarInstruccion(char* instruccion, int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
 int longitudDeStringArray(char** stringArray);
-tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto);
+tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto, int socketParaMemoria);
 
 
 /*Funciones mAnsisOp*/
