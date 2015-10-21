@@ -1,6 +1,6 @@
 #include "funcionesCPU.h"
 
-
+//Crear archivo de configuracion
 tipoConfigCPU* crearConfigCPU()
 {
 	tipoConfigCPU* cfg = malloc(sizeof(tipoConfigCPU));
@@ -10,6 +10,7 @@ tipoConfigCPU* crearConfigCPU()
 	return cfg;
 }
 
+//Liberar memoria de archivo de configuracion
 void destruirConfigCPU(tipoConfigCPU* cfg)
 {
 	free(cfg->ipPlanificador);
@@ -17,6 +18,7 @@ void destruirConfigCPU(tipoConfigCPU* cfg)
 	free(cfg);
 }
 
+//Cargar archivo de configuracion
 tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfiguracionDelCPU)
 {
 	t_config* archivoCfg = config_create(rutaDelArchivoDeConfiguracionDelCPU);
@@ -43,6 +45,7 @@ tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfigura
 	return cfg;
 }
 
+//Cargar archivo a memoria
 FILE* abrirProgramaParaLectura(char* rutaDelPrograma)
 {
 	FILE* programa = fopen(rutaDelPrograma, "r");
@@ -54,6 +57,7 @@ FILE* abrirProgramaParaLectura(char* rutaDelPrograma)
 	return programa;
 }
 
+//Lector de rafagas
 int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketParaPlanificador, int socketParaMemoria)
 {
 	int tipoDeSalida = 0; //Si es 1, corta la ejecución del while que ejecuta instrucciones
@@ -188,6 +192,7 @@ int ejecutarInstruccion(char* instruccion, int idDeProceso, int socketParaPlanif
 	return instruccionBloqueante;
 }
 
+//Funcion que dado un array de strings, devuelve la longitud del mismo (cantidad de strings)
 int longitudDeStringArray(char** stringArray){
 	int i = 0;
 	while(stringArray[i])
@@ -222,7 +227,7 @@ bool esInstruccionFinalizar(char* instruccion)
 	return string_equals_ignore_case(instruccion, "finalizar");
 }
 
-
+//Funcion que lee un string y devuelve el string sin las comillas iniciales/finales
 char* sacarComillas(char* frase)
 {
 	if(string_starts_with(frase, "\"") && string_ends_with(frase, "\""))
