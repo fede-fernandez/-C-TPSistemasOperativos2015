@@ -67,7 +67,7 @@ void deserializarInstruccion(void* buffer,tipoInstruccion* instruccion);
 
 tipoInstruccion* recibirInstruccion(int socketEnviador);
 
-void enviarInstruccion(int socketCliente,tipoInstruccion instruccion);
+void enviarInstruccion(int socketCliente,tipoInstruccion* instruccion);
 
 void* serializarRespuesta(tipoRespuesta respuesta);
 
@@ -75,11 +75,13 @@ void deserializarRespuesta(void* buffer,tipoRespuesta* respuesta);
 
 tipoRespuesta* recibirRespuesta(int socketEnviador);
 
-void enviarRespuesta(int socketCliente,tipoRespuesta respuesta);
+void enviarRespuesta(int socketCliente,tipoRespuesta* respuesta);
 
 //-------------------LEONEGRO----------------------------------------
 
 //ronan: esto lo hice yo lpm, dejen de robar mi trabajo
+
+tipoInstruccion* crearTipoInstruccion(int pid,char instruccion,int nroPagina,char* texto);
 
 tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion);
 
