@@ -45,14 +45,27 @@ typedef struct{
 typedef struct{
 	t_list* listaRAM;
 	t_list* listaTLB;
+	t_list* listaTablaPaginas;
 	int socketSWAP;
 	int maximoSocket;
 	tipoConfigMemoria* configuracion;
 	fd_set* cpusATratar;
-	t_list* administradorPaginas;
 	bool* memoriaActiva;
 	int socketCpus;
+	t_list* listaAccesosAPaginasRAM;//Pongo
+	t_list* listaAccesosAPaginasTLB;//esto para
+	char tipoDeAlgoritmoRAM;//que funcione
+	char tipoDeAlgoritmoTLB;//fifo y lru
 }tipoEstructuraMemoria;
+
+typedef struct{
+	int cantVecesAccedido;
+	int pid;
+	int nroPagina;
+}tipoAccesosAPagina;
+
+#define FIFO 1
+#define LRU 2
 
 typedef struct{
 	int pid;
@@ -62,17 +75,16 @@ typedef struct{
 
 typedef struct{
 	int pid;
-	int numeroDePagina;
-	bool modificado;
-	char* contenido;
-}tipoRAM;
-
-typedef struct{
-	int pid;
 	int paginasPedidas;
 	int paginasAsignadas;
-}tipoAdministracionPaginas;
+	t_list* frames;
+}tipoTablaPaginas;
 
+typedef struct{
+	int numeroDePagina;
+	bool modificado;
+	int posicionEnRAM;
+}tipoPagina;
 
 tipoEstructuraMemoria* datosMemoria;
 
@@ -106,19 +118,23 @@ bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta* respuesta);
 
 void enviarPaginaPedidaACpu(tipoInstruccion instruccion, int cpuATratar);
 
-void liberarEstructuraRAM(int posicionEnRam);
+char* traerPaginaDesdeRam(int direccion);
 
-void quitarPaginasDeRAM(int pid);
+int buscarTabla(int pid);
 
-int cantidadDePaginasAsignadas(int pid);
+int dondeEstaEnTabla(int nroPagina, int pid);
+
+int dondeEstaEnTLB(int nroPagina, int pid);
+
+void traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta);
 
 void quitarPaginasDeTLB(int pid);
 
-int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta);
+int cantidadDePaginasAsignadas(int pid);
 
-int dondeEstaEnRam(int nroPagina, int pid);
+void quitarTabla(int pid);
 
-int dondeEstaEnTLB(int nroPagina, int pid);
+void liberarPaginaDeRAM(int posicionEnRam);
 
 //////////////////
 //ESCRIBIR PAGINA
@@ -132,12 +148,38 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar);
 //FINALIZAR PROCESO
 /////////////////////
 
-bool instruccionASwapRealizada(tipoInstruccion instruccion,tipoRespuesta* respuesta) ;
+bool instruccionASwapRealizada(tipoInstruccion* instruccion,tipoRespuesta** respuesta) ;
 
 void quitarProceso(tipoInstruccion instruccion, int cpuaATratar);
 
 void destruirProceso(int pid);
 
-void quitarAdministracionDePaginas(int pid);
+
+//**************************************************************************************************************
+//**********************************FUNCIONES DE REEMPLAZO******************************************************
+//**************************************************************************************************************
+
+void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam);
+
+void agregarPaginaATabla(int nroPagina,int pid,int posicionEnRam);//Agrega pagina a la tabla de pagina
+
+bool agregarPagina(int nroPagina,int pid,char* pagina);//agrega a ram y a tabla de paginas
+
+//int agregarPaginaARam(char* pagina);//Agrega la pagina a listaRAM y retorna la posicion dentro del t_list
+
+int cualReemplazarRAM();
+
+bool RAMLlena();
+
+bool TLBLlena();
+
+int cualReemplazarRAMFIFO();
+
+int cualReemplazarRAMLRU();
+
+int cualReemplazarTLBFIFO();
+
+int cualReemplazarTLB();
+
 
 #endif /* FUNCIONESMEMORIA_H_ */
