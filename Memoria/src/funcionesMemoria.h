@@ -53,7 +53,7 @@ typedef struct{
 	bool* memoriaActiva;
 	int socketCpus;
 	t_list* listaAccesosAPaginasRAM;//Pongo
-	t_list* listaAccesosAPaginasTLB;//esto para
+	//t_list* listaAccesosAPaginasTLB;//esto para
 	char tipoDeAlgoritmoRAM;//que funcione
 	char tipoDeAlgoritmoTLB;//fifo y lru
 }tipoEstructuraMemoria;
@@ -180,6 +180,18 @@ int cualReemplazarRAMLRU();
 int cualReemplazarTLBFIFO();
 
 int cualReemplazarTLB();
+
+void quitarPaginaDeTLB(int nroPagina,int pid);
+
+void limpiarTLB();
+
+void limpiarRam();
+
+void volcarRamALog();
+
+void limpiarTabla();
+
+void limpiarListaAccesos();
 
 
 #endif /* FUNCIONESMEMORIA_H_ */
