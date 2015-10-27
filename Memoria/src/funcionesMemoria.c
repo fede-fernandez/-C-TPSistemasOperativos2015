@@ -329,7 +329,7 @@ int dondeEstaEnTLB(int nroPagina, int pid) {
 	return posicionDePagina;
 }
 
-void traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta) {
+bool traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta) {
 
 	instruccion.instruccion = LEER;
 
@@ -337,6 +337,8 @@ void traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta)
 
 	if(instruccionExitosa)
 	agregarPagina(instruccion.nroPagina,instruccion.pid,respuesta->informacion);
+
+	return instruccionExitosa;
 
 }
 
@@ -485,8 +487,9 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 		if(posicionDePag<0) {
 
-		 traerPaginaDesdeSwap(instruccion, respuesta);
+		 bool traidoDesdeSwap = traerPaginaDesdeSwap(instruccion, respuesta);
 
+		 if(traidoDesdeSwap)
 		 posicionDePag = dondeEstaEnTabla(instruccion.nroPagina,instruccion.pid);
 		}
 
@@ -814,8 +817,8 @@ void limpiarTabla(){
 
 void limpiarListaAccesos(){
 	int var;
-	for (var = list_size(datosMemoria->listaAccesosAPaginasRAM); var>=0; ++var) {
-		list_remove(datosMemoria->listaAccesosAPaginasRAM,var);
+	for (var = list_size(datosMemoria->listaAccesosAPaginasRAM); var>0; ++var) {
+		list_remove(datosMemoria->listaAccesosAPaginasRAM,var-1);
 	}
 }
 

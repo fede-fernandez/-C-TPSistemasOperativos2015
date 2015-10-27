@@ -126,7 +126,7 @@ int dondeEstaEnTabla(int nroPagina, int pid);
 
 int dondeEstaEnTLB(int nroPagina, int pid);
 
-void traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta);
+bool traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta);
 
 void quitarPaginasDeTLB(int pid);
 
