@@ -16,10 +16,10 @@ char* completarBloque(char* bloqueACompletar, int tamanioDeBloque);
 //////////////FUNCIONES PARA EL ARCHIVO DE PARTICION///////////////////////
 
 
-FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas){
+void inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas){
 
 	char* instruccion=string_new();
-	FILE* particion;
+	//FILE* particion;
 
 	printf("Inicializando particion...\n\n");
 
@@ -30,9 +30,9 @@ FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int canti
 
 	printf("Particion inicializada. \n");
 
-	particion = fopen(nombreDeParticion,"r+");//modo actualizacion, el archivo debe existir
+	//particion = fopen(nombreDeParticion,"r+");//modo actualizacion, el archivo debe existir
 
-	return particion;
+	//return particion;
 }
 
 
