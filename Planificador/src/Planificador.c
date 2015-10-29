@@ -553,7 +553,7 @@ int liberar_memoria(){
 	liberarSocket(socketEscucha);
 
 
-	list_destroy_and_destroy_elements(CPUs,(void*)liberar_pcb);
+	//list_destroy_and_destroy_elements(CPUs,(void*)liberar_pcb);
 
 	//destruir hilos
 	//destruir listas.todo lo q este en memoria dinamica.
