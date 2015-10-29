@@ -321,7 +321,7 @@ tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int 
 	instruccionAMemoria.instruccion = instruccion;
 	instruccionAMemoria.nroPagina = numeroDePagina;
 	instruccionAMemoria.texto = texto;
-	enviarInstruccion(socketParaMemoria, instruccionAMemoria);
+	enviarInstruccion(socketParaMemoria, &instruccionAMemoria);
 	return recibirRespuesta(socketParaMemoria);
 }
 
