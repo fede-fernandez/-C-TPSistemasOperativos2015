@@ -17,7 +17,7 @@
 
 //////////////FUNCIONES PARA EL ARCHIVO DE PARTICION///////////////////////
 
-FILE* inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas);
+void inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas);
 
 void escribirBloqueMapeado(char* archivo,char* contenidoAEscribir,int numDeBloque, int tamanioDeBloque);
 

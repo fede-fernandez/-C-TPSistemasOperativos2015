@@ -4,6 +4,7 @@
 
 #include <commons/string.h>
 #include <commons/config.h>
+#include <commons/log.h>
 #include <sys/mman.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +44,7 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketP
 FILE* abrirProgramaParaLectura(char* rutaDelPrograma);
 int ejecutarInstruccion(char* instruccion, int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
 int longitudDeStringArray(char** stringArray);
-tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto);
+tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto, int socketParaMemoria);
 
 
 /*Funciones mAnsisOp*/

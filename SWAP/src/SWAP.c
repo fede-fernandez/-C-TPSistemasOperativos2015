@@ -35,7 +35,7 @@ int main(void) {
 	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("cfgSWAP");
 	t_list* listaDeHuecosUtilizados = inicializarListaDeHuecosUtilizados();
 
-	FILE* particion = inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
+	inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
 
 	tipoInstruccion* instruccionAEjecutar;
 	tipoRespuesta* respuestaParaMemoria;
@@ -70,7 +70,7 @@ int main(void) {
 
 	list_destroy_and_destroy_elements(listaDeHuecosUtilizados,(void*)destruirHuecoUtilizado);
 	destruirConfigSWAP(configuracion);
-	fclose(particion);
+
 
 
 	return EXIT_SUCCESS;

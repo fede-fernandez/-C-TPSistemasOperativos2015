@@ -2,45 +2,65 @@
 #include <stdlib.h>
 #include "funcionesCPU.h"
 
-#define RUTA_DE_ARCHIVO_DE_CONFIGURACION "cfgCPU"
+#define RUTA_DE_ARCHIVO_DE_CONFIGURACION_CPU "cfgCPU"
+#define RUTA_DE_ARCHIVO_DE_LOGS_CPU "logsCPU"
 
-void* CPU();
 
-int main(void) {
+
+
+//Estructura Hilo CPU
+typedef struct
+{
+	int idCPU;
+	tipoConfigCPU* configuracionCPU;
+	t_log* logCPU;
+}t_hiloCPU;
+
+void* unCPU(t_hiloCPU* datosCPU);
+
+
+int main(void)
+{
+	//Parametros para crear un hiloCPU: idCPU, archivoDeConfiguracion, archivoDeLogs
+	t_hiloCPU* datosCPU;
 
 	//Carga de archivo de configuracion
-	tipoConfigCPU* configuracion = cargarArchivoDeConfiguracionDeCPU(RUTA_DE_ARCHIVO_DE_CONFIGURACION);
+	datosCPU->configuracionCPU = cargarArchivoDeConfiguracionDeCPU(RUTA_DE_ARCHIVO_DE_CONFIGURACION_CPU);
+
+	//Creacion archivo de log
+	//CPU->logCPU = log_create(RUTA_DE_ARCHIVO_DE_LOGS_CPU, "CPU", 1, LOG_LEVEL_TRACE);
 
 	//Crea tantos "CPUs" (hilos), especificado en el archivo de configuracion
-	pthread_t hiloCPU;
+	pthread_t* hiloCPU[datosCPU->configuracionCPU->cantidadDeHilos];
 	int i;
-	for(i = 0; i < configuracion->cantidadDeHilos; i++)
+	int errorDeHilo;
+	for(i = 0; i < datosCPU->configuracionCPU->cantidadDeHilos; i++)
 	{
-		pthread_create(&hiloCPU, NULL, CPU, &i);
+		datosCPU->idCPU = i;
+		errorDeHilo = pthread_create(&hiloCPU[i], NULL, unCPU, datosCPU);
+		pthread_join(hiloCPU[i], NULL);
 	}
 
 
-	destruirConfigCPU(configuracion);
-	return EXIT_SUCCESS;
+	free(datosCPU);
+	return 0;
 }
 
 //Hilo CPU
-void* CPU(int idCPU)
+void* unCPU(t_hiloCPU* datosCPU)
 {
-	tipoConfigCPU* configuracion = cargarArchivoDeConfiguracionDeCPU(RUTA_DE_ARCHIVO_DE_CONFIGURACION);
-
 	int quantum = 0;
 	//Conexion a Planificador
 	int socketParaPlanificador = crearSocket();
-	conectarAServidor(socketParaPlanificador, configuracion->ipPlanificador, configuracion->puertoPlanificador);
+	conectarAServidor(socketParaPlanificador, datosCPU->configuracionCPU->ipPlanificador, datosCPU->configuracionCPU->puertoPlanificador);
 
 	//Primer mensaje para planificador, diciendo que estoy online y me responde con el quantum, si quantum = 0 -> FIFO
-	enviarMensaje(socketParaPlanificador, &idCPU, sizeof(&idCPU));
-	recibirMensajeCompleto(socketParaPlanificador, &quantum, sizeof(quantum));
+	enviarMensaje(socketParaPlanificador, datosCPU->idCPU, sizeof(int));
+	recibirMensajeCompleto(socketParaPlanificador, &quantum, sizeof(int));
 
 	//Me trato de conectar con Memoria
 	int socketParaMemoria = crearSocket();
-	conectarAServidor(socketParaMemoria, configuracion->ipMemoria, configuracion->puertoMemoria);
+	conectarAServidor(socketParaMemoria, datosCPU->configuracionCPU->ipMemoria, datosCPU->configuracionCPU->puertoMemoria);
 
 	//Espero a recibir tarea del planificador
 	while(true)
@@ -49,11 +69,10 @@ void* CPU(int idCPU)
 		PCB = recibirPCB(socketParaPlanificador);
 
 		//Me llega una tarea del planificador
-		ejecutarPrograma(PCB, quantum, configuracion->retardo, socketParaPlanificador, socketParaMemoria);
+		ejecutarPrograma(PCB, quantum, datosCPU->configuracionCPU->retardo, socketParaPlanificador, socketParaMemoria);
 	}
 
 	liberarSocket(socketParaMemoria);
 	liberarSocket(socketParaPlanificador);
-	destruirConfigCPU(configuracion);
-	return NULL;
+	return 0;
 }

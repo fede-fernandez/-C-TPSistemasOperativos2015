@@ -4,20 +4,19 @@
 #include <commonsDeAsedio/cliente-servidor.h>
 #include <commons/collections/list.h>
 #include <commonsDeAsedio/select.h>
+#include <commonsDeAsedio/thread.h>
+#include "funcionesSeñales.h"
 //-----------------------------------------------------------------
 #include <sys/types.h>
 #include <unistd.h>
 //---------------------------------------------------------------
 #define maxConexionesEntrantes 10
-#define PUERTOCPU 7200
-#define IPSWAP "127.0.0.1"
-#define PUERTOSWAP 6000
 
 int main(void) {
 
 //////////////////////////INICIALIZACION DE VARIABLES////////////////////////////////
 
-	tipoConfigMemoria* configuracion = cargarArchivoDeConfiguracionDeMemoria(/*"cfgMemoria");/*/"/home/alexis/git/tp-2015-2c-los-javimancos/Memoria/Debug/cfgMemoria");
+	tipoConfigMemoria* configuracion = cargarArchivoDeConfiguracionDeMemoria("cfgMemoria");
 
 	int socketParaCpus = crearSocket();
 
@@ -39,8 +38,7 @@ int main(void) {
 	FD_ZERO(&listaFiltrada);
 	FD_SET(socketParaCpus,&listaPrincipal);
 
-
-tipoEstructuraMemoria* datosMemoria = malloc(sizeof(tipoEstructuraMemoria));
+	tipoEstructuraMemoria* datosMemoria = malloc(sizeof(tipoEstructuraMemoria));
 
 	//datosMemoria->listaRAM = listaRAM;
 
@@ -69,6 +67,10 @@ tipoEstructuraMemoria* datosMemoria = malloc(sizeof(tipoEstructuraMemoria));
 	conectarAServidor(socketParaSwap,configuracion->ipSWAP,configuracion->puertoSWAP);
 
 	escucharConexiones(socketParaCpus,maxConexionesEntrantes);
+
+	pthread_t hiloSignals;
+
+	crearThread(&hiloSignals,funcionPrueba,datosMemoria);
 
 
 /////////////////////////////////////////////////////////////////////////////////////

@@ -97,7 +97,7 @@ void deserializarPCB(void* bloque, tipoPCB* pcbRecibido){
 
 tipoInstruccion* recibirInstruccion(int socketEnviador){
 
-	size_t tamanioBloque;
+	/*size_t tamanioBloque;
 
 	void* buffer= recibirBloque(&tamanioBloque,socketEnviador);
 
@@ -105,7 +105,20 @@ tipoInstruccion* recibirInstruccion(int socketEnviador){
 
 	deserializarInstruccion(buffer,instruccionRecibida);
 
-	return instruccionRecibida;
+	return instruccionRecibida;*/
+
+	tipoInstruccion* instruccion = malloc(sizeof(tipoInstruccion));
+
+	size_t tamanioTexto;
+
+	recibirMensajeCompleto(socketEnviador,&(instruccion->pid),sizeof(int));
+	recibirMensajeCompleto(socketEnviador,&(instruccion->instruccion),sizeof(char));
+	recibirMensajeCompleto(socketEnviador,&(instruccion->nroPagina),sizeof(int));
+	recibirMensajeCompleto(socketEnviador,&tamanioTexto,sizeof(size_t));
+	instruccion->texto = malloc(tamanioTexto);
+	recibirMensajeCompleto(socketEnviador,instruccion->texto,tamanioTexto);
+
+	return instruccion;
 }
 
 void deserializarInstruccion(void* buffer,tipoInstruccion* instruccion){
@@ -160,15 +173,29 @@ void* serializarInstruccion(tipoInstruccion instruccion){
 		return buffer;
 }
 
-void enviarInstruccion(int socketCliente,tipoInstruccion instruccion){
+void enviarInstruccion(int socketCliente,tipoInstruccion* instruccion){
 
-	size_t tamanioBloque = 2*(sizeof(char)+sizeof(int)+sizeof(size_t))+strlen(instruccion.texto);
+	/*size_t tamanioBloque = 2*(sizeof(char)+sizeof(int)+sizeof(size_t))+strlen(instruccion.texto);
 
 	void* bloque = serializarInstruccion(instruccion);
 
 	enviarMensaje(socketCliente,bloque,tamanioBloque);
 
-	free(bloque);
+	free(bloque);*/
+
+	printf("ya pase\n");
+	size_t tamanioTexto = strlen(instruccion->texto)+sizeof(char);
+	printf("ya pase\n");
+	enviarMensaje(socketCliente,&(instruccion->pid),sizeof(int));
+	printf("ya pase\n");
+	enviarMensaje(socketCliente,&(instruccion->instruccion),sizeof(char));
+	printf("ya pase\n");
+	enviarMensaje(socketCliente,&(instruccion->nroPagina),sizeof(int));
+	printf("ya pase\n");
+	enviarMensaje(socketCliente,&tamanioTexto,sizeof(size_t));
+	printf("ya pase\n");
+	enviarMensaje(socketCliente,instruccion->texto,tamanioTexto);
+
 }
 
 
@@ -185,7 +212,7 @@ void deserializarRespuesta(void* buffer,tipoRespuesta* respuesta){
 
 }
 
-void enviarRespuesta(int socketCliente,tipoRespuesta respuesta){
+void enviarRespuesta(int socketCliente,tipoRespuesta* respuesta){
 
 	/*size_t tamanioBloque = 2*(sizeof(size_t)+sizeof(char))+strlen(respuesta.informacion);
 
@@ -195,11 +222,11 @@ void enviarRespuesta(int socketCliente,tipoRespuesta respuesta){
 
 	free(buffer);*/
 
-	size_t tamanioInfo = strlen(respuesta.informacion)+sizeof(char);
+	size_t tamanioInfo = strlen(respuesta->informacion)+sizeof(char);
 
-	enviarMensaje(socketCliente,&respuesta.respuesta,sizeof(char));
+	enviarMensaje(socketCliente,&(respuesta->respuesta),sizeof(char));
 	enviarMensaje(socketCliente,&tamanioInfo,sizeof(size_t));
-	enviarMensaje(socketCliente,respuesta.informacion,tamanioInfo);
+	enviarMensaje(socketCliente,respuesta->informacion,tamanioInfo);
 }
 
 tipoRespuesta* recibirRespuesta(int socketEnviador){
@@ -223,7 +250,7 @@ tipoRespuesta* recibirRespuesta(int socketEnviador){
 	recibirMensajeCompleto(socketEnviador,&(respuesta->respuesta),sizeof(char));
 	recibirMensajeCompleto(socketEnviador,&tamanioInfo,sizeof(size_t));
 	respuesta->informacion = malloc(tamanioInfo);
-	recibirMensajeCompleto(socketEnviador,&(respuesta->informacion),tamanioInfo);
+	recibirMensajeCompleto(socketEnviador,respuesta->informacion,tamanioInfo);
 
 	return respuesta;
 
@@ -232,10 +259,29 @@ tipoRespuesta* recibirRespuesta(int socketEnviador){
 /*******************Funciones para tipoRespuesta*************************/
 
 tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion){//esto es al dope, no, yo lo uso en el swap
-	tipoRespuesta* aux = malloc(sizeof(tipoRespuesta));
 
+	printf("pase");
+	tipoRespuesta* aux = malloc(sizeof(tipoRespuesta)+strlen(informacion));
+
+	printf("pase");
 	aux->respuesta = respuesta;
+
 	aux->informacion = informacion;
+
+	return aux;
+}
+
+tipoInstruccion* crearTipoInstruccion(int pid,char instruccion,int nroPagina,char* texto ){//esto es al dope, no, yo lo uso en el swap
+
+	tipoInstruccion* aux = malloc(sizeof(tipoInstruccion)+strlen(texto));
+
+	aux->instruccion = instruccion;
+
+	aux->nroPagina = nroPagina;
+
+	aux->pid = pid;
+
+	aux->texto = texto;
 
 	return aux;
 }
