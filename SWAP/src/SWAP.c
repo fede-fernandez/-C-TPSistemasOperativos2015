@@ -57,7 +57,7 @@ int main(void) {
 
 		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion);
 
-		enviarRespuesta(socketParaRecibirInstrucciones,*respuestaParaMemoria);
+		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
 
 		destruirTipoRespuesta(respuestaParaMemoria);
 		destruirTipoInstruccion(instruccionAEjecutar);
