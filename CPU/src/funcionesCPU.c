@@ -99,9 +99,11 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketP
 	}
 
 	//Salida a Planificador del PCB actualizado
-	tipoPCB PCBRespuesta;
-	PCBRespuesta = *PCB;
-	PCBRespuesta.insPointer = instructionPointer;
+	tipoPCB* PCBRespuesta;
+	PCBRespuesta->ruta = PCB->ruta;
+	PCBRespuesta->pid = PCB->pid;
+	PCBRespuesta->estado = PCB->estado;
+	PCBRespuesta->insPointer = instructionPointer;
 	enviarPCB(socketParaPlanificador, PCBRespuesta);
 	fclose(programa);
 	return tipoDeSalida;
