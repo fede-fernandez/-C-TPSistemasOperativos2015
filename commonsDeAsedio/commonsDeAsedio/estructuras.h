@@ -51,13 +51,13 @@ typedef struct{
 }tipoRespuesta;
 
 
-void* serializarPCB(tipoPCB pcb);
-
-void deserializarPCB(void* bloque, tipoPCB* pcbrecibido);
+//void* serializarPCB(tipoPCB pcb);
+//
+//void deserializarPCB(void* bloque, tipoPCB* pcbrecibido);
 
 tipoPCB* recibirPCB(int socketEnviador);
 
-void enviarPCB(int socketCliente,tipoPCB pcb);
+void enviarPCB(int socketCliente,tipoPCB* pcb);
 
 void imprimirBufferPCB(void* buffer);
 

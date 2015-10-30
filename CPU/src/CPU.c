@@ -62,15 +62,21 @@ void* unCPU(t_hiloCPU* datosCPU)
 	int socketParaMemoria = crearSocket();
 	conectarAServidor(socketParaMemoria, datosCPU->configuracionCPU->ipMemoria, datosCPU->configuracionCPU->puertoMemoria);
 
+	//LOG: CPU creada conectada/conectada
+	log_trace(datosCPU->logCPU, "CPU ID: %i CREADA/CONECTADA A MEMORIA", datosCPU->idCPU);
+
 	//Espero a recibir tarea del planificador
 	while(true)
 	{
 		tipoPCB* PCB;
 		PCB = recibirPCB(socketParaPlanificador);
 
+		//LOG: CPU recibe PCBs
+		log_trace(datosCPU->logCPU, "CPU ID: %i PCB RECIBIDO. RUTA: %s | ESTADO: %c | PID: %i | INSPOINTER: %i", datosCPU->idCPU, PCB->ruta, PCB->estado, PCB->pid, PCB->insPointer, quantum);
+
 		//Me llega una tarea del planificador
 		ejecutarPrograma(PCB, quantum, datosCPU->configuracionCPU->retardo, socketParaPlanificador, socketParaMemoria);
-	}
+	} //ACORDATE DE REEMPLAZAR DATOSCPU->CONFIGBLABLA POR DATOS CPU UNICAMENTE Y MODIFICAR FUNCION
 
 	liberarSocket(socketParaMemoria);
 	liberarSocket(socketParaPlanificador);
