@@ -95,34 +95,59 @@ void liberar_pcb(t_PCB *PCB){
 }
 
 
-void enviarPCB2(int socketReceptor,t_PCB pcb){
+t_PCB recibirPCB2(int socketEnviador){
 
-	enviarMensaje(socketReceptor,&pcb.id,sizeof(int));
-	enviarMensaje(socketReceptor,&pcb.pc,sizeof(int));
-	enviarMensaje(socketReceptor,&pcb.estado,sizeof(char));
-	enviarMensaje(socketReceptor,&pcb.path,sizeof(char[30]));
+	size_t tamanioRuta;
+
+	tipoPCB* respuesta = malloc(sizeof(tipoPCB));
+
+	recibirMensajeCompleto(socketEnviador, &(respuesta->pid), sizeof(int));
+
+	recibirMensajeCompleto(socketEnviador, &(respuesta->insPointer), sizeof(int));
+
+	recibirMensajeCompleto(socketEnviador, &(respuesta->estado), sizeof(char));
+
+	recibirMensajeCompleto(socketEnviador, &tamanioRuta, sizeof(size_t));
+
+	respuesta->ruta = malloc(tamanioRuta);
+
+	recibirMensajeCompleto(socketEnviador, respuesta->ruta, tamanioRuta);
+
+	t_PCB pcb;
+
+
+	pcb.id = respuesta->pid;
+	pcb.pc = respuesta->insPointer;
+	pcb.estado = respuesta->estado;
+    memset(pcb.path, '\0', 30);
+    strcpy(pcb.path,respuesta->ruta);
+
+
+	return pcb;
 
 }
 
-t_PCB recibirPCB2(int socketEnviador){
+void enviarPCB2(int socketReceptor, t_PCB PCB_leo)
+{
 
-	t_PCB pcb;
-	int id;
-	int pc;
-	char estado;
-	char path[30];
+	tipoPCB* PCB;
 
-	recibirMensaje(socketEnviador, &id, sizeof(int));
-	recibirMensaje(socketEnviador, &pc, sizeof(int));
-	recibirMensaje(socketEnviador, &estado, sizeof(char));
-	recibirMensaje(socketEnviador, &path, sizeof(path));
+	PCB->pid = PCB_leo.id;
+	PCB->insPointer = PCB_leo.pc;
+	PCB->estado = PCB_leo.estado;
+	PCB->ruta =strdup(PCB_leo.path);
 
-	pcb.id = id;
-	pcb.pc = pc;
-	pcb.estado = estado;
-    memset(pcb.path, '\0', 30);
-    strcpy(pcb.path,path);
 
-	return pcb;
+		size_t tamanioRuta = strlen(PCB->ruta) + sizeof(char);
+
+		enviarMensaje(socketReceptor, &(PCB->pid), sizeof(int));
+
+		enviarMensaje(socketReceptor, &(PCB->insPointer), sizeof(int));
+
+		enviarMensaje(socketReceptor, &(PCB->estado), sizeof(char));
+
+		enviarMensaje(socketReceptor, &tamanioRuta, sizeof(int));
+
+		enviarMensaje(socketReceptor, PCB->ruta, tamanioRuta);
 }
 
