@@ -172,9 +172,10 @@ void enviarPaginaPedidaACpu(tipoInstruccion instruccion, int cpuATratar) {
 
 		if(posicionDePag<0) {
 
-		 traerPaginaDesdeSwap(instruccion, respuesta);
+			 bool traidoDesdeSwap = traerPaginaDesdeSwap(instruccion, respuesta);
 
-		 posicionDePag = dondeEstaEnTabla(instruccion.nroPagina,instruccion.pid);
+		if(traidoDesdeSwap)
+			 posicionDePag = dondeEstaEnTabla(instruccion.nroPagina,instruccion.pid);
 		}
 
 
@@ -313,7 +314,7 @@ int dondeEstaEnTLB(int nroPagina, int pid) {
 
 	for (var = 0; var < list_size(datosMemoria->listaTLB); ++var) {
 
-		estructuraTLBActual = list_get(datosMemoria->listaRAM, var);
+		estructuraTLBActual = list_get(datosMemoria->listaTLB, var);
 
 		if (estructuraTLBActual->numeroDePagina == nroPagina&& estructuraTLBActual->pid == pid) {
 
@@ -503,22 +504,23 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 		char* paginaAModificar = traerPaginaDesdeRam(posicionDePag);
 
-		free(paginaAModificar);
+		//free(paginaAModificar);
 
-		paginaAModificar = malloc(datosMemoria->configuracion->tamanioDeMarco);
+		//paginaAModificar = malloc(datosMemoria->configuracion->tamanioDeMarco);
 
 		memcpy(paginaAModificar,instruccion.texto,datosMemoria->configuracion->tamanioDeMarco);
 
-		list_replace(datosMemoria->listaRAM,posicionDePag,paginaAModificar);
+		list_replace(datosMemoria->listaRAM,posicionDePag,paginaAModificar);//Deberia liberar memoria?? ,no entiendo nada!!
 
 		modificarBitDeModificacion(instruccion.nroPagina,instruccion.pid);
 
-		if(!estaEnTLB&&estaHabilitadaLaTLB())
-			agregarPaginaATLB(instruccion.nroPagina,instruccion.pid,posicionDePag);
 
 				}
 		else
 			agregarPagina(instruccion.nroPagina,instruccion.pid,instruccion.texto);
+
+		if(!estaEnTLB&&estaHabilitadaLaTLB())
+			agregarPaginaATLB(instruccion.nroPagina,instruccion.pid,posicionDePag);
 		}
 
 	else{
@@ -668,7 +670,7 @@ void destruirProceso(int pid) {
 
 void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam){
 
-	if(!TLBLlena()){
+	if(TLBLlena()){
 
 		int posicionAReemplazar = cualReemplazarTLB();
 
@@ -786,7 +788,7 @@ void quitarPaginaDeTLB(int nroPagina,int pid){
 void limpiarTLB(){
 	int var;
 	for (var = 0; var < list_size(datosMemoria->listaTLB); ++var) {
-		list_remove(datosMemoria->listaTLB,var);
+		list_remove(datosMemoria->listaTLB,0);//var);
 	}
 }
 
@@ -805,14 +807,21 @@ void limpiarTabla(){
 
 	int var;
 
-	tipoTablaPaginas* instanciaTabla;
+	/*tipoTablaPaginas* instanciaTabla;
 
 	for (var = list_size(datosMemoria->listaTablaPaginas); var >=0; --var) {
 
 		instanciaTabla = list_get(datosMemoria->listaTablaPaginas,var);
 
 		quitarTabla(instanciaTabla->pid);
+	}*/
+
+	for (var = 0; var < list_size(datosMemoria->listaTablaPaginas); ++var) {
+
+		list_remove(datosMemoria->listaTablaPaginas,0);
+
 	}
+
 }
 
 void limpiarListaAccesos(){
