@@ -16,6 +16,7 @@
 #include <commonsDeAsedio/cliente-servidor.h>
 #include <commonsDeAsedio/estructuras.h>
 #include <commons/collections/list.h>
+#include <commonsDeAsedio/select.h>
 
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
@@ -49,13 +50,14 @@ typedef struct{
 	int socketSWAP;
 	int maximoSocket;
 	tipoConfigMemoria* configuracion;
-	fd_set* cpusATratar;
+	//fd_set* cpusATratar;
 	bool* memoriaActiva;
 	int socketCpus;
 	t_list* listaAccesosAPaginasRAM;//Pongo
 	//t_list* listaAccesosAPaginasTLB;//esto para
 	char tipoDeAlgoritmoRAM;//que funcione
 	char tipoDeAlgoritmoTLB;//fifo y lru
+	//fd_set* listaCpus;
 }tipoEstructuraMemoria;
 
 typedef struct{
@@ -100,7 +102,7 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(char* rutaDelArchivoDeC
 
 void tratarPeticion(int cpuAtendida);
 
-void tratarPeticiones();
+//void tratarPeticiones();
 
 /**************INSTRUCCIONES*******************/
 

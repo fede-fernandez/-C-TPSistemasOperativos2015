@@ -88,6 +88,7 @@ void tratarPeticion(int cpuAtendida) {
 
 	case ESCRIBIR:
 			escribirPagina(*instruccion,cpuAtendida);
+
 		break;
 
 	case FINALIZAR:
@@ -96,14 +97,24 @@ void tratarPeticion(int cpuAtendida) {
 	}
 }
 
-void tratarPeticiones() {
+/*void tratarPeticiones() {
 
 	int var;
 	for (var = 1; var <= datosMemoria->maximoSocket; ++var) {
-		if (FD_ISSET(var, datosMemoria->cpusATratar)&&var!=datosMemoria->socketCpus)
-			tratarPeticion(var);
+
+		if(FD_ISSET(var, datosMemoria->cpusATratar)){
+
+			if(var==datosMemoria->socketCpus){
+				int socketCpuEntrante = crearSocketParaAceptarSolicitudes(datosMemoria->socketCpus);
+				FD_SET(socketCpuEntrante,datosMemoria->listaCpus);
+				datosMemoria->maximoSocket = maximoEntre(datosMemoria->maximoSocket,socketCpuEntrante);
+			}
+
+			else 	tratarPeticion(var);
+		}
+
 	}
-}
+}*/
 
 /**************INSTRUCCIONES*******************/
 
@@ -113,6 +124,10 @@ void tratarPeticiones() {
 void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 
 	tipoRespuesta* respuesta;// = malloc(sizeof(tipoRespuesta));
+
+	int dondeEstaTabla = buscarTabla(instruccion.pid);
+
+	if(dondeEstaTabla<0){
 
 	if (puedoReservarEnSWAP(instruccion, &respuesta)) {
 
@@ -136,6 +151,8 @@ void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 
 		printf("agregue pagina a tabla de paginas\n");
 	}
+	}
+	else 	respuesta = crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso ya existente");
 
 	enviarRespuesta(cpuATratar, respuesta);
 }

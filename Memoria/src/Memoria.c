@@ -50,7 +50,9 @@ int main(void) {
 
 	datosMemoria->configuracion = configuracion;
 
-	datosMemoria->cpusATratar = &listaFiltrada;
+	//datosMemoria->cpusATratar = &listaFiltrada;
+
+	//datosMemoria->listaCpus = &listaPrincipal;
 
 	//datosMemoria->administradorPaginas = listaAdministracionPaginas;
 
@@ -72,28 +74,46 @@ int main(void) {
 
 	crearThread(&hiloSignals,funcionPrueba,datosMemoria);
 
+	/*socketCpuEntrante = crearSocketParaAceptarSolicitudes(socketParaCpus);
+	FD_SET(socketParaCpus,&listaPrincipal);
+	datosMemoria->maximoSocket = maximoEntre(datosMemoria->maximoSocket,socketCpuEntrante);*/
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 
 
 	while(memoriaActiva){
 
-		FD_ZERO(&listaFiltrada);
+		//FD_ZERO(&listaFiltrada);
 
 		listaFiltrada = listaPrincipal;
 
 		select(datosMemoria->maximoSocket+1,&listaFiltrada,NULL,NULL,NULL);
 
-		if(FD_ISSET(socketParaCpus,&listaFiltrada)){
+		/*if(FD_ISSET(socketParaCpus,&listaFiltrada)){
 			socketCpuEntrante = crearSocketParaAceptarSolicitudes(socketParaCpus);
 			FD_SET(socketParaCpus,&listaPrincipal);
 			FD_SET(socketCpuEntrante,&listaFiltrada);
 			datosMemoria->maximoSocket = maximoEntre(datosMemoria->maximoSocket,socketCpuEntrante);
-		}
+		}*/
 
-		tratarPeticiones(&datosMemoria);
+		int var;
+		for (var = 0; var <= datosMemoria->maximoSocket; var++) {
+
+			if(FD_ISSET(var, &listaFiltrada)){
+
+				if(var==datosMemoria->socketCpus){
+					socketCpuEntrante = crearSocketParaAceptarSolicitudes(datosMemoria->socketCpus);
+					FD_SET(socketCpuEntrante,&listaPrincipal);
+					datosMemoria->maximoSocket = maximoEntre(datosMemoria->maximoSocket,socketCpuEntrante);
+				}
+
+				else 	tratarPeticion(var);
+		}
+	}
 
 	}
+
 
 	destruirConfigMemoria(configuracion);
 
