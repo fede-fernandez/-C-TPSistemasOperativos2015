@@ -18,20 +18,20 @@ char* completarBloque(char* bloqueACompletar, int tamanioDeBloque);
 
 void inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantidadDePaginas){
 
-	char* instruccion=string_new();
 	//FILE* particion;
+
+	char* instruccion = string_new();
+	string_append_with_format(&instruccion,"dd if=/dev/zero of=%s bs=%d count=%d",nombreDeParticion,tamanioDePagina,cantidadDePaginas);
 
 	printf("Inicializando particion...\n\n");
 
-
-	sprintf(instruccion,"dd if=/dev/zero of=%s bs=%d count=%d",nombreDeParticion,tamanioDePagina,cantidadDePaginas);
-	//sprintf(instruccion,"truncate -s %d %s",tamanioDeParticion,nombreDeParticion);
+	//system("dd if=/dev/zero of=%s bs=%d count=%d",nombreDeParticion,tamanioDePagina,cantidadDePaginas);
 	system(instruccion);
+	//sprintf(instruccion,"truncate -s %d %s",tamanioDeParticion,nombreDeParticion);
 
 	printf("Particion inicializada. \n");
 
 	//particion = fopen(nombreDeParticion,"r+");//modo actualizacion, el archivo debe existir
-
 	//return particion;
 }
 
