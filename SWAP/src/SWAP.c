@@ -54,17 +54,17 @@ int main(void) {
 
 
 /***********Recibir instrucciones y ejecutarlas***********/
-//	while(INFINITO){
-//
-//		instruccionAEjecutar = recibirInstruccion(socketParaRecibirInstrucciones);
-//
-//		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion);
-//
-//		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
-//
-//		destruirTipoRespuesta(respuestaParaMemoria);
-//		destruirTipoInstruccion(instruccionAEjecutar);
-//	}
+	while(INFINITO){
+
+		instruccionAEjecutar = recibirInstruccion(socketParaRecibirInstrucciones);
+
+		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion);
+
+		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
+
+		destruirTipoRespuesta(respuestaParaMemoria);
+		destruirTipoInstruccion(instruccionAEjecutar);
+	}
 
 /********Liberar memoria*************/
 
