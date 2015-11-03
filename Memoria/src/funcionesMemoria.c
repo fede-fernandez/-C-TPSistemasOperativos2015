@@ -129,6 +129,8 @@ void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 
 	if(dondeEstaTabla<0){
 
+	if(instruccion.nroPagina<=datosMemoria->configuracion->maximoDeMarcosPorProceso){
+
 	if (puedoReservarEnSWAP(instruccion, &respuesta)) {
 
 		printf("pude reservar en swap!!\n");
@@ -150,7 +152,9 @@ void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 		list_add(datosMemoria->listaTablaPaginas, tablaDePaginasNueva);
 
 		printf("agregue pagina a tabla de paginas\n");
-	}
+			}
+		}
+		else respuesta = crearTipoRespuesta(MANQUEADO,"Cantidad de paginas excede el maximo por proceso");
 	}
 	else 	respuesta = crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso ya existente");
 
@@ -221,12 +225,12 @@ void enviarPaginaPedidaACpu(tipoInstruccion instruccion, int cpuATratar) {
 
 			tipoRespuesta* respuestaSwap;
 
-			if(instruccionASwapRealizada(&instruccionDeBorrado,respuestaSwap))
+			if(instruccionASwapRealizada(&instruccionDeBorrado,respuestaSwap))//Aca tira un buen segmentation fault
 				destruirProceso(instruccion.pid);
 
 			respuesta->respuesta = MANQUEADO;
 
-			respuesta->informacion = "Pagina no encontrada";
+			respuesta->informacion = string_duplicate("Pagina no encontrada");
 		}
 	}
 
@@ -246,10 +250,9 @@ void enviarPaginaPedidaACpu(tipoInstruccion instruccion, int cpuATratar) {
 					if(instruccionASwapRealizada(&instruccionDeBorrado,respuestaSwap))
 					destruirProceso(instruccion.pid);
 
-					respuesta->respuesta = MANQUEADO;
+					respuesta = crearTipoRespuesta(MANQUEADO,"Tabla de paginas no existente");
 
-					respuesta->informacion = "Tabla de paginas no existente";
-				}
+			}
 
 	enviarRespuesta(cpuATratar, respuesta);
 
@@ -490,7 +493,7 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 		tipoTablaPaginas* tablaDeProceso = list_get(datosMemoria->listaTablaPaginas,dondeEstaTabla);
 
-	if(strlen(instruccion.texto)<datosMemoria->configuracion->tamanioDeMarco&&instruccion.nroPagina<=tablaDeProceso->paginasPedidas){
+	if(strlen(instruccion.texto)<datosMemoria->configuracion->tamanioDeMarco&&instruccion.nroPagina<tablaDeProceso->paginasPedidas){
 
 		if(estaHabilitadaLaTLB())
 			posicionDePag = dondeEstaEnTLB(instruccion.nroPagina,instruccion.pid);
@@ -515,22 +518,23 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 		respuesta->informacion = malloc(datosMemoria->configuracion->tamanioDeMarco);
 
-		memcpy(respuesta->informacion,instruccion.texto,datosMemoria->configuracion->tamanioDeMarco);
+		memcpy(respuesta->informacion,instruccion.texto,datosMemoria->configuracion->tamanioDeMarco);//strlen(instruccion.texto));
 
 		if(posicionDePag>=0){
 
-		char* paginaAModificar = traerPaginaDesdeRam(posicionDePag);
+		char* paginaAModificar; //= traerPaginaDesdeRam(posicionDePag);
 
 		//free(paginaAModificar);
 
-		//paginaAModificar = malloc(datosMemoria->configuracion->tamanioDeMarco);
+		paginaAModificar = malloc(datosMemoria->configuracion->tamanioDeMarco);
 
-		memcpy(paginaAModificar,instruccion.texto,datosMemoria->configuracion->tamanioDeMarco);
+		memcpy(paginaAModificar,instruccion.texto,strlen(instruccion.texto));
 
-		list_replace(datosMemoria->listaRAM,posicionDePag,paginaAModificar);//Deberia liberar memoria?? ,no entiendo nada!!
+		char* paginaModificada = list_replace(datosMemoria->listaRAM,posicionDePag,paginaAModificar);//Deberia liberar memoria?? ,no entiendo nada!!
+
+		free(paginaModificada);
 
 		modificarBitDeModificacion(instruccion.nroPagina,instruccion.pid);
-
 
 				}
 		else
@@ -570,7 +574,7 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 				else{
 
-					tipoInstruccion instruccionDeBorrado;
+					/*tipoInstruccion instruccionDeBorrado;
 
 					instruccionDeBorrado.instruccion = FINALIZAR;
 
@@ -582,7 +586,8 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 					tipoRespuesta* respuestaSwap;
 
-					if(instruccionASwapRealizada(&instruccionDeBorrado,respuestaSwap))
+					if(instruccionASwapRealizada(&instruccionDeBorrado,respuestaSwap))*///Aca si no existe la tabla en
+																						//RAM no deberia de existir en SWAP
 					destruirProceso(instruccion.pid);
 
 					respuesta->respuesta = MANQUEADO;
