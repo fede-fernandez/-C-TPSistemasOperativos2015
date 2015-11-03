@@ -32,7 +32,7 @@ bool baseMenor(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);
 
 /********Funciones principales de SWAP**************/
 
-tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion);
+tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion, int retardoDeCompactacion);
 tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso);
 tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion);
 tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion);
@@ -51,7 +51,7 @@ int baseParaMProcSiTengoEspacioContiguo(t_list* listaDeHuecosUtilizados, int can
 
 void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas, int base);
 
-void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina);
+void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina, int retardoDeCompactacion);
 
 void moverHueco(tipoHuecoUtilizado* hueco,char* particion, int ultimaPaginaEscrita,int tamanioDePagina);
 void moverPagina(char* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina);

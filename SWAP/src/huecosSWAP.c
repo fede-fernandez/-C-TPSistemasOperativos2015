@@ -157,7 +157,7 @@ t_list* inicializarListaDeHuecosUtilizados(){
 
 
 /////////////////////FUNCIONES PRINCIPALES//////////////
-tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion){
+tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion, int retardoDeCompactacion){
 
 	tipoRespuesta* respuestaASolicitudDeReserva;
 	int baseParaNuevoPID;
@@ -167,7 +167,7 @@ tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNue
 		//tengo espacio contiguo para almacenar las paginas que el mprc necesita?
 		if((baseParaNuevoPID = baseParaMProcSiTengoEspacioContiguo(listaDeHuecosUtilizados,cantPaginasSolicitadas,cantDePaginasDeSWAP)) == -1){
 
-			compactacionAlpha(listaDeHuecosUtilizados,particion,tamanioDePagina);
+			compactacionAlpha(listaDeHuecosUtilizados,particion,tamanioDePagina,retardoDeCompactacion);
 			//baseNuevo = ultima pagina ocupada para asignar al final
 			tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,list_size(listaDeHuecosUtilizados)-1);
 			baseParaNuevoPID = traducirDireccionLogicaAFisica(aux,aux->cantidadDePaginasQueOcupa);
@@ -293,7 +293,7 @@ int baseParaMProcSiTengoEspacioContiguo(t_list* listaDeHuecosUtilizados, int can
 	return -1;
 }
 
-void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina){
+void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina, int retardoDeCompactacion){
 	tipoHuecoUtilizado* hueco;
 	int ultimaPaginaEscrita = 0;
 
@@ -305,6 +305,8 @@ void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tama
 		moverHueco(hueco,particion,ultimaPaginaEscrita,tamanioDePagina);
 		ultimaPaginaEscrita = traducirDireccionLogicaAFisica(hueco,hueco->cantidadDePaginasQueOcupa);
 	}
+
+	sleep(retardoDeCompactacion);
 }
 
 void moverHueco(tipoHuecoUtilizado* hueco,char* particion, int ultimaPaginaEscrita,int tamanioDePagina){

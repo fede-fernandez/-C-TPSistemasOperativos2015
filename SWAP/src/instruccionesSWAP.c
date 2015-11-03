@@ -18,7 +18,7 @@ tipoRespuesta* ejecutarInstruccion(tipoInstruccion* instruccion,t_list* listaDeH
 
 	switch (instruccion->instruccion) {
 		case INICIAR:
-			respuesta = reservarEspacio(listaDeHuecos,instruccion->pid,instruccion->nroPagina,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,configuracion->nombreDeSWAP);
+			respuesta = reservarEspacio(listaDeHuecos,instruccion->pid,instruccion->nroPagina,configuracion->cantidadDePaginas,configuracion->tamanioDePagina,configuracion->nombreDeSWAP,configuracion->retardoDeCompactacion);
 			break;
 
 		case LEER:
