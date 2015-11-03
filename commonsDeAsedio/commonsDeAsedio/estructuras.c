@@ -45,6 +45,11 @@ void enviarPCB(int socketCliente, tipoPCB* PCB)
 		enviarMensaje(socketCliente, PCB->ruta, tamanioRuta);
 }
 
+void imprimirPCB(tipoPCB* PCB)
+{
+	printf("pID: %i | instructionPointer: %i | estado: %c | ruta: %s\n", PCB->pid, PCB->insPointer, PCB->estado, PCB->ruta);
+}
+
 tipoInstruccion* recibirInstruccion(int socketEnviador){
 
 	tipoInstruccion* instruccion = malloc(sizeof(tipoInstruccion));
@@ -63,17 +68,11 @@ tipoInstruccion* recibirInstruccion(int socketEnviador){
 
 void enviarInstruccion(int socketCliente,tipoInstruccion* instruccion){
 
-	printf("ya pase\n");
 	size_t tamanioTexto = strlen(instruccion->texto)+sizeof(char);
-	printf("ya pase\n");
 	enviarMensaje(socketCliente,&(instruccion->pid),sizeof(int));
-	printf("ya pase\n");
 	enviarMensaje(socketCliente,&(instruccion->instruccion),sizeof(char));
-	printf("ya pase\n");
 	enviarMensaje(socketCliente,&(instruccion->nroPagina),sizeof(int));
-	printf("ya pase\n");
 	enviarMensaje(socketCliente,&tamanioTexto,sizeof(size_t));
-	printf("ya pase\n");
 	enviarMensaje(socketCliente,instruccion->texto,tamanioTexto);
 
 }

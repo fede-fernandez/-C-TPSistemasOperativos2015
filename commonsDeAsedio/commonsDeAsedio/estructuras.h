@@ -55,6 +55,8 @@ tipoPCB* recibirPCB(int socketEnviador);
 
 void enviarPCB(int socketCliente,tipoPCB* pcb);
 
+void imprimirPCB(tipoPCB* PCB);
+
 tipoInstruccion* recibirInstruccion(int socketEnviador);
 
 void enviarInstruccion(int socketCliente,tipoInstruccion* instruccion);
