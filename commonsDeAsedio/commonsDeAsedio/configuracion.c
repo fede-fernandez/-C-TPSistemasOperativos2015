@@ -11,3 +11,15 @@ int obtenerCampoDeConfiguracion(char** campoObtenido,char* campoBuscado,t_config
 		return -1;
 	}
 }
+
+void validarExistenciaDeArchivoDeConfiguracion(char* rutaDelArchivoDeConfiguracion)
+{
+	FILE* archivoDeConfiguracion = fopen(rutaDelArchivoDeConfiguracion, "r");
+	if(archivoDeConfiguracion == NULL)
+	{
+		perror("El archivo de configuracion no existe o esta vacio.");
+		fclose(archivoDeConfiguracion);
+		abort();
+	}
+	fclose(archivoDeConfiguracion);
+}
