@@ -22,6 +22,8 @@ void destruirConfigCPU(tipoConfigCPU* cfg)
 tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfiguracionDelCPU)
 {
 	t_config* archivoCfg = config_create(rutaDelArchivoDeConfiguracionDelCPU);
+	//ARREGLARRRvalidarExistenciaDeArchivoDeConfiguracion(rutaDelArchivoDeConfiguracionDelCPU);
+
 	tipoConfigCPU* cfg = crearConfigCPU();
 
 	validarErrorYAbortar(config_has_property(archivoCfg,IP_PLANIFICADOR)
@@ -70,7 +72,7 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketP
 	{
 		while(instructionPointer < longitudDeStringArray(instrucciones))
 		{
-			tipoDeSalida = ejecutarInstruccion(instrucciones[PCB->insPointer], PCB->pid, socketParaPlanificador, socketParaMemoria);
+			tipoDeSalida = ejecutarInstruccion(instrucciones[instructionPointer], PCB->pid, socketParaPlanificador, socketParaMemoria);
 			sleep(tiempoDeRetardo);
 			instructionPointer++;
 			if(tipoDeSalida == 1)
@@ -85,7 +87,7 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketP
 		int clock = 0;
 		while(clock < quantum)
 		{
-			tipoDeSalida = ejecutarInstruccion(instrucciones[PCB->insPointer], PCB->pid, socketParaPlanificador, socketParaMemoria);
+			tipoDeSalida = ejecutarInstruccion(instrucciones[instructionPointer], PCB->pid, socketParaPlanificador, socketParaMemoria);
 			sleep(tiempoDeRetardo);
 			instructionPointer++;
 			clock++;
