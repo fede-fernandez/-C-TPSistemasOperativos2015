@@ -237,7 +237,11 @@ int recibir_rafagas(){
 	// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
 	recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
-	recibirMensaje(nodo_cpu->puerto, &T, sizeof(int));
+	if(llegada=='B'){
+
+		recibirMensaje(nodo_cpu->puerto, &T, sizeof(int));
+	}
+
 
 	PCB_recibido = recibirPCB2(nodo_cpu->puerto); // recibe el PCB
 
