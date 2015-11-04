@@ -55,6 +55,7 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(
 	return cfg;
 }
 
+
 void setearEstructuraMemoria(tipoEstructuraMemoria* datos) {
 
 	datosMemoria = datos;
@@ -69,8 +70,23 @@ void setearEstructuraMemoria(tipoEstructuraMemoria* datos) {
 	datosMemoria->listaTLB = list_create();
 	//datosMemoria->listaAccesosAPaginasTLB = list_create();
 	}
+
+	datosMemoria->tipoDeAlgoritmoRAM = FIFO;//Hardcodeo algoritmo
+	datosMemoria->listaAccesosAPaginasRAM = list_create();
 }
 
+void agregarAcceso(int nroPagina,int pid){
+
+	tipoAccesosAPagina* accesoPagina = malloc(sizeof(tipoAccesosAPagina));
+
+	accesoPagina->cantVecesAccedido = 0;
+
+	accesoPagina->nroPagina = nroPagina;
+
+	accesoPagina->pid = pid;
+
+	list_add(datosMemoria->listaAccesosAPaginasRAM,accesoPagina);
+}
 /************************FUNCIONES********************************/
 
 void tratarPeticion(int cpuAtendida) {
@@ -210,6 +226,8 @@ void enviarPaginaPedidaACpu(tipoInstruccion instruccion, int cpuATratar) {
 
 		if(!estaEnTLB&&estaHabilitadaLaTLB())
 			agregarPaginaATLB(instruccion.nroPagina,instruccion.pid,posicionDePag);
+
+		aumentarAccesoAPaginaRAM(instruccion.nroPagina,instruccion.pid);
 
 				}
 		else{
@@ -508,6 +526,8 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 		if(posicionDePag<0) {
 
+			instruccion.instruccion = LEER;
+
 		 bool traidoDesdeSwap = traerPaginaDesdeSwap(instruccion, respuesta);
 
 		 if(traidoDesdeSwap)
@@ -536,9 +556,14 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 		modificarBitDeModificacion(instruccion.nroPagina,instruccion.pid);
 
+		aumentarAccesoAPaginaRAM(instruccion.nroPagina,instruccion.pid);
+
 				}
-		else
+		else{
 			agregarPagina(instruccion.nroPagina,instruccion.pid,instruccion.texto);
+
+			agregarAcceso(instruccion.nroPagina,instruccion.pid);
+		}
 
 		if(!estaEnTLB&&estaHabilitadaLaTLB())
 			agregarPaginaATLB(instruccion.nroPagina,instruccion.pid,posicionDePag);
@@ -612,7 +637,7 @@ void modificarBitDeModificacion(int nroPagina,int pid){
 
 		if(paginaActual->numeroDePagina==nroPagina){
 
-			paginaActual->modificado = !paginaActual->modificado;
+			paginaActual->modificado = true;//!paginaActual->modificado;
 
 			break;
 		}
@@ -728,7 +753,10 @@ void agregarPaginaATabla(int nroPagina,int pid,int posicionEnRam){
 	list_add(tablaDeProceso->frames,instanciaPagina);
 }
 
+
 bool agregarPagina(int nroPagina,int pid,char* pagina){
+
+	printf("Entrando a agregar pagina...\n");
 
 	bool operacionExitosa = true;
 
@@ -738,9 +766,11 @@ bool agregarPagina(int nroPagina,int pid,char* pagina){
 
 			int posicionAReemplazar = cualReemplazarRAM();
 
+			printf("Encontre que pagina reemplazar..\n");
 			tipoAccesosAPagina* instanciaAccesoAReemplzar = list_get(datosMemoria->listaAccesosAPaginasRAM,posicionAReemplazar);
 
-			tipoInstruccion* instruccion = malloc(sizeof(tipoInstruccion));
+			printf("La pagina a reemplazar es la pag %d del proceso %d...\n",instanciaAccesoAReemplzar->nroPagina,instanciaAccesoAReemplzar->pid);
+			/*tipoInstruccion* instruccion = malloc(sizeof(tipoInstruccion));
 
 			instruccion->nroPagina = instanciaAccesoAReemplzar->nroPagina;
 
@@ -750,22 +780,39 @@ bool agregarPagina(int nroPagina,int pid,char* pagina){
 
 			instruccion->texto = malloc(datosMemoria->configuracion->tamanioDeMarco);
 
+			//memcpy(instruccion->texto,)
+
 			tipoRespuesta* respuestaSwap;
 
-			operacionExitosa = instruccionASwapRealizada(instruccion,respuestaSwap);
+			operacionExitosa = instruccionASwapRealizada(instruccion,respuestaSwap);*/
 
-			if(operacionExitosa){
+			//if(operacionExitosa){
+			if(estaHabilitadaLaTLB()){
 
 				posicionEnRam = dondeEstaEnTLB(instanciaAccesoAReemplzar->nroPagina,instanciaAccesoAReemplzar->pid);
 
 				if(posicionEnRam>=0)
 					quitarPaginaDeTLB(instanciaAccesoAReemplzar->nroPagina,instanciaAccesoAReemplzar->pid);
 
-				else{
-					posicionEnRam = dondeEstaEnTabla(instanciaAccesoAReemplzar->nroPagina,instanciaAccesoAReemplzar->pid);
+				else	posicionEnRam = dondeEstaEnTabla(instanciaAccesoAReemplzar->nroPagina,instanciaAccesoAReemplzar->pid);
 
-					quitarPaginaDeTabla(instanciaAccesoAReemplzar->nroPagina,instanciaAccesoAReemplzar->pid);
-				}
+				quitarPaginaDeTabla(instanciaAccesoAReemplzar->nroPagina,instanciaAccesoAReemplzar->pid);
+
+				tipoInstruccion* instruccion = malloc(sizeof(tipoInstruccion));
+
+							instruccion->nroPagina = instanciaAccesoAReemplzar->nroPagina;
+
+							instruccion->pid = instanciaAccesoAReemplzar->pid;
+
+							instruccion->instruccion = ESCRIBIR;//Esto hay que charlarlo con Forronan
+
+							instruccion->texto = malloc(datosMemoria->configuracion->tamanioDeMarco);
+
+							memcpy(instruccion->texto,list_get(datosMemoria->listaRAM,posicionEnRam),datosMemoria->configuracion->tamanioDeMarco);
+
+							tipoRespuesta* respuestaSwap;
+
+							operacionExitosa = instruccionASwapRealizada(instruccion,&respuestaSwap);
 
 				list_remove(datosMemoria->listaRAM,posicionEnRam);
 			}
@@ -786,6 +833,7 @@ bool agregarPagina(int nroPagina,int pid,char* pagina){
 
 	return operacionExitosa;
 }
+
 
 void quitarPaginaDeTLB(int nroPagina,int pid){
 
@@ -991,6 +1039,3 @@ int cualReemplazarPorLRU(t_list* listaAEvaluar){
 
 	return posicionLRU;
 }
-
-
-

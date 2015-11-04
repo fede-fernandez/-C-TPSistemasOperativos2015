@@ -43,6 +43,7 @@ typedef struct{
 	int retardoDeMemoria;
 }tipoConfigMemoria;
 
+
 typedef struct{
 	t_list* listaRAM;
 	t_list* listaTLB;
@@ -68,6 +69,7 @@ typedef struct{
 
 #define FIFO 1
 #define LRU 2
+#define CLOCK_MODIFICADO 3
 
 typedef struct{
 	int pid;
@@ -194,6 +196,5 @@ void volcarRamALog();
 void limpiarTabla();
 
 void limpiarListaAccesos();
-
 
 #endif /* FUNCIONESMEMORIA_H_ */
