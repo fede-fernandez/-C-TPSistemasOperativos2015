@@ -598,22 +598,10 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 	}
 
 				else{
+					///Aca si no existe la tabla en
+					//RAM no deberia de existir en SWAP
 
-					/*tipoInstruccion instruccionDeBorrado;
-
-					instruccionDeBorrado.instruccion = FINALIZAR;
-
-					instruccionDeBorrado.pid = instruccion.pid;
-
-					instruccionDeBorrado.nroPagina = 0;
-
-					instruccionDeBorrado.texto = "";
-
-					tipoRespuesta* respuestaSwap;
-
-					if(instruccionASwapRealizada(&instruccionDeBorrado,respuestaSwap))*///Aca si no existe la tabla en
-																						//RAM no deberia de existir en SWAP
-					destruirProceso(instruccion.pid);
+					//destruirProceso(instruccion.pid);//ESTO HAY QUE DESCOMENTARLO PERO TIRA ERROR!
 
 					respuesta->respuesta = MANQUEADO;
 
@@ -800,36 +788,47 @@ bool agregarPagina(int nroPagina,int pid,char* pagina){
 
 				tipoInstruccion* instruccion = malloc(sizeof(tipoInstruccion));
 
-							instruccion->nroPagina = instanciaAccesoAReemplzar->nroPagina;
+				instruccion->nroPagina = instanciaAccesoAReemplzar->nroPagina;
 
-							instruccion->pid = instanciaAccesoAReemplzar->pid;
+				instruccion->pid = instanciaAccesoAReemplzar->pid;
 
-							instruccion->instruccion = ESCRIBIR;//Esto hay que charlarlo con Forronan
+				instruccion->instruccion = ESCRIBIR;//Esto hay que charlarlo con Forronan
 
-							instruccion->texto = malloc(datosMemoria->configuracion->tamanioDeMarco);
+				instruccion->texto = malloc(datosMemoria->configuracion->tamanioDeMarco);
 
-							memcpy(instruccion->texto,list_get(datosMemoria->listaRAM,posicionEnRam),datosMemoria->configuracion->tamanioDeMarco);
+				memcpy(instruccion->texto,list_get(datosMemoria->listaRAM,posicionEnRam),datosMemoria->configuracion->tamanioDeMarco);
 
-							tipoRespuesta* respuestaSwap;
+				tipoRespuesta* respuestaSwap;
 
-							operacionExitosa = instruccionASwapRealizada(instruccion,&respuestaSwap);
+				operacionExitosa = instruccionASwapRealizada(instruccion,&respuestaSwap);
 
-				list_remove(datosMemoria->listaRAM,posicionEnRam);
+				if(operacionExitosa){
+
+					agregarPaginaATabla(nroPagina,pid,posicionEnRam);
+
+					list_replace_and_destroy_element(datosMemoria->listaRAM,posicionEnRam,pagina,free);
+
+					if(estaHabilitadaLaTLB())
+						agregarPaginaATLB(nroPagina,pid,posicionEnRam);
+				}
+
+				else {
+					//error en swap de guardado de pagina!!
+				}
+
 			}
 	}
-	else
-		posicionEnRam = list_size(datosMemoria->listaRAM);
+	else{
 
+		list_add(datosMemoria->listaRAM,pagina);
 
-	if(operacionExitosa){
+		posicionEnRam = list_size(datosMemoria->listaRAM)-1;
 
-				list_add(datosMemoria->listaRAM,pagina);
+		agregarPaginaATabla(nroPagina,pid,posicionEnRam);
 
-				agregarPaginaATabla(nroPagina,pid,posicionEnRam);
-
-				if(estaHabilitadaLaTLB())
+		if(estaHabilitadaLaTLB())
 				agregarPaginaATLB(nroPagina,pid,posicionEnRam);
-			}
+	}
 
 	return operacionExitosa;
 }
