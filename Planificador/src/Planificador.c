@@ -229,6 +229,7 @@ int recibir_rafagas(){
 	t_PCB *PCB;
 	char llegada; // "Quantum", "Bloqueado" y "Fin"
 
+
 	pthread_mutex_lock(&cpuss);
 
 	//una vez que encontramos el puerto, lo saco con "puertoConCambios" al nodo de la lista
