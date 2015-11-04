@@ -24,7 +24,7 @@ void destruirConfigSWAP (tipoConfigSWAP* cfg){
 tipoConfigSWAP* cargarArchivoDeConfiguracionDeSWAP(char* rutaDelArchivoDeConfiguracion){
 
 	t_config* archivoCfg = config_create(rutaDelArchivoDeConfiguracion);
-	validarErrorYAbortar(archivoCfg == NULL, "No existe archivo de configuracion\n");
+	validarExistenciaDeArchivoDeConfiguracion(rutaDelArchivoDeConfiguracion);
 
 	tipoConfigSWAP* cfg = crearConfigSWAP();
 
