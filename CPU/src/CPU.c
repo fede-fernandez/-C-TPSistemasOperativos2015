@@ -61,7 +61,7 @@ void* unCPU(t_hiloCPU* datosCPU)
 	//LOG: CPU creada conectada/conectada
 	if(LOGS_ACTIVADOS == 1)
 	{
-		log_trace(datosCPU->logCPU, "CPU ID: %i CREADA/CONECTADA A MEMORIA", datosCPU->idCPU);
+		log_trace(datosCPU->logCPU, "CPU ID: %i CREADA/CONECTADA A MEMORIA\n", datosCPU->idCPU);
 	}
 
 	//Espero a recibir tarea del planificador
@@ -78,7 +78,7 @@ void* unCPU(t_hiloCPU* datosCPU)
 		//LOG: CPU recibe PCBs
 		if(LOGS_ACTIVADOS == 1)
 		{
-			log_trace(datosCPU->logCPU, "CPU ID: %i PCB RECIBIDO. RUTA: %s | ESTADO: %c | PID: %i | INSPOINTER: %i", datosCPU->idCPU, PCB->ruta, PCB->estado, PCB->pid, PCB->insPointer, quantum);
+			log_trace(datosCPU->logCPU, "CPU ID: %i | PCB RECIBIDO | RUTA: %s | ESTADO: %c | PID: %i | INSPOINTER: %i | QUANTUM (0=FIFO): %i\n", datosCPU->idCPU, PCB->ruta, PCB->estado, PCB->pid, PCB->insPointer, quantum);
 		}
 
 		ejecutarPrograma(PCB, quantum, datosCPU);
