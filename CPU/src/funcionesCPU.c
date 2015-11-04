@@ -111,17 +111,17 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, t_hiloCPU* datosCPU)
 	}
 
 	//Salida a Planificador del PCB actualizado
-	tipoPCB* PCBRespuesta;
-	PCBRespuesta->ruta = PCB->ruta;
-	PCBRespuesta->pid = PCB->pid;
-	PCBRespuesta->estado = PCB->estado;
-	PCBRespuesta->insPointer = instructionPointer;
-	enviarPCB(datosCPU->socketParaPlanificador, PCBRespuesta);
+	tipoPCB PCBRespuesta;
+	PCBRespuesta.ruta = PCB->ruta;
+	PCBRespuesta.pid = PCB->pid;
+	PCBRespuesta.estado = PCB->estado;
+	PCBRespuesta.insPointer = instructionPointer;
+	enviarPCB(datosCPU->socketParaPlanificador, &PCBRespuesta);
 
 	if(DEBUG == 1)
 	{
 		printf("idCPU: %i | PCB ENVIADO A PLANIFICADOR | ", datosCPU->idCPU);
-		imprimirPCB(PCBRespuesta);
+		imprimirPCB(&PCBRespuesta);
 	}
 
 	if(LOGS_ACTIVADOS == 1)
