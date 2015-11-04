@@ -40,6 +40,7 @@ int main(void)
 	return 0;
 }
 
+
 //Hilo CPU
 void* unCPU(t_hiloCPU* datosCPU)
 {
@@ -53,9 +54,10 @@ void* unCPU(t_hiloCPU* datosCPU)
 
 	int quantum = 0;
 	recibirMensajeCompleto(datosCPU->socketParaPlanificador, &quantum, sizeof(int));
+
 	if(DEBUG == 1)
 	{
-		printf("idCPU: %i | QUANTUM RECIBIDO: %i\n", datosCPU->idCPU, quantum);
+		printf("idCPU: %i | QUANTUM RECIBIDO (0 = FIFO): %i\n", datosCPU->idCPU, quantum);
 	}
 
 	//LOG: CPU creada conectada/conectada
