@@ -284,7 +284,7 @@ char* sacarComillas(char* frase)
 //Funcion Iniciar CantidadDePaginas;
 int instruccionIniciar(int cantidadDePaginas, int idDeProceso, t_hiloCPU* datosCPU)
 {
-	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, INICIAR, cantidadDePaginas, "NULL", datosCPU);
+	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, INICIAR, cantidadDePaginas, "(null)", datosCPU);
 
 	if(respuestaDeMemoria->respuesta == MANQUEADO) //Si fallo la operacion
 	{
@@ -314,7 +314,7 @@ int instruccionIniciar(int cantidadDePaginas, int idDeProceso, t_hiloCPU* datosC
 //Funcion Leer NumeroDePagina;
 int instruccionLeer(int numeroDePagina, int idDeProceso, t_hiloCPU* datosCPU)
 {
-	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, LEER, numeroDePagina, "NULL", datosCPU);
+	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, LEER, numeroDePagina, "(null)", datosCPU);
 
 	if(respuestaDeMemoria->respuesta == MANQUEADO) //Si fallo la operacion
 	{
@@ -400,7 +400,7 @@ int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, t_hiloCPU* dat
 //Funcion Finalizar;
 int instruccionFinalizar(int idDeProceso, t_hiloCPU* datosCPU)
 {
-	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, FINALIZAR, 0, "NULL", datosCPU);
+	tipoRespuesta* respuestaDeMemoria = enviarInstruccionAMemoria(idDeProceso, FINALIZAR, 0, "(null)", datosCPU);
 
 	if(respuestaDeMemoria->respuesta == MANQUEADO) //Si fallo la operacion
 	{
