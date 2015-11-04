@@ -21,6 +21,11 @@
 #define CANTIDAD_HILOS "CANTIDAD_HILOS"
 #define RETARDO "RETARDO"
 
+#define RUTA_DE_ARCHIVO_DE_CONFIGURACION_CPU "cfgCPU"
+#define RUTA_DE_ARCHIVO_DE_LOGS_CPU "logsCPU"
+#define LOGS_ACTIVADOS 0
+#define DEBUG 1
+
 
 typedef struct{
 	char* ipPlanificador;
@@ -40,19 +45,40 @@ void destruirConfigCPU(tipoConfigCPU* estructuraDeConfiguracion);
 
 
 /************Funciones principales del CPU************/
-int ejecutarPrograma(tipoPCB *PCB, int quantum, int tiempoDeRetardo, int socketParaPlanificador, int socketParaMemoria);
-FILE* abrirProgramaParaLectura(char* rutaDelPrograma);
-int ejecutarInstruccion(char* instruccion, int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
-int longitudDeStringArray(char** stringArray);
-tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto, int socketParaMemoria);
 
+//Estructura Instruccion a Memoria
+typedef struct{
+	char* nombreDeInstruccion;
+	char* valorDeInstruccion1;
+	char* valorDeInstruccion2;
+}t_instruccion;
+
+//Estructura Hilo CPU
+typedef struct
+{
+	int idCPU;
+	tipoConfigCPU* configuracionCPU;
+	t_log* logCPU;
+	int socketParaPlanificador;
+	int socketParaMemoria;
+}t_hiloCPU;
+
+void* unCPU(t_hiloCPU* datosCPU);
+
+
+FILE* abrirProgramaParaLectura(char* rutaDelPrograma);
+int longitudDeStringArray(char** stringArray);
+int ejecutarPrograma(tipoPCB *PCB, int quantum, t_hiloCPU* datosCPU);
+t_instruccion extraerInstruccion(char* instruccion);
+int ejecutarInstruccion(char* lineaDeInstruccion, int idDeProceso, t_hiloCPU* datosCPU);
+tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto, t_hiloCPU* datosCPU);
 
 /*Funciones mAnsisOp*/
-int instruccionIniciar(int numeroDePaginas, int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
-int instruccionLeer(int numeroDePagina, int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
-int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
-int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, int socketParaPlanificador);
-int instruccionFinalizar(int idDeProceso, int socketParaPlanificador, int socketParaMemoria);
+int instruccionIniciar(int numeroDePaginas, int idDeProceso, t_hiloCPU* datosCPU);
+int instruccionLeer(int numeroDePagina, int idDeProceso, t_hiloCPU* datosCPU);
+int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso, t_hiloCPU* datosCPU);
+int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, t_hiloCPU* datosCPU);
+int instruccionFinalizar(int idDeProceso, t_hiloCPU* datosCPU);
 
 
 /*Funciones de control de lineas de codigo mAnsisOp*/
