@@ -27,7 +27,7 @@ t_queue *procesos_bloqueados; // cola donde se encolan los procesos para luego m
 
 //----- sockets
 
-int puerto = 7200;//Elijo 7200 pero esto se carga del archivo de configuracion
+int puerto = 4000;//Elijo 7200 pero esto se carga del archivo de configuracion
 int socketEscucha; // socket que escuche las conecciones entrantes
 fd_set master; // conjunto maestro de descriptores de fichero
 fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
