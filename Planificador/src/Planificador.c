@@ -17,6 +17,8 @@
 
 int contador_de_id_procesos = 0; // para saber cuantos procesos hay en el sistema
 int quantum = 0; // 0 si tiene quantum y el "valor" en caso de que tenga quantum
+int T;// timpo de ferni
+
 
 //---listas y colas
 
@@ -235,6 +237,8 @@ int recibir_rafagas(){
 	// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
 	recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
+	recibirMensaje(nodo_cpu->puerto, &T, sizeof(int));
+
 	PCB_recibido = recibirPCB2(nodo_cpu->puerto); // recibe el PCB
 
 
@@ -291,9 +295,6 @@ int llega_quantum(t_PCB *PCB){
 int llega_entrada_salida(t_PCB *PCB,int socketCpu){
 
 
-	int T;
-
-	recibirMensaje(socketCpu, &T, sizeof(int));
 
 	// meter procesos en la cola de bloqueados
 	pthread_mutex_lock(&bloqueados);
