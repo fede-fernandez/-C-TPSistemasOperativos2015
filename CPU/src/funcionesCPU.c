@@ -67,7 +67,7 @@ FILE* abrirProgramaParaLectura(char* rutaDelPrograma)
 //Lector de rafagas
 int ejecutarPrograma(tipoPCB *PCB, int quantum, t_hiloCPU* datosCPU)
 {
-	int tipoDeSalida = 0; //Si es 1, corta la ejecución del while que ejecuta instrucciones
+	int tipoDeSalida = 0; //(0 = continua ejecucion | 1 = termina ejecucion mantiene insPointer | 2 = termina ejecucion aumenta insPointer)
 	int instructionPointer = PCB->insPointer;
 	FILE* programa = abrirProgramaParaLectura(PCB->ruta);
 	char* programaEnMemoria = mmap(0, sizeof(programa), PROT_READ, MAP_SHARED, fileno(programa), 0);
@@ -82,6 +82,13 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, t_hiloCPU* datosCPU)
 
 			if(tipoDeSalida == 1)
 			{
+				break;
+			}
+
+
+			if(tipoDeSalida == 2)
+			{
+				instructionPointer++;
 				break;
 			}
 
@@ -100,6 +107,12 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, t_hiloCPU* datosCPU)
 
 			if(tipoDeSalida == 1)
 			{
+				break;
+			}
+
+			if(tipoDeSalida == 2)
+			{
+				instructionPointer++;
 				break;
 			}
 
@@ -301,7 +314,7 @@ int instruccionIniciar(int cantidadDePaginas, int idDeProceso, t_hiloCPU* datosC
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		return 1;
+		return 1; //Devuelve 1, operacion bloqueante que mantiene instructionPointer
 	}
 
 	if(DEBUG == 1)
@@ -334,7 +347,7 @@ int instruccionLeer(int numeroDePagina, int idDeProceso, t_hiloCPU* datosCPU)
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		return 1;
+		return 1; //Devuelve 1, operacion bloqueante que mantiene instructionPointer
 	}
 
 	if(DEBUG == 1)
@@ -370,7 +383,7 @@ int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProces
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		return 1;
+		return 1; //Devuelve 1, operacion bloqueante que mantiene instructionPointer
 	}
 
 	if(DEBUG == 1)
@@ -406,7 +419,7 @@ int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, t_hiloCPU* dat
 		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION ENTRADA-SALIDA EJECUTADA | PID: %i | TIEMPO DE ESPERA: %i\n", datosCPU->idCPU, idDeProceso, tiempoDeEspera);
 	}
 
-	return 1; //Devuelve 1, operacion bloqueante
+	return 2; //Devuelve 2, operacion bloqueante que aumenta instructionPointer
 }
 
 
@@ -426,7 +439,7 @@ int instruccionFinalizar(int idDeProceso, t_hiloCPU* datosCPU)
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		return 1;
+		return 1; //Devuelve 1, operacion bloqueante que mantiene instructionPointer
 	}
 
 	char tipoSalidaParaPlanificador = 'F';
@@ -443,7 +456,7 @@ int instruccionFinalizar(int idDeProceso, t_hiloCPU* datosCPU)
 		log_trace(datosCPU->logCPU, "CPU ID: %i | RESPUESTA RECIBIDA | PID: %i\n", datosCPU->idCPU, idDeProceso);
 	}
 
-	return 1; //Devuelve 1, operacion bloqueante
+	return 1; //Devuelve 1, operacion bloqueante que mantiene instructionPointer
 }
 
 
