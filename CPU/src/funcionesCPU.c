@@ -79,27 +79,31 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, t_hiloCPU* datosCPU)
 		{
 			tipoDeSalida = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			sleep(datosCPU->configuracionCPU->retardo);
-			instructionPointer++;
+
 			if(tipoDeSalida == 1)
 			{
 				break;
 			}
+
+			instructionPointer++;
 		}
 	}
 
 	else //ROUND ROBIN
 	{
-		int clock = 0;
-		while(clock < quantum)
+		int reloj = 0;
+		while(reloj < quantum)
 		{
 			tipoDeSalida = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			sleep(datosCPU->configuracionCPU->retardo);
-			instructionPointer++;
-			clock++;
+			reloj++;
+
 			if(tipoDeSalida == 1)
 			{
 				break;
 			}
+
+			instructionPointer++;
 		}
 		char tipoSalidaParaPlanificador = 'Q';
 		enviarMensaje(datosCPU->socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
