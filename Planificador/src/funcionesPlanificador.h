@@ -55,7 +55,7 @@ void crear_lista();
 void liberar_puertos();
 
 void liberar_pcb(t_PCB *PCB);
-//-------Funciones HILOS prototipadas----------------
+//------Funciones HILOS prototipadas----------------
 
 
 void* recibir_cpu();
