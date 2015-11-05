@@ -299,7 +299,7 @@ int instruccionIniciar(int cantidadDePaginas, int idDeProceso, t_hiloCPU* datosC
 
 	if(DEBUG == 1)
 	{
-		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, datosCPU->idCPU,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
 	}
 
 	if(LOGS_ACTIVADOS == 1)
@@ -329,7 +329,7 @@ int instruccionLeer(int numeroDePagina, int idDeProceso, t_hiloCPU* datosCPU)
 
 	if(DEBUG == 1)
 	{
-		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, datosCPU->idCPU, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
 	}
 
 	printf("Contenido de la pagina %i: %s\n", numeroDePagina, respuestaDeMemoria->informacion);
@@ -362,7 +362,7 @@ int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProces
 
 	if(DEBUG == 1)
 	{
-		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, datosCPU->idCPU, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
 	}
 
 	if(LOGS_ACTIVADOS == 1)
@@ -418,7 +418,7 @@ int instruccionFinalizar(int idDeProceso, t_hiloCPU* datosCPU)
 
 	if(DEBUG == 1)
 	{
-		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, datosCPU->idCPU, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
 	}
 
 	if(LOGS_ACTIVADOS == 1)
