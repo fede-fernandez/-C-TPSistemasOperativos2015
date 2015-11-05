@@ -66,7 +66,7 @@ int recibir_rafagas();
 
 int llega_quantum(t_PCB *PCB);
 
-int llega_entrada_salida(t_PCB *PCB,int socketCpu);
+int llega_entrada_salida(t_PCB *PCB,int tiempo);
 
 int llega_de_fin(t_PCB *PCB);
 

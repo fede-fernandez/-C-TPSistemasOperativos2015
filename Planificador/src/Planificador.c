@@ -17,7 +17,6 @@
 
 int contador_de_id_procesos = 0; // para saber cuantos procesos hay en el sistema
 int quantum = 0; // 0 si tiene quantum y el "valor" en caso de que tenga quantum
-int T;// tiEmpo de ferni
 
 
 //---listas y colas
@@ -191,7 +190,7 @@ int recibir_conexion(){
 
 		socketCpu = crearSocketParaAceptarSolicitudes(socketEscucha); //
 
-		recibirMensaje(socketCpu, &id, sizeof(int));// recibo id de CPU
+		recibirMensajeCompleto(socketCpu, &id, sizeof(int));// recibo id de CPU
 
 
 		pthread_mutex_lock(&cpuss);
@@ -228,6 +227,7 @@ int recibir_rafagas(){
 	t_PCB PCB_recibido;
 	t_PCB *PCB;
 	char llegada; // "Quantum", "Bloqueado" y "Fin"
+	int T; // tiempo que se va a dormir el mcod
 
 
 	pthread_mutex_lock(&cpuss);
@@ -236,11 +236,11 @@ int recibir_rafagas(){
 	nodo_cpu= list_find(CPUs,(void*)(buscar_por_puerto)); // "puertoConCambios" es la variable gloval, esta en el .h
 
 	// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
-	recibirMensaje(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
+	recibirMensajeCompleto(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
 	if(llegada=='B'){
 
-		recibirMensaje(nodo_cpu->puerto, &T, sizeof(int));
+		recibirMensajeCompleto(nodo_cpu->puerto, &T, sizeof(int));
 	}
 
 
@@ -260,7 +260,7 @@ int recibir_rafagas(){
 	  case   'Q':
 	      llega_quantum(PCB);	       break; // va a meter ese proceso a la cola de redy y actualizar PCB
 	  case   'B':
-		  llega_entrada_salida(PCB,nodo_cpu->puerto);   break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
+		  llega_entrada_salida(PCB,T);   break; // va a meter ese proceso a la cola de Entara-Salida, para despues bloquearlo y actualizar PCB
 	  case   'F':
 	      llega_de_fin(PCB);	       break; // unicamente actualiza el PCB del proceso llegante
 
@@ -297,8 +297,7 @@ int llega_quantum(t_PCB *PCB){
 
 }
 
-int llega_entrada_salida(t_PCB *PCB,int socketCpu){
-
+int llega_entrada_salida(t_PCB *PCB,int T){
 
 
 	// meter procesos en la cola de bloqueados
@@ -308,7 +307,6 @@ int llega_entrada_salida(t_PCB *PCB,int socketCpu){
 
 	// actualizo el PCB
 	PCB->estado = 'B'; // le cambio el valor que esta en memoria dinamica
-
 
 	sem_post(&solicitud_deBloqueo);
 
