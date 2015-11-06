@@ -75,7 +75,7 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, t_hiloCPU* datosCPU)
 
 	if(quantum == 0) //FIFO
 	{
-		while(instructionPointer < longitudDeStringArray(instrucciones))
+		while(instructionPointer < longitudDeStringArray(instrucciones) +1)
 		{
 			tipoDeSalida = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			sleep(datosCPU->configuracionCPU->retardo);
