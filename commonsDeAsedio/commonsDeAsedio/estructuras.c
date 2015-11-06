@@ -103,11 +103,11 @@ tipoRespuesta* recibirRespuesta(int socketEnviador){
 
 /*******************Funciones para tipoRespuesta*************************/
 
-tipoRespuesta crearTipoRespuesta(char respuesta, char* informacion){//esto es al dope, no, yo lo uso en el swap
+tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion){//esto es al dope, no, yo lo uso en el swap
 
-	tipoRespuesta aux;// = malloc(sizeof(tipoRespuesta));
-	aux.respuesta = respuesta;
-	aux.informacion = string_duplicate(informacion);
+	tipoRespuesta* aux = malloc(sizeof(tipoRespuesta));
+	aux->respuesta = respuesta;
+	aux->informacion = string_duplicate(informacion);
 	return aux;
 }
 
