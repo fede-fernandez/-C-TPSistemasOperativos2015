@@ -71,7 +71,7 @@ void enviarRespuesta(int socketCliente,tipoRespuesta* respuesta);
 
 tipoInstruccion* crearTipoInstruccion(int pid,char instruccion,int nroPagina,char* texto);
 
-tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion);
+tipoRespuesta crearTipoRespuesta(char respuesta, char* informacion);
 
 void destruirTipoRespuesta(tipoRespuesta* respuesta);
 
