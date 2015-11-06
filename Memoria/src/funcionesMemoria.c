@@ -536,9 +536,11 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 		respuesta->respuesta = PERFECTO;
 
-		respuesta->informacion = malloc(datosMemoria->configuracion->tamanioDeMarco);
+		//respuesta->informacion = malloc(datosMemoria->configuracion->tamanioDeMarco);
 
-		memcpy(respuesta->informacion,instruccion.texto,datosMemoria->configuracion->tamanioDeMarco);//strlen(instruccion.texto));
+		//memcpy(respuesta->informacion,instruccion.texto,/*datosMemoria->configuracion->tamanioDeMarco);/*/strlen(instruccion.texto));
+
+		respuesta->informacion = string_duplicate(instruccion.texto);
 
 		if(posicionDePag>=0){
 
