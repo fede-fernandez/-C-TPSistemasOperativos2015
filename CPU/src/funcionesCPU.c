@@ -448,6 +448,7 @@ int instruccionFinalizar(int idDeProceso, t_hiloCPU* datosCPU)
 	if(DEBUG == 1)
 	{
 		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+		printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 	}
 
 	if(LOGS_ACTIVADOS == 1)
