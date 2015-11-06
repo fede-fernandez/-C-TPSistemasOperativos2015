@@ -13,7 +13,7 @@
 #include <commonsDeAsedio/estructuras.h>
 
 
-// VARIABLES GLOBALES <<<<<<<<<<<<------------
+//---->>>>>>>VARIABLES GLOBALES <<<<<<<<<<<<------------
 
 int contador_de_id_procesos = 0; // para saber cuantos procesos hay en el sistema
 int quantum = 0; // 0 si tiene quantum y el "valor" en caso de que tenga quantum
