@@ -105,29 +105,19 @@ tipoRespuesta* recibirRespuesta(int socketEnviador){
 
 tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion){//esto es al dope, no, yo lo uso en el swap
 
-	printf("pase");
-	tipoRespuesta* aux = malloc(sizeof(tipoRespuesta)+strlen(informacion));
-
-	printf("pase");
+	tipoRespuesta* aux = malloc(sizeof(tipoRespuesta));
 	aux->respuesta = respuesta;
-
-	aux->informacion = informacion;
-
+	aux->informacion = string_duplicate(informacion);
 	return aux;
 }
 
 tipoInstruccion* crearTipoInstruccion(int pid,char instruccion,int nroPagina,char* texto ){//esto es al dope, no, yo lo uso en el swap
 
-	tipoInstruccion* aux = malloc(sizeof(tipoInstruccion)+strlen(texto));
-
+	tipoInstruccion* aux = malloc(sizeof(tipoInstruccion));
 	aux->instruccion = instruccion;
-
 	aux->nroPagina = nroPagina;
-
 	aux->pid = pid;
-
-	aux->texto = texto;
-
+	aux->texto = string_duplicate(texto);
 	return aux;
 }
 
