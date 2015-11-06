@@ -137,7 +137,6 @@ void enviarPCB2(int socketReceptor, t_PCB PCB_leo)
 	PCB.estado = PCB_leo.estado;
 	PCB.ruta =strdup(PCB_leo.path);
 
-	printf("%s \n",PCB.ruta);
 
 
 		size_t tamanioRuta = strlen(PCB.ruta) + sizeof(char);
