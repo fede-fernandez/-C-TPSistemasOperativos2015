@@ -47,6 +47,8 @@ void escribirBloqueMapeado(char* rutaDeParticion,char* contenidoAEscribir,int nu
 	char* aux = completarBloque(contenidoAEscribir,tamanioDeBloque);
 
 	fwrite(aux,tamanioDeBloque,1,archivo);
+
+	fclose(archivo);
 }
 
 char* leerBloqueMapeado(char* rutaDeParticion,int numDeBloque, int tamanioDeBloque){
@@ -59,6 +61,8 @@ char* leerBloqueMapeado(char* rutaDeParticion,int numDeBloque, int tamanioDeBloq
 	fread(leido,tamanioDeBloque,1,archivo);
 
 	char* aux = recuperarBloque(leido);
+
+	fclose(archivo);
 
 	return aux;
 }

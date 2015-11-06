@@ -224,7 +224,12 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 	//retornarContenidoDePagina
 	//return contenidoDePagina;
 
-	respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
+	if (string_equals_ignore_case(contenidoDePagina,"")) {
+		respuestaASolicitudDeLectura = crearTipoRespuesta(MANQUEADO,"No tengo la pagina");
+	}
+	else {
+		respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
+	}
 
 	return respuestaASolicitudDeLectura;
 }
