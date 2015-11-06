@@ -208,7 +208,7 @@ tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
 }
 
 tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion){
-	tipoRespuesta* respuestaASolicitudDeLectura;
+	tipoRespuesta respuestaASolicitudDeLectura;
 
 	char* contenidoDePagina;
 
