@@ -26,7 +26,7 @@ t_queue *procesos_en_ready; // cola de procesos "listos para ejecutar"
 t_list *CPUs; // lista de cpu disponibles
 t_queue *procesos_bloqueados; // cola donde se encolan los procesos para luego mandarlos a dormir
 
-//----- sockets
+//-- sockets
 
 int puerto = 4000;//Elijo 7200 pero esto se carga del archivo de configuracion
 int socketEscucha; // socket que escuche las conecciones entrantes
