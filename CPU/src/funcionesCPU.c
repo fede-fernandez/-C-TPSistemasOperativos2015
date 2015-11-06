@@ -388,7 +388,7 @@ int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProces
 
 	if(DEBUG == 1)
 	{
-		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, datosCPU->idCPU, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
 	}
 
 	if(LOGS_ACTIVADOS == 1)
