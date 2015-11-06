@@ -457,7 +457,7 @@ int instruccionFinalizar(int idDeProceso, t_hiloCPU* datosCPU)
 		log_trace(datosCPU->logCPU, "CPU ID: %i | RESPUESTA RECIBIDA | PID: %i\n", datosCPU->idCPU, idDeProceso);
 	}
 
-	return 1; //Devuelve 1, operacion bloqueante que mantiene instructionPointer
+	return 2; //Devuelve 2, operacion bloqueante que aumenta instructionPointer
 }
 
 
