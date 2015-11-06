@@ -183,6 +183,7 @@ tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNue
 		respuestaASolicitudDeReserva = crearTipoRespuesta(MANQUEADO,ERROR_NO_HAY_ESPACIO_EN_SWAP);
 	}
 
+	printf("Paginas inicializadas\n");
 	return respuestaASolicitudDeReserva;
 }
 
@@ -223,8 +224,14 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 
 	//retornarContenidoDePagina
 	//return contenidoDePagina;
+	printf("Pagina leida\n");
 
-	respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
+	if (string_equals_ignore_case(contenidoDePagina,"")) {
+		respuestaASolicitudDeLectura = crearTipoRespuesta(MANQUEADO,"No tengo la pagina");
+	}
+	else {
+		respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
+	}
 
 	return respuestaASolicitudDeLectura;
 }
