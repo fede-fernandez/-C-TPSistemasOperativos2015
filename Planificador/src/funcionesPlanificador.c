@@ -130,24 +130,25 @@ t_PCB recibirPCB2(int socketEnviador){
 void enviarPCB2(int socketReceptor, t_PCB PCB_leo)
 {
 
-	tipoPCB* PCB;
+	tipoPCB PCB;
 
-	PCB->pid = PCB_leo.id;
-	PCB->insPointer = PCB_leo.pc;
-	PCB->estado = PCB_leo.estado;
-	PCB->ruta =strdup(PCB_leo.path);
+	PCB.pid = PCB_leo.id;
+	PCB.insPointer = PCB_leo.pc;
+	PCB.estado = PCB_leo.estado;
+	PCB.ruta =strdup(PCB_leo.path);
 
 
-		size_t tamanioRuta = strlen(PCB->ruta) + sizeof(char);
 
-		enviarMensaje(socketReceptor, &(PCB->pid), sizeof(int));
+		size_t tamanioRuta = strlen(PCB.ruta) + sizeof(char);
 
-		enviarMensaje(socketReceptor, &(PCB->insPointer), sizeof(int));
+		enviarMensaje(socketReceptor, &(PCB.pid), sizeof(int));
 
-		enviarMensaje(socketReceptor, &(PCB->estado), sizeof(char));
+		enviarMensaje(socketReceptor, &(PCB.insPointer), sizeof(int));
+
+		enviarMensaje(socketReceptor, &(PCB.estado), sizeof(char));
 
 		enviarMensaje(socketReceptor, &tamanioRuta, sizeof(int));
 
-		enviarMensaje(socketReceptor, PCB->ruta, tamanioRuta);
+		enviarMensaje(socketReceptor, PCB.ruta, tamanioRuta);
 }
 
