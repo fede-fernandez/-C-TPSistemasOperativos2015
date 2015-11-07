@@ -38,7 +38,7 @@ int main(void) {
 	inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
 
 	tipoInstruccion* instruccionAEjecutar;
-	tipoRespuesta respuestaParaMemoria;
+	tipoRespuesta* respuestaParaMemoria;
 
 	//FILE* particion = fopen("swap","r+");
 
@@ -60,7 +60,7 @@ int main(void) {
 
 		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion);
 
-		enviarRespuesta(socketParaRecibirInstrucciones,&respuestaParaMemoria);
+		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
 
 //		destruirTipoRespuesta(respuestaParaMemoria);
 //		destruirTipoInstruccion(instruccionAEjecutar);
