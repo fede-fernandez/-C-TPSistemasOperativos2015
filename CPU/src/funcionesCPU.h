@@ -63,26 +63,33 @@ typedef struct
 	int idCPU;
 	tipoConfigCPU* configuracionCPU;
 	t_log* logCPU;
-	int socketParaPlanificador;
-	int socketParaMemoria;
 }t_hiloCPU;
 
-void* unCPU(t_hiloCPU* datosCPU);
+typedef struct
+{
+	int idCPU;
+	tipoConfigCPU* configuracionCPU;
+	t_log* logCPU;
+	int socketParaPlanificador;
+	int socketParaMemoria;
+}t_datosCPU;
+
+void* unCPU(t_hiloCPU*);
 
 
 FILE* abrirProgramaParaLectura(char* rutaDelPrograma);
 int longitudDeStringArray(char** stringArray);
-int ejecutarPrograma(tipoPCB *PCB, int quantum, t_hiloCPU* datosCPU);
+int ejecutarPrograma(tipoPCB *PCB, int quantum, t_datosCPU* datosCPU);
 t_instruccion extraerInstruccion(char* instruccion);
-int ejecutarInstruccion(char* lineaDeInstruccion, int idDeProceso, t_hiloCPU* datosCPU);
-tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto, t_hiloCPU* datosCPU);
+int ejecutarInstruccion(char* lineaDeInstruccion, int idDeProceso, t_datosCPU* datosCPU);
+tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int numeroDePagina, char* texto, t_datosCPU* datosCPU);
 
 /*Funciones mAnsisOp*/
-int instruccionIniciar(int numeroDePaginas, int idDeProceso, t_hiloCPU* datosCPU);
-int instruccionLeer(int numeroDePagina, int idDeProceso, t_hiloCPU* datosCPU);
-int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso, t_hiloCPU* datosCPU);
-int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, t_hiloCPU* datosCPU);
-int instruccionFinalizar(int idDeProceso, t_hiloCPU* datosCPU);
+int instruccionIniciar(int numeroDePaginas, int idDeProceso, t_datosCPU* datosCPU);
+int instruccionLeer(int numeroDePagina, int idDeProceso, t_datosCPU* datosCPU);
+int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProceso, t_datosCPU* datosCPU);
+int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, t_datosCPU* datosCPU);
+int instruccionFinalizar(int idDeProceso, t_datosCPU* datosCPU);
 
 
 /*Funciones de control de lineas de codigo mAnsisOp*/
