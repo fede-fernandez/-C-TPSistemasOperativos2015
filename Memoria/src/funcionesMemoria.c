@@ -146,7 +146,7 @@ void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 
 	if(dondeEstaTabla<0){
 
-	if(instruccion.nroPagina<=datosMemoria->configuracion->maximoDeMarcosPorProceso){
+	//if(instruccion.nroPagina<=datosMemoria->configuracion->maximoDeMarcosPorProceso){
 
 	if (puedoReservarEnSWAP(instruccion, &respuesta)) {
 
@@ -166,8 +166,8 @@ void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 		list_add(datosMemoria->listaTablaPaginas, tablaDePaginasNueva);
 
 			}
-		}
-		else respuesta = crearTipoRespuesta(MANQUEADO,"Cantidad de paginas excede el maximo por proceso");
+		//}
+		//else respuesta = crearTipoRespuesta(MANQUEADO,"Cantidad de paginas excede el maximo por proceso");
 	}
 	else 	respuesta = crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso ya existente");
 
@@ -566,9 +566,10 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 				}
 		else{
-			agregarPagina(instruccion.nroPagina,instruccion.pid,instruccion.texto);
 
+			if(agregarPagina(instruccion.nroPagina,instruccion.pid,instruccion.texto)){
 			agregarAcceso(instruccion.nroPagina,instruccion.pid);
+			}
 		}
 
 		}
@@ -759,7 +760,19 @@ bool agregarPagina(int nroPagina,int pid,char* pagina){
 
 	int posicionEnRam;
 
-	if(RAMLlena()){
+	int dondeEstaTabla = buscarTabla(pid);
+
+	bool excedeMaxDeMarcos = false;
+
+	if(dondeEstaTabla>=0){
+	tipoTablaPaginas* instanciaTabla = list_get(datosMemoria->listaTablaPaginas,dondeEstaTabla);
+
+	excedeMaxDeMarcos = (instanciaTabla->paginasAsignadas>=datosMemoria->configuracion->maximoDeMarcosPorProceso);
+
+	}
+
+
+	if(RAMLlena()||excedeMaxDeMarcos){
 
 			int posicionAReemplazar = cualReemplazarRAM();
 
@@ -866,7 +879,7 @@ bool agregarPagina(int nroPagina,int pid,char* pagina){
 
 		if(estaHabilitadaLaTLB())
 			agregarPaginaATLB(nroPagina,pid,posicionEnRam);
-	}
+		}
 
 	return operacionExitosa;
 }
