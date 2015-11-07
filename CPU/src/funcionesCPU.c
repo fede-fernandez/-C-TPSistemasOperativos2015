@@ -80,13 +80,13 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, t_hiloCPU* datosCPU)
 			tipoDeSalida = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			sleep(datosCPU->configuracionCPU->retardo);
 
-			if(tipoDeSalida == 1)
+			if(tipoDeSalida == SALIDA_BLOQUEANTE_POR_ERROR)
 			{
 				break;
 			}
 
 
-			if(tipoDeSalida == 2)
+			if(tipoDeSalida == SALIDA_BLOQUEANTE)
 			{
 				instructionPointer++;
 				break;
@@ -105,12 +105,12 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, t_hiloCPU* datosCPU)
 			sleep(datosCPU->configuracionCPU->retardo);
 			reloj++;
 
-			if(tipoDeSalida == 1)
+			if(tipoDeSalida == SALIDA_BLOQUEANTE_POR_ERROR)
 			{
 				break;
 			}
 
-			if(tipoDeSalida == 2)
+			if(tipoDeSalida == SALIDA_BLOQUEANTE)
 			{
 				instructionPointer++;
 				break;
@@ -118,12 +118,16 @@ int ejecutarPrograma(tipoPCB *PCB, int quantum, t_hiloCPU* datosCPU)
 
 			instructionPointer++;
 		}
-		char tipoSalidaParaPlanificador = 'Q';
-		enviarMensaje(datosCPU->socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
 
-		if(DEBUG == 1)
+		if(tipoDeSalida == CONTINUA_EJECUCION)
 		{
-			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, PCB->pid, tipoSalidaParaPlanificador);
+			char tipoSalidaParaPlanificador = 'Q';
+			enviarMensaje(datosCPU->socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
+
+			if(DEBUG == 1)
+			{
+				printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, PCB->pid, tipoSalidaParaPlanificador);
+			}
 		}
 	}
 
@@ -314,7 +318,7 @@ int instruccionIniciar(int cantidadDePaginas, int idDeProceso, t_hiloCPU* datosC
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		return 1; //Devuelve 1, operacion bloqueante que mantiene instructionPointer
+		return SALIDA_BLOQUEANTE_POR_ERROR;
 	}
 
 	if(DEBUG == 1)
@@ -327,7 +331,7 @@ int instruccionIniciar(int cantidadDePaginas, int idDeProceso, t_hiloCPU* datosC
 		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION INICIAR EJECUTADA | PID: %i | CANTIDAD DE PAGINAS: %i\n", datosCPU->idCPU, idDeProceso, cantidadDePaginas);
 		log_trace(datosCPU->logCPU, "CPU ID: %i | RESPUESTA RECIBIDA | PID: %i | NUMERO DE PAGINA: %i\n", datosCPU->idCPU, idDeProceso, cantidadDePaginas);
 	}
-	return 0;
+	return CONTINUA_EJECUCION;
 }
 
 
@@ -347,7 +351,7 @@ int instruccionLeer(int numeroDePagina, int idDeProceso, t_hiloCPU* datosCPU)
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		return 1; //Devuelve 1, operacion bloqueante que mantiene instructionPointer
+		return SALIDA_BLOQUEANTE_POR_ERROR;
 	}
 
 	if(DEBUG == 1)
@@ -363,7 +367,7 @@ int instruccionLeer(int numeroDePagina, int idDeProceso, t_hiloCPU* datosCPU)
 		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION LEER EJECUTADA | PID: %i | NUMERO DE PAGINA: %i\n", datosCPU->idCPU, idDeProceso, numeroDePagina);
 		log_trace(datosCPU->logCPU, "CPU ID: %i | RESPUESTA RECIBIDA | PID: %i | NUMERO DE PAGINA: %i | CONTENIDO: :%s\n", datosCPU->idCPU, idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
 	}
-	return 0;
+	return CONTINUA_EJECUCION;
 }
 
 
@@ -383,7 +387,7 @@ int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProces
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		return 1; //Devuelve 1, operacion bloqueante que mantiene instructionPointer
+		return SALIDA_BLOQUEANTE_POR_ERROR;
 	}
 
 	if(DEBUG == 1)
@@ -397,7 +401,7 @@ int instruccionEscribir(int numeroDePagina, char* textoAEscribir, int idDeProces
 		log_trace(datosCPU->logCPU, "CPU ID: %i | RESPUESTA RECIBIDA | PID: %i | NUMERO DE PAGINA: %i | CONTENIDO: :%s\n", datosCPU->idCPU, idDeProceso, numeroDePagina, textoAEscribir);
 	}
 
-	return 0;
+	return CONTINUA_EJECUCION;
 }
 
 
@@ -419,7 +423,7 @@ int instruccionEntradaSalida(int tiempoDeEspera, int idDeProceso, t_hiloCPU* dat
 		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION ENTRADA-SALIDA EJECUTADA | PID: %i | TIEMPO DE ESPERA: %i\n", datosCPU->idCPU, idDeProceso, tiempoDeEspera);
 	}
 
-	return 2; //Devuelve 2, operacion bloqueante que aumenta instructionPointer
+	return SALIDA_BLOQUEANTE;
 }
 
 
@@ -439,7 +443,7 @@ int instruccionFinalizar(int idDeProceso, t_hiloCPU* datosCPU)
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		return 1; //Devuelve 1, operacion bloqueante que mantiene instructionPointer
+		return SALIDA_BLOQUEANTE_POR_ERROR;
 	}
 
 	char tipoSalidaParaPlanificador = 'F';
@@ -457,7 +461,7 @@ int instruccionFinalizar(int idDeProceso, t_hiloCPU* datosCPU)
 		log_trace(datosCPU->logCPU, "CPU ID: %i | RESPUESTA RECIBIDA | PID: %i\n", datosCPU->idCPU, idDeProceso);
 	}
 
-	return 2; //Devuelve 2, operacion bloqueante que aumenta instructionPointer
+	return SALIDA_BLOQUEANTE;
 }
 
 

@@ -26,6 +26,10 @@
 #define LOGS_ACTIVADOS 0
 #define DEBUG 1
 
+#define CONTINUA_EJECUCION 0
+#define SALIDA_BLOQUEANTE_POR_ERROR 1
+#define SALIDA_BLOQUEANTE 2
+
 
 typedef struct{
 	char* ipPlanificador;
