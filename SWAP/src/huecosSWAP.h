@@ -23,9 +23,9 @@
 
 
 #define ERROR_NO_HAY_ESPACIO_EN_SWAP "No se pudo asignar la pagina. No hay espacio disponible en SWAP"
-#define OK_ESPACIO_RESERVADO ""
-#define OK_ESPACIO_LIBERADO ""
-#define OK_PAGINA_ESCRITA ""
+#define OK_ESPACIO_RESERVADO "Espacio en SWAP reservado"
+#define OK_ESPACIO_LIBERADO "Espacio en SWAP liberado"
+#define OK_PAGINA_ESCRITA "Pagina escrita correctamente en SWAP"
 
 bool baseMenor(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);
 

@@ -255,7 +255,6 @@ tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,cha
 
 
 
-
 /////////////////FUNCIONES SECUNDARIAS//////////////
 void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas,int base){
 	//ARREGLAR
