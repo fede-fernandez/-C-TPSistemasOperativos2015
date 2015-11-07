@@ -52,9 +52,9 @@ int main(void) {
 	printf("Conexion establecida\n\n");
 
 
-
+	int i = 1;
 /***********Recibir instrucciones y ejecutarlas***********/
-	//while(INFINITO){
+	while(i<10){
 
 		printf("Esperando instruccion\n");
 		instruccionAEjecutar = recibirInstruccion(socketParaRecibirInstrucciones);
@@ -64,27 +64,15 @@ int main(void) {
 
 		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
 		printf("Respuesta enviada\n\n");
+//
+//		destruirTipoRespuesta(respuestaParaMemoria);
+//		destruirTipoInstruccion(instruccionAEjecutar);
+		i++;
 
-		destruirTipoRespuesta(respuestaParaMemoria);
-		destruirTipoInstruccion(instruccionAEjecutar);
+}
 
-		imprimirListaDeHuecos(listaDeHuecosUtilizados);
-	//}
+	imprimirListaDeHuecos(listaDeHuecosUtilizados);
 
-
-		tipoInstruccion* instruccionAEjecutar2;
-		tipoRespuesta* respuestaParaMemoria2;
-
-		printf("Esperando instruccion 2\n");
-		instruccionAEjecutar2 = recibirInstruccion(socketParaRecibirInstrucciones);
-		printf("Instruccion 2 recibida \n");
-
-		respuestaParaMemoria2 = ejecutarInstruccion(instruccionAEjecutar2,listaDeHuecosUtilizados,configuracion);
-
-		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria2);
-		printf("Respuesta 2 enviada\n\n");
-
-		imprimirListaDeHuecos(listaDeHuecosUtilizados);
 
 
 /********Liberar memoria*************/
