@@ -1,7 +1,7 @@
 /*
  * funcionesSeñales.h
  *
- *  Created on: 25/10/2015
+ *  Created on: 7/11/2015
  *      Author: utnso
  */
 
@@ -12,5 +12,15 @@
 
 void funcionPrueba(tipoEstructuraMemoria* datosMemoria);
 
+void mostarEstado(tipoEstructuraMemoria* datosMemoria);
+
+void mostrarTLB(tipoEstructuraMemoria* datosMemoria);
+
+void mostrarTipoTLB(int posicionDeTabla,tipoEstructuraMemoria* datosMemoria);
+
+void mostrarTablasDePaginas(tipoEstructuraMemoria* datosMemoria);
+
+void mostrarTablaDePaginas(int posicionDeTabla,tipoEstructuraMemoria* datosMemoria);
 
 #endif /* FUNCIONESSEÑALES_H_ */
+

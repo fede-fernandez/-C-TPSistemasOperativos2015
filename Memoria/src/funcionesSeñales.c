@@ -8,24 +8,33 @@
 
 void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 
-	int boton = 0;
+	/*int boton = 0;
 
 	while(true){
 
 		scanf("%d",&boton);
 
 		switch (boton) {
-			case 1:
+			case 1:*/
 				mostrarTablasDePaginas(datosMemoria);
 				printf("\n\n");
 				mostrarTLB(datosMemoria);
 				printf("\n\n");
-				break;
+				/*break;
 		}
 
-	}
+	}*/
 
 }
+
+void mostarEstado(tipoEstructuraMemoria* datosMemoria){
+
+	mostrarTablasDePaginas(datosMemoria);
+	printf("\n\n");
+	mostrarTLB(datosMemoria);
+	printf("\n\n");
+}
+
 
 void mostrarTablaDePaginas(int posicionDeTabla,tipoEstructuraMemoria* datosMemoria){
 
@@ -40,15 +49,22 @@ void mostrarTablaDePaginas(int posicionDeTabla,tipoEstructuraMemoria* datosMemor
 
 void mostrarTablasDePaginas(tipoEstructuraMemoria* datosMemoria){
 
+	printf("######################TABLA DE PAGINAS############################");
+
+
 	int var;
 	for (var = 0; var < list_size(datosMemoria->listaTablaPaginas); ++var) {
 
 		mostrarTablaDePaginas(var,datosMemoria);
 
 	}
+
+	printf("#################################################################");
+
 }
 
 void mostrarTipoTLB(int posicionDeTabla,tipoEstructuraMemoria* datosMemoria){
+
 
 	tipoTLB* tablaPaginas = list_get(datosMemoria->listaTLB,posicionDeTabla);
 
@@ -61,11 +77,15 @@ void mostrarTipoTLB(int posicionDeTabla,tipoEstructuraMemoria* datosMemoria){
 
 void mostrarTLB(tipoEstructuraMemoria* datosMemoria){
 
+	printf("######################TLB#######################################");
+
 	int var;
-	for (var = 0; var < list_size(datosMemoria->listaTablaPaginas); ++var) {
+	for (var = 0; var < list_size(datosMemoria->listaTLB); ++var) {
 
 		mostrarTipoTLB(var,datosMemoria);
 
 	}
+
+	printf("################################################################");
 }
 

@@ -112,6 +112,10 @@ int main(void) {
 		}
 	}
 
+		//mostrarEstado(datosMemoria);
+
+		//funcionPrueba(datosMemoria);
+
 	}
 
 

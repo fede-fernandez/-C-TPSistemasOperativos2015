@@ -340,8 +340,6 @@ int dondeEstaEnTabla(int nroPagina, int pid) {
 		}
 
 		}
-	if(posicionDePagina>=0)
-		aumentarAccesoAPaginaRAM(nroPagina,pid);
 
 	return posicionDePagina;
 
@@ -364,9 +362,6 @@ int dondeEstaEnTLB(int nroPagina, int pid) {
 			break;
 		}
 	}
-
-	if(posicionDePagina>=0)
-		aumentarAccesoAPaginaTLB(nroPagina,pid);
 
 	return posicionDePagina;
 }
@@ -563,6 +558,9 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 		aumentarAccesoAPaginaRAM(instruccion.nroPagina,instruccion.pid);
 
+		if(!estaEnTLB&&estaHabilitadaLaTLB())
+			agregarPaginaATLB(instruccion.nroPagina,instruccion.pid,posicionDePag);
+
 				}
 		else{
 			agregarPagina(instruccion.nroPagina,instruccion.pid,instruccion.texto);
@@ -570,8 +568,6 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 			agregarAcceso(instruccion.nroPagina,instruccion.pid);
 		}
 
-		if(!estaEnTLB&&estaHabilitadaLaTLB())
-			agregarPaginaATLB(instruccion.nroPagina,instruccion.pid,posicionDePag);
 		}
 
 	else{
@@ -725,6 +721,12 @@ void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam){
 	instanciaTLB->posicionEnRAM = posicionEnRam;
 
 	list_add(datosMemoria->listaTLB,instanciaTLB);
+
+	printf("Pagina agregada a tlb con:\n");
+
+	printf("pid:%d\n",instanciaTLB->pid);
+	printf("nroPagina:%d\n",instanciaTLB->numeroDePagina);
+	printf("posicionRAM:%d\n",instanciaTLB->posicionEnRAM);
 
 }
 
