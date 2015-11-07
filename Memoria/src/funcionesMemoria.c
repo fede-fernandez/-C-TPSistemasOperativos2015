@@ -174,10 +174,13 @@ void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar) {
 	}
 	else 	respuesta = crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso ya existente");
 
+	printf("estdo de respuesta:%c\n",respuesta->respuesta);
+	printf("Texto de respuesta:%s\n",respuesta->informacion);
+
 	enviarRespuesta(cpuATratar, respuesta);
 }
 
-bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta* respuesta) {
+bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta** respuesta) {
 
 	return instruccionASwapRealizada(&instruccion, respuesta);
 }
@@ -243,7 +246,7 @@ void enviarPaginaPedidaACpu(tipoInstruccion instruccion, int cpuATratar) {
 
 			tipoRespuesta* respuestaSwap;
 
-			if(instruccionASwapRealizada(&instruccionDeBorrado,respuestaSwap))//Aca tira un buen segmentation fault
+			if(instruccionASwapRealizada(&instruccionDeBorrado,&respuestaSwap))//Aca tira un buen segmentation fault
 				destruirProceso(instruccion.pid);
 
 			respuesta->respuesta = MANQUEADO;
@@ -265,7 +268,7 @@ void enviarPaginaPedidaACpu(tipoInstruccion instruccion, int cpuATratar) {
 
 					tipoRespuesta* respuestaSwap;
 
-					if(instruccionASwapRealizada(&instruccionDeBorrado,respuestaSwap))
+					if(instruccionASwapRealizada(&instruccionDeBorrado,&respuestaSwap))
 					destruirProceso(instruccion.pid);
 
 					respuesta = crearTipoRespuesta(MANQUEADO,"Tabla de paginas no existente");
@@ -585,7 +588,7 @@ void escribirPagina(tipoInstruccion instruccion,int cpuATratar){
 
 		tipoRespuesta* respuestaSwap;
 
-		if(instruccionASwapRealizada(&instruccionDeBorrado,respuestaSwap))
+		if(instruccionASwapRealizada(&instruccionDeBorrado,&respuestaSwap))
 		destruirProceso(instruccion.pid);
 
 		respuesta->respuesta = MANQUEADO;
@@ -663,14 +666,13 @@ void quitarProceso(tipoInstruccion instruccion, int cpuaATratar) {
 
 	tipoRespuesta* respuesta;
 
-	instruccionASwapRealizada(&instruccion, respuesta);
-
-	if (respuesta->respuesta == PERFECTO) {
+	if (instruccionASwapRealizada(&instruccion, &respuesta)) {
 
 		destruirProceso(instruccion.pid);
 	}
 
-	enviarRespuesta(cpuaATratar, respuesta);
+	enviarRespuesta(cpuaATratar,respuesta);
+
 }
 
 void destruirProceso(int pid) {

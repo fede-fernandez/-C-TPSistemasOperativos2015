@@ -114,7 +114,7 @@ void tratarPeticion(int cpuAtendida);
 
 void reservarMemoriaParaProceso(tipoInstruccion instruccion, int cpuATratar);
 
-bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta* respuesta);
+bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta** respuesta);
 
 //////////////////
 //LEER PAGINA
