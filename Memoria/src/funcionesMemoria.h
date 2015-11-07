@@ -189,6 +189,8 @@ void quitarPaginaDeTLB(int nroPagina,int pid);
 
 void limpiarTLB();
 
+void quitarAcceso(int nroPagina,int pid);
+
 void limpiarRam();
 
 void volcarRamALog();
@@ -196,5 +198,7 @@ void volcarRamALog();
 void limpiarTabla();
 
 void limpiarListaAccesos();
+
+void quitarPaginaDeTabla(int nroPagina,int pid);
 
 #endif /* FUNCIONESMEMORIA_H_ */
