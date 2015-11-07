@@ -823,6 +823,8 @@ bool agregarPagina(int nroPagina,int pid,char* pagina){
 
 			printf("Haciendo malloc de marco\n");
 
+			printf("La posicion de la pagina a reemplazar es:%d\n",posicionEnRam);
+
 			char* paginaVieja = (char*)list_get(datosMemoria->listaRAM,posicionEnRam);
 
 			printf("La pagina tiene:%s\n",paginaVieja);
