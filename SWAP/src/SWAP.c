@@ -70,9 +70,10 @@ int main(void) {
 
 		imprimirListaDeHuecos(listaDeHuecosUtilizados);
 	//}
+
+
 		tipoInstruccion* instruccionAEjecutar2;
 		tipoRespuesta* respuestaParaMemoria2;
-
 
 		printf("Esperando instruccion 2\n");
 		instruccionAEjecutar2 = recibirInstruccion(socketParaRecibirInstrucciones);
