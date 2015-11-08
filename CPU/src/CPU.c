@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "funcionesCPU.h"
 
+
 int main(void)
 {
 	t_hiloCPU hilosCPU;
@@ -17,14 +18,19 @@ int main(void)
 
 	//Crea tantos "CPUs" (hilos), especificado en el archivo de configuracion
 	pthread_t hiloCPU[hilosCPU.configuracionCPU->cantidadDeHilos];
+
 	int i;
 	for(i = 0; i < hilosCPU.configuracionCPU->cantidadDeHilos; i++)
 	{
 		hilosCPU.idCPU = i;
 		pthread_create(&hiloCPU[i], NULL, unCPU, &hilosCPU);
-		pthread_join(hiloCPU[i], NULL);
+		sleep(1);
 	}
 
+	for(i = 0; i < hilosCPU.configuracionCPU->cantidadDeHilos; i++)
+	{
+		pthread_join(hiloCPU[i], NULL);
+	}
 
 	return 0;
 }
