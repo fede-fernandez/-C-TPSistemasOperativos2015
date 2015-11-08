@@ -52,9 +52,9 @@ int main(void) {
 	printf("Conexion establecida\n\n");
 
 
-	int i = 1;
+	//int i = 1;
 /***********Recibir instrucciones y ejecutarlas***********/
-	while(i<10){
+	while(1){
 
 		printf("Esperando instruccion\n");
 		instruccionAEjecutar = recibirInstruccion(socketParaRecibirInstrucciones);
@@ -67,7 +67,7 @@ int main(void) {
 //
 //		destruirTipoRespuesta(respuestaParaMemoria);
 //		destruirTipoInstruccion(instruccionAEjecutar);
-		i++;
+	//	i++;
 
 }
 
