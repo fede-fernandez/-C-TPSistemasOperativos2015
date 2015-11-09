@@ -43,10 +43,9 @@ void* unCPU(t_hiloCPU* hiloCPU)
 {
 	//Parametros para crear un hilo de CPU: idCPU, archivoDeConfiguracion, archivoDeLogs, socketParaPlanificador, socketParaMemoria
 	t_datosCPU datosCPU;
-
-	datosCPU.idCPU = idCPUAAsignar;
-
+	
 	sem_wait(&semaforoIDCPU);
+	datosCPU.idCPU = idCPUAAsignar;
 	idCPUAAsignar++;
 	sem_post(&semaforoIDCPU);
 
