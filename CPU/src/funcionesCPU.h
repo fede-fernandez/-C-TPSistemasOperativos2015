@@ -12,6 +12,7 @@
 #include <commonsDeAsedio/estructuras.h>
 #include <commonsDeAsedio/cliente-servidor.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 /************Archivo de Config de CPU************/
 #define IP_PLANIFICADOR "IP_PLANIFICADOR"
@@ -60,7 +61,6 @@ typedef struct{
 //Estructura Hilo CPU
 typedef struct
 {
-	int idCPU;
 	tipoConfigCPU* configuracionCPU;
 	t_log* logCPU;
 }t_hiloCPU;

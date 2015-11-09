@@ -1,10 +1,14 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "funcionesCPU.h"
 
+int idCPUAAsignar = 0;
+sem_t semaforoIDCPU;
 
 int main(void)
 {
+	//Inicializo semaforo para asignar correctamente idCPU a cada hilo
+	sem_init(&semaforoIDCPU, 0, 1);
+
+	//Declaro estructura que requiere un hilo de CPU (configuracion y logs)
 	t_hiloCPU hilosCPU;
 
 	//Carga de archivo de configuracion
@@ -22,9 +26,7 @@ int main(void)
 	int i;
 	for(i = 0; i < hilosCPU.configuracionCPU->cantidadDeHilos; i++)
 	{
-		hilosCPU.idCPU = i;
-		pthread_create(&hiloCPU[i], NULL, unCPU, &hilosCPU);
-		sleep(1);
+		pthread_create(&hiloCPU[i], NULL, (void*)unCPU, &hilosCPU);
 	}
 
 	for(i = 0; i < hilosCPU.configuracionCPU->cantidadDeHilos; i++)
@@ -39,18 +41,22 @@ int main(void)
 //Hilo CPU
 void* unCPU(t_hiloCPU* hiloCPU)
 {
-	if(DEBUG == 1)
-	{
-		printf("idCPU: %i | HILO CPU CREADO\n", hiloCPU->idCPU);
-	}
-
-	//Parametros para crear un hiloCPU: idCPU, archivoDeConfiguracion, archivoDeLogs, socketParaPlanificador, socketParaMemoria
+	//Parametros para crear un hilo de CPU: idCPU, archivoDeConfiguracion, archivoDeLogs, socketParaPlanificador, socketParaMemoria
 	t_datosCPU datosCPU;
 
-	datosCPU.idCPU = hiloCPU->idCPU;
+	datosCPU.idCPU = idCPUAAsignar;
+
+	sem_wait(&semaforoIDCPU);
+	idCPUAAsignar++;
+	sem_post(&semaforoIDCPU);
+
 	datosCPU.configuracionCPU = hiloCPU->configuracionCPU;
 	datosCPU.logCPU = hiloCPU->logCPU;
 
+	if(DEBUG == 1)
+	{
+		printf("idCPU: %i | HILO CPU CREADO\n", datosCPU.idCPU);
+	}
 
 	//Conexion a Planificador
 	datosCPU.socketParaPlanificador = crearSocket();
@@ -103,12 +109,13 @@ void* unCPU(t_hiloCPU* hiloCPU)
 			imprimirPCB(PCB);
 		}
 
-		//LOG: CPU recibe PCBs
+		//LOG: CPU recibe PCB
 		if(LOGS_ACTIVADOS == 1)
 		{
 			log_trace(datosCPU.logCPU, "CPU ID: %i | PCB RECIBIDO | RUTA: %s | ESTADO: %c | PID: %i | INSPOINTER: %i | QUANTUM (0=FIFO): %i\n", datosCPU.idCPU, PCB->ruta, PCB->estado, PCB->pid, PCB->insPointer, quantum);
 		}
 
+		//Funcion principal que va a ejecutar el programa
 		ejecutarPrograma(PCB, quantum, &datosCPU);
 	}
 
