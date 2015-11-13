@@ -18,18 +18,6 @@
 #include <commonsDeAsedio/estructuras.h>
 
 
-#define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
-#define ALGORITMO_PLANIFICACION "ALGORITMO_PLANIFICACION"
-#define QUANTUM "QUANTUM"
-
-
-
-typedef struct{
-	int puertoEscucha;
-	char* algoritmoDePlanificacion;
-	int quantum;
-}tipoConfigPlanificador;
-
 typedef struct{
 	int id;
 	int pc;
@@ -84,11 +72,24 @@ int correr_path(void);
 void ps();
 //-------------------------------------------------------------------
 
-tipoConfigPlanificador* crearConfigPlanificador();
+/************Archivo de Config de PLANIFICADOR************/
 
-void destruirConfigPlanificador(tipoConfigPlanificador* estructuraDeConfiguracion);
+void configurar();
 
-tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDeArchivoDeConfiguracion);
+#define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
+#define QUANTUM "QUANTUM"
+
+typedef struct{
+	int puertoPlanificador;
+	int quantum;
+}tipoConfig;
+
+tipoConfig* cargarArchivoDeConfiguracion(char* rutaDelArchivoDeConfiguracion);
+
+tipoConfig* crearConfig();
+
+void destruirConfig(tipoConfig* estructuraDeConfiguracion);
+/*********Fin de Archivo de Config de PLANIFICADOR************/
 
 //-----------------------------------------------------------------------
 t_PCB* PCB_create(int id, int pc, char estado, char path[30]);

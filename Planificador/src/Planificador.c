@@ -62,12 +62,7 @@ pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de
 int main(void) {
 
 
-	/*tipoConfigPlanificador* configuracion = cargarArchivoDeConfiguracionDelPlanificador("/home/utnso/Escritorio/cfgPlanificador");
-
-	puerto = configuracion->puertoEscucha;
-	quantum = configuracion->quantum;
-
-	destruirConfigPlanificador(configuracion); */
+	//configurar();
 
 	inicializar_semaforos();
 
@@ -77,7 +72,6 @@ int main(void) {
 	pthread_create(&ejecucion, NULL, ejecutar_proceso, NULL);
 	pthread_create(&recibir, NULL, recibir_cpu, NULL);
 	pthread_create(&bloquear, NULL, bloquear_procesos, NULL);
-
 
 	menu();
 
@@ -90,7 +84,7 @@ int main(void) {
 int correr_path(void){
 
 
-	char comando[30];
+
 	char path[30];
 
 
@@ -99,7 +93,7 @@ int correr_path(void){
 
 	printf("Ingresar Comando: \n");
 
-	scanf("%s %s", comando, path); // supongo que siempre es un comando valido y path tambien
+	scanf("%s", path); // supongo que siempre es un comando valido y path tambien
 
 	contador_de_id_procesos++; // mantengo la cuenta de todos los procesos que se crearon en el sistema
 
@@ -589,5 +583,22 @@ void liberar_puertos(){
 		liberarSocket(nodo_cpu->puerto);
 		free(nodo_cpu);
 	}
+
+}
+
+
+void configurar(){
+
+	tipoConfig *configuracion;
+
+	//Carga de archivo de configuracion
+	configuracion = cargarArchivoDeConfiguracion("cfgPlanificador");
+
+	puerto = configuracion->puertoPlanificador;
+	quantum = configuracion->quantum;
+
+	printf("Quantum: %d \n", quantum);
+
+	destruirConfig(configuracion);
 
 }

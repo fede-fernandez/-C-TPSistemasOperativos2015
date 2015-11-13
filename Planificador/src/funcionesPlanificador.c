@@ -11,34 +11,39 @@
 
 
 
-tipoConfigPlanificador* crearConfigPlanificador(){
-	tipoConfigPlanificador *cfg = malloc(sizeof(tipoConfigPlanificador));
-	cfg->algoritmoDePlanificacion = string_new();
+//Crear archivo de configuracion
+tipoConfig* crearConfig(){
+
+	tipoConfig* cfg = malloc(sizeof(tipoConfig));
 
 	return cfg;
 }
 
 
-void destruirConfigPlanificador(tipoConfigPlanificador* cfg){
-	free(cfg->algoritmoDePlanificacion);
+//Liberar memoria de archivo de configuracion
+void destruirConfig(tipoConfig* cfg){
+
 	free(cfg);
 }
 
-tipoConfigPlanificador* cargarArchivoDeConfiguracionDelPlanificador(char* rutaDeArchivoDeConfiguracion){
-	t_config* archivoConfig = config_create(rutaDeArchivoDeConfiguracion);
 
-	tipoConfigPlanificador* cfg = crearConfigPlanificador();
+//Cargar archivo de configuracion
+tipoConfig* cargarArchivoDeConfiguracion(char* rutaDelArchivoDeConfiguracion){
 
-	validarErrorYAbortar(config_has_property(archivoConfig,PUERTO_ESCUCHA)
-			&& config_has_property(archivoConfig,ALGORITMO_PLANIFICACION)
-			&& config_has_property(archivoConfig,QUANTUM),
-			"Las claves del archivo de configuracion no coinciden con las que requiere el Planificador.");
+	t_config* archivoCfg = config_create(rutaDelArchivoDeConfiguracion);
+	validarExistenciaDeArchivoDeConfiguracion(rutaDelArchivoDeConfiguracion);
 
-	cfg->puertoEscucha = config_get_int_value(archivoConfig,PUERTO_ESCUCHA);
-	cfg->algoritmoDePlanificacion = string_duplicate(config_get_string_value(archivoConfig,ALGORITMO_PLANIFICACION));
-	cfg->quantum = config_get_int_value(archivoConfig,QUANTUM);
+	tipoConfig* cfg = crearConfig();
 
-	config_destroy(archivoConfig);
+	validarErrorYAbortar(config_has_property(archivoCfg,PUERTO_ESCUCHA)
+			&& config_has_property(archivoCfg,QUANTUM),
+			"Las claves del archivo de configuracion no coinciden con las que requiere el Panificador");
+
+
+	cfg->puertoPlanificador = config_get_int_value(archivoCfg,PUERTO_ESCUCHA);
+	cfg->quantum = config_get_int_value(archivoCfg,QUANTUM);
+
+	config_destroy(archivoCfg);
 
 	return cfg;
 }
