@@ -72,9 +72,13 @@ void conectarAServidor(int socket,char* direccionIp,int puerto){
 	informacionSocket.sin_addr.s_addr = inet_addr(direccionIp);
 	informacionSocket.sin_port = htons(puerto);
 
-	int conexion = connect(socket, (struct sockaddr*) &informacionSocket, sizeof(informacionSocket));
 
-	validarError(conexion,"Error al conectar con servidor");
+	int conexion = -1;
+
+	while(conexion < 0)
+	{
+		conexion = connect(socket, (struct sockaddr*) &informacionSocket, sizeof(informacionSocket));
+	}
 
 }
 
