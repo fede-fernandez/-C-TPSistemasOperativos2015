@@ -1,12 +1,12 @@
 #include "funcionesCPU.h"
 
-int idCPUAAsignar = 0;
-sem_t semaforoIDCPU;
+int idCPUAAsignar = 1;
+sem_t semaforoHiloCPU;
 
 int main(void)
 {
 	//Inicializo semaforo para asignar correctamente idCPU a cada hilo
-	sem_init(&semaforoIDCPU, 0, 1);
+	sem_init(&semaforoHiloCPU, 0, 1);
 
 	//Declaro estructura que requiere un hilo de CPU (configuracion y logs)
 	t_hiloCPU hilosCPU;
@@ -26,6 +26,7 @@ int main(void)
 	int i;
 	for(i = 0; i < hilosCPU.configuracionCPU->cantidadDeHilos; i++)
 	{
+		sem_wait(&semaforoHiloCPU);
 		pthread_create(&hiloCPU[i], NULL, (void*)unCPU, &hilosCPU);
 	}
 
@@ -44,10 +45,11 @@ void* unCPU(t_hiloCPU* hiloCPU)
 	//Parametros para crear un hilo de CPU: idCPU, archivoDeConfiguracion, archivoDeLogs, socketParaPlanificador, socketParaMemoria
 	t_datosCPU datosCPU;
 	
-	sem_wait(&semaforoIDCPU);
+
 	datosCPU.idCPU = idCPUAAsignar;
 	idCPUAAsignar++;
-	sem_post(&semaforoIDCPU);
+	sem_post(&semaforoHiloCPU);
+
 
 	datosCPU.configuracionCPU = hiloCPU->configuracionCPU;
 	datosCPU.logCPU = hiloCPU->logCPU;
@@ -94,7 +96,7 @@ void* unCPU(t_hiloCPU* hiloCPU)
 	//LOG: CPU creada conectada/conectada
 	if(LOGS_ACTIVADOS == 1)
 	{
-		log_trace(datosCPU.logCPU, "CPU ID: %i CREADA/CONECTADA A MEMORIA\n", datosCPU.idCPU);
+		log_trace(datosCPU.logCPU, "CPU ID: %i CREADA Y CONECTADA A MEMORIA", datosCPU.idCPU);
 	}
 
 	//Espero a recibir tarea del planificador
@@ -111,7 +113,14 @@ void* unCPU(t_hiloCPU* hiloCPU)
 		//LOG: CPU recibe PCB
 		if(LOGS_ACTIVADOS == 1)
 		{
-			log_trace(datosCPU.logCPU, "CPU ID: %i | PCB RECIBIDO | RUTA: %s | ESTADO: %c | PID: %i | INSPOINTER: %i | QUANTUM (0=FIFO): %i\n", datosCPU.idCPU, PCB->ruta, PCB->estado, PCB->pid, PCB->insPointer, quantum);
+			if(quantum == 0)
+			{
+				log_trace(datosCPU.logCPU, "CPU ID: %i | PCB RECIBIDO | RUTA: %s | ESTADO: %c | PID: %i | INSPOINTER: %i | PLANIFICACION: FIFO", datosCPU.idCPU, PCB->ruta, PCB->estado, PCB->pid, PCB->insPointer);
+			}
+			else
+			{
+				log_trace(datosCPU.logCPU, "CPU ID: %i | PCB RECIBIDO | RUTA: %s | ESTADO: %c | PID: %i | INSPOINTER: %i | PLANIFICACION: ROUNDROBIN | QUANTUM: %i", datosCPU.idCPU, PCB->ruta, PCB->estado, PCB->pid, PCB->insPointer, quantum);
+			}
 		}
 
 		//Funcion principal que va a ejecutar el programa
