@@ -38,7 +38,7 @@ int main(void) {
 	FD_ZERO(&listaFiltrada);
 	FD_SET(socketParaCpus,&listaPrincipal);
 
-	tipoEstructuraMemoria* datosMemoria = malloc(sizeof(tipoEstructuraMemoria));
+	/*tipoEstructuraMemoria* */datosMemoria = malloc(sizeof(tipoEstructuraMemoria));
 
 	//datosMemoria->listaRAM = listaRAM;
 
@@ -70,9 +70,9 @@ int main(void) {
 
 	escucharConexiones(socketParaCpus,maxConexionesEntrantes);
 
-	//pthread_t hiloSignals;
+	pthread_t hiloSignals;
 
-	//crearThread(&hiloSignals,funcionPrueba,datosMemoria);
+	crearThread(&hiloSignals,funcionPrueba,datosMemoria);
 
 	/*socketCpuEntrante = crearSocketParaAceptarSolicitudes(socketParaCpus);
 	FD_SET(socketParaCpus,&listaPrincipal);

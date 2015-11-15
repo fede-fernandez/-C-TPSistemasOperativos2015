@@ -8,22 +8,25 @@
 
 void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 
-	/*int boton = 0;
+	int boton = 0;
 
 	while(true){
 
 		scanf("%d",&boton);
 
 		switch (boton) {
-			case 1:*/
+			case 1:
 				mostrarTablasDePaginas(datosMemoria);
 				printf("\n\n");
-				mostrarTLB(datosMemoria);
+				imprimirTablas(datosMemoria->listaTablaPaginas);
 				printf("\n\n");
-				/*break;
+				//mostrarTLB(datosMemoria);
+				mostrarRAM(datosMemoria->listaRAM);
+				printf("\n\n");
+				break;
 		}
 
-	}*/
+	}
 
 }
 
@@ -87,5 +90,57 @@ void mostrarTLB(tipoEstructuraMemoria* datosMemoria){
 	}
 
 	printf("################################################################");
+}
+
+void mostrarRAM(t_list* ram){
+
+	printf("MOSTRANDO RAM:\n");
+
+	int var;
+	for (var = 0; var < list_size(ram); ++var) {
+
+		printf("MARCO %d :\n%s\n",var,(char*)list_get(ram,var));
+
+	}
+}
+
+void imprimirTablas(t_list* tablas){
+
+	tipoTablaPaginas* tabla;
+
+	int var;
+	for (var = 0; var < list_size(tablas); ++var) {
+
+		tabla = list_get(tablas,var);
+
+		printf("TABLA DE PAGINA DE %d:\n",tabla->pid);
+
+		printf("CON ACCESOS: ");
+		int i;
+		for (i = 0; i < list_size(tabla->listaParaAlgoritmo); ++i) {
+			printf("%d",(int)(*(int*)list_get(tabla->listaParaAlgoritmo,i)));
+		}
+
+		printf("\n");
+
+		imprimirPaginas(tabla->frames);
+	}
+	}
+
+void imprimirPaginas(t_list* frames){
+	printf("PAGINAS:\n");
+
+	int var;
+	for (var = 0; var < list_size(frames); ++var) {
+
+		tipoPagina* paginaAux = list_get(frames, var);
+
+		printf("Nº: "); printf("%d		",var);
+		printf("Posicion RAM: "); printf("%d		",paginaAux->posicionEnRAM);
+		printf("Modificado: "); printf("%d		",paginaAux->modificado);
+		printf("\n\n");
+
+	}
+
 }
 
