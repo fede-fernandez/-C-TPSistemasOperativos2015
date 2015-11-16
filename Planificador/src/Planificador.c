@@ -62,7 +62,7 @@ pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de
 int main(void) {
 
 
-	//configurar();
+	configurar();
 
 	inicializar_semaforos();
 
