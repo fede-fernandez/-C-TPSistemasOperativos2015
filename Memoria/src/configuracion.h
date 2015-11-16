@@ -48,19 +48,16 @@ typedef struct{
 	int socketSWAP;
 	int maximoSocket;
 	tipoConfigMemoria* configuracion;
-	//fd_set* cpusATratar;
 	bool* memoriaActiva;
 	int socketCpus;
-	t_list* listaAccesosAPaginasRAM;
+	t_list* colaFIFOTLB;
 	char tipoDeAlgoritmoRAM;
-	char tipoDeAlgoritmoTLB;
 }tipoEstructuraMemoria;
 
 typedef struct{
-	int cantVecesAccedido;
 	int pid;
 	int nroPagina;
-}tipoAccesosAPagina;
+}tipoAccesoAPaginaTLB;
 
 
 typedef struct{
@@ -83,7 +80,6 @@ typedef struct{
 #define NO_EXISTE -16
 
 typedef struct{
-	//int numeroDePagina;
 	bool modificado;
 	int posicionEnRAM;
 	bool usado;

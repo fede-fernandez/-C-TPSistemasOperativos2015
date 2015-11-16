@@ -12,16 +12,11 @@ void setearEstructuraMemoria(tipoEstructuraMemoria* datos) {
 
 	datosMemoria->listaRAM = list_create();
 
-	datosMemoria->listaAccesosAPaginasRAM = list_create();
-
 	if(estaHabilitadaLaTLB())
 	datosMemoria->listaTLB = list_create();
 
-	datosMemoria->listaAccesosAPaginasRAM = list_create();
-
 	setearParaAlgoritmos();
 
-	//setearParaValidaciones(datosMemoria);
 }
 
 
@@ -189,11 +184,9 @@ tipoRespuesta* leerPagina(tipoInstruccion instruccion){
 
 		respuesta = crearTipoRespuesta(PERFECTO,pagina);
 
-		printf("La pagina ya se encontro en ram..\n");
+		modificarUso(instruccion.nroPagina,instruccion.pid,true);
 
 		agregarAccesoPorAlgoritmo(instruccion.nroPagina,instruccion.pid);
-
-		modificarUso(instruccion.nroPagina,instruccion.pid,true);
 
 		if(estaHabilitadaLaTLB())
 		agregarPaginaATLB(instruccion.nroPagina,instruccion.pid,posicionEnRam);
@@ -365,8 +358,6 @@ tipoRespuesta* escribirPagina(tipoInstruccion instruccion){
 
 	if(posicionDePag==NO_EXISTE){
 
-		printf("Pagina no existe..\n");
-
 		posicionDePag = agregarPagina(instruccion.nroPagina,instruccion.pid,instruccion.texto);
 
 		aumentarPaginasAsignadas(instruccion.pid);
@@ -375,11 +366,11 @@ tipoRespuesta* escribirPagina(tipoInstruccion instruccion){
 	else
 		modificarPagina(instruccion.nroPagina,instruccion.pid,posicionDePag,instruccion.texto);
 
-	agregarAccesoPorAlgoritmo(instruccion.nroPagina,instruccion.pid);
-
 	modificarUso(instruccion.nroPagina,instruccion.pid,true);
 
 	modificarModificado(instruccion.nroPagina,instruccion.pid,true);
+
+	agregarAccesoPorAlgoritmo(instruccion.nroPagina,instruccion.pid);
 
 	if(estaHabilitadaLaTLB())
 	agregarPaginaATLB(instruccion.nroPagina,instruccion.pid,posicionDePag);
@@ -411,17 +402,12 @@ void modificarModificado(int nroPagina,int pid,bool modificado){
 
 void modificarUso(int nroPagina,int pid,bool uso){
 
-	printf("Voy a modificar uso..\n");
-
 	tipoTablaPaginas* tablaDePagina = traerTablaDePaginas(pid);
 
 	tipoPagina* paginaAModificar = list_get(tablaDePagina->frames,nroPagina);
 
-	printf("Uso siendo modificado..\n");
-
 	paginaAModificar->usado = uso;
 
-	printf("Uso modificado..\n");
 }
 
 void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam){
@@ -432,9 +418,11 @@ void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam){
 
 	if(TLBLlena()){
 
-		int posicionAReemplazar = cualReemplazarTLB();
+		tipoAccesoAPaginaTLB*  cualReemplazar = cualReemplazarTLB();
 
-		list_remove(datosMemoria->listaTLB,posicionAReemplazar);
+		int posicionAReemplazar = dondeEstaPaginaEnTLB(cualReemplazar->nroPagina,cualReemplazar->pid);
+
+		list_remove_and_destroy_element(datosMemoria->listaTLB,posicionAReemplazar,free);
 	}
 
 	tipoTLB* instanciaTLB = malloc(sizeof(tipoTLB));
@@ -478,6 +466,8 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 		instruccionASwapRealizada(instruccionASwap,&respuesta);
 
 		free(instruccionASwap);//esto puede romper porque lo agregue a lo ultimo..
+
+		printf("La posicion en la que se escribira la pagina es:%d\n",posicionEnRam);
 
 		}
 
@@ -545,5 +535,25 @@ void quitarPaginaDeRam(int nroPagina,int pid){//Aca hay un problema con direccio
 		list_replace_and_destroy_element(datosMemoria->listaRAM,dondeEstaEnRam,"",free);//esto despues hay q verlo pero lo hago para dejar un hueco en ram
 																						//y que no se modifiquen las posiciones de las paginas
 	}
+
+int dondeEstaPaginaEnTLB(int nroPagina,int pid){
+
+	tipoTLB* instanciaTLB;
+
+	int var,dondeEsta=-1;
+	for (var = 0; var < list_size(datosMemoria->listaTLB); ++var) {
+
+		instanciaTLB = list_get(datosMemoria->listaTLB,var);
+
+		if(instanciaTLB->numeroDePagina==nroPagina&&instanciaTLB->pid==pid){
+
+			dondeEsta = var;
+
+			break;
+		}
+	}
+
+	return dondeEsta;
+}
 
 

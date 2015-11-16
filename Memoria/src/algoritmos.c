@@ -7,36 +7,18 @@
 
 #include "algoritmos.h"
 
-void setearParaAlgoritmos(/*tipoEstructuraMemoria* datos*/){
-	//datosMemoria = datos;
+void setearParaAlgoritmos(){
 
 	datosMemoria->tipoDeAlgoritmoRAM = LRU;//Hardcodeado hasta que no se
 
-	datosMemoria->tipoDeAlgoritmoTLB = FIFO;//agregue en el archivo de config
+	if(estaHabilitadaLaTLB())
+		datosMemoria->colaFIFOTLB = list_create();//agregue en el archivo de config
 
 }
 
-int cualReemplazarTLB(){
+tipoAccesoAPaginaTLB* cualReemplazarTLB(){
 
-
-	int cualReemplazar;
-
-switch (datosMemoria->tipoDeAlgoritmoTLB) {
-
-	case FIFO:
-		cualReemplazar = cualReemplazarTLBFIFO();
-		break;
-
-	case LRU:
-		cualReemplazar = cualReemplazarTLBLRU();
-		break;
-
-	case CLOCK_MODIFICADO:
-		cualReemplazar = cualReemplazarTLBCLOCKM();
-			break;
-}
-
-	return cualReemplazar;
+return cualReemplazarTLBFIFO();
 }
 
 int cualReemplazarRAM(tipoTablaPaginas* tablaDePaginas){
@@ -45,16 +27,16 @@ int cualReemplazarRAM(tipoTablaPaginas* tablaDePaginas){
 
 	switch (datosMemoria->tipoDeAlgoritmoRAM) {
 
-	case FIFO:
+	/*case FIFO:
 		cualReemplazar = cualReemplazarRAMFIFO(tablaDePaginas->listaParaAlgoritmo);
-			break;
+			break;*/
 
 	case LRU:
 		cualReemplazar = cualReemplazarRAMLRU(tablaDePaginas->listaParaAlgoritmo);
 			break;
 
 	case CLOCK_MODIFICADO:
-		cualReemplazar = cualReemplazarRAMCLOCKM();
+		cualReemplazar = cualReemplazarRAMCLOCKM(tablaDePaginas);
 			break;
 	}
 
@@ -70,6 +52,27 @@ int cualReemplazarRAMFIFO(t_list* listaAccesos){
 	list_remove(listaAccesos,0);
 
 	return paginaAReemplazar;
+}
+
+tipoAccesoAPaginaTLB* cualReemplazarTLBFIFO(){
+
+	int var,dondeEstaElAccesoAReemplazar;
+
+	tipoAccesoAPaginaTLB* accesoAux;
+
+	for (var = 0; var < list_size(datosMemoria->colaFIFOTLB); ++var) {
+
+		accesoAux = list_get(datosMemoria->colaFIFOTLB,var);
+
+		dondeEstaElAccesoAReemplazar = dondeEstaAccesoTLB(accesoAux->nroPagina,accesoAux->pid);
+
+		if(dondeEstaElAccesoAReemplazar>=0)
+			break;
+	}
+
+	list_remove(datosMemoria->colaFIFOTLB,dondeEstaElAccesoAReemplazar);
+
+	return accesoAux;
 }
 
 int cualReemplazarRAMLRU(t_list* listaAccesos){
@@ -102,16 +105,97 @@ int cualReemplazarRAMLRU(t_list* listaAccesos){
 	return paginaAReemplazar;
 }
 
-int cualReemplazarRAMCLOCKM(){
+int cualReemplazarRAMCLOCKM(tipoTablaPaginas* tablaDePagina){
 
-return 0;
+	int* nroPaginaAReemplazar = malloc(sizeof(int));
+
+	bool noFunciono = false;
+
+	while(noFunciono){
+
+	noFunciono = !ejecutarPaso1CLOCKM(tablaDePagina,nroPaginaAReemplazar);
+
+	if(noFunciono)
+	noFunciono = !ejecutarPaso2CLOCKM(tablaDePagina,nroPaginaAReemplazar);
 }
 
-int cualReemplazarTLBFIFO(){
-
-	return 0;
+	return *nroPaginaAReemplazar;
 }
 
+bool ejecutarPaso1CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplazar){
+
+	int var,puntero = tablaDePagina->punteroParaAlgoritmo;
+
+	bool encontrado = false;
+
+	tipoPagina* pagina;
+
+	int* acceso;
+
+	for (var = 0; var < list_size(tablaDePagina->listaParaAlgoritmo); ++var) {
+
+		if(puntero==list_size(tablaDePagina->listaParaAlgoritmo))
+			puntero = 0;
+
+		acceso = list_get(tablaDePagina->listaParaAlgoritmo,puntero);
+
+		pagina = list_get(tablaDePagina->frames,*acceso);
+
+		puntero++;
+
+		if(!(pagina->usado||pagina->modificado)){
+
+			encontrado = true;
+
+			*nroPaginaAReemplazar = *acceso;
+
+			break;
+		}
+
+	}
+
+return encontrado;
+
+}
+
+bool ejecutarPaso2CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplazar){
+
+	int var,puntero = tablaDePagina->punteroParaAlgoritmo;
+
+	bool encontrado = false;
+
+	tipoPagina* pagina;
+
+	int* acceso;
+
+	for (var = 0; var < list_size(tablaDePagina->listaParaAlgoritmo); ++var) {
+
+		if(puntero==list_size(tablaDePagina->listaParaAlgoritmo))
+			puntero = 0;
+
+		acceso = list_get(tablaDePagina->listaParaAlgoritmo,puntero);
+
+		pagina = list_get(tablaDePagina->frames,*acceso);
+
+		puntero++;
+
+		if(!pagina->usado&&pagina->modificado){
+
+			encontrado = true;
+
+			*nroPaginaAReemplazar = *acceso;
+
+			break;
+		}
+
+		modificarUso(*acceso,tablaDePagina->pid,false);
+	}
+
+return encontrado;
+
+}
+
+/*
 int cualReemplazarTLBLRU(){
 
 	return 0;
@@ -120,7 +204,7 @@ int cualReemplazarTLBLRU(){
 int cualReemplazarTLBCLOCKM(){
 
 	return 0;
-}
+}*/
 
 void agregarAccesoPorAlgoritmo(int nroPagina,int pid){
 
@@ -128,9 +212,9 @@ void agregarAccesoPorAlgoritmo(int nroPagina,int pid){
 
 	switch (datosMemoria->tipoDeAlgoritmoRAM) {
 
-	case FIFO:
+	/*case FIFO:
 				agregarAccesoPorFIFO(tablaDePaginas,nroPagina);
-		break;
+		break;*/
 
 	case LRU:
 
@@ -142,6 +226,9 @@ void agregarAccesoPorAlgoritmo(int nroPagina,int pid){
 		agregarAccesoPorCLOCKM(tablaDePaginas,nroPagina);
 			break;
 	}
+
+	if(estaHabilitadaLaTLB())
+		agregarAccesoPorFIFO(nroPagina,pid);
 }
 
 void inicializarPorAlgoritmo(tipoTablaPaginas* tablaDePagina){
@@ -186,21 +273,28 @@ int ejecutarAlgoritmo(int* nroPagina,int pid,bool* estaModificada){
 
 	modificarDatosDePagina(nroPaginaAReemplazar,pid,-1,EN_SWAP,false,false);
 
-	if(estaHabilitadaLaTLB())
+	if(estaHabilitadaLaTLB()){
 	quitarDeTLB(nroPaginaAReemplazar,pid);
+	quitarAccesoTLB(nroPaginaAReemplazar,pid);
+	}
 
 	return dondeEstaEnRam;
 
 }
 
-void agregarAccesoPorFIFO(tipoTablaPaginas* tablaDePaginas,int nroPagina){
+void agregarAccesoPorFIFO(int nroPagina,int pid){
 
-	int* nuevoAcceso = malloc(sizeof(int));
+	if(dondeEstaAccesoTLB(nroPagina,pid)<0){
 
-	*nuevoAcceso = nroPagina;
+	tipoAccesoAPaginaTLB* nuevoAcceso = malloc(sizeof(tipoAccesoAPaginaTLB));
 
-	list_add(tablaDePaginas->listaParaAlgoritmo,nuevoAcceso);
+	nuevoAcceso->nroPagina = nroPagina;
 
+	nuevoAcceso->pid = pid;
+
+	list_add(datosMemoria->colaFIFOTLB,nuevoAcceso);
+
+	}
 }
 
 void agregarAccesoPorLRU(tipoTablaPaginas* tablaDePaginas,int nroPagina){
@@ -243,6 +337,38 @@ void agregarAccesoPorCLOCKM(tipoTablaPaginas* tablaDePaginas,int nroPagina){
 	}
 
 }
+
+void quitarAccesoTLB(int nroPagina,int pid){
+
+	int dondeEstaAcceso = dondeEstaAccesoTLB(nroPagina,pid);
+
+	if(dondeEstaAcceso>=0)
+		list_remove_and_destroy_element(datosMemoria->colaFIFOTLB,dondeEstaAcceso,free);
+}
+
+int dondeEstaAccesoTLB(int nroPagina,int pid){
+
+	tipoAccesoAPaginaTLB* acceso;
+
+	int var,posicionDeAcceso = -1;
+
+	for (var = 0; var < list_size(datosMemoria->colaFIFOTLB); ++var) {
+
+		acceso = list_get(datosMemoria->colaFIFOTLB,var);
+
+		if(acceso->nroPagina==nroPagina&&acceso->pid==pid){
+
+			posicionDeAcceso = var;
+
+			break;
+		}
+	}
+
+	return posicionDeAcceso;
+}
+
+
+
 
 
 

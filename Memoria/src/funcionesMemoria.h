@@ -51,6 +51,8 @@ char* traerPaginaDesdeRam(int direccion);//Retorna el contenido de la pagina
 
 tipoTablaPaginas* traerTablaDePaginas(int pid);//Retorna la tabla de paginas correspondiente a pid
 
+int dondeEstaPaginaEnTLB(int nroPagina,int pid);//Busca en que posicion de la TLB se encuentra determinada instancia
+
 /*####################################MODIFICACIONES###################################################*/
 
 void modificarDatosDePagina(int nroPagina,int pid,int posicionEnRam,int presente,bool uso,bool modificado);

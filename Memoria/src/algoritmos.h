@@ -21,7 +21,7 @@ void setearParaAlgoritmos();//Setea el tipo de algoritmo a utilizar
 
 int ejecutarAlgoritmoDeReemplazo(int* nroPagina,int pid,tipoTablaPaginas* tablaDePagina);
 
-int cualReemplazarTLB();
+tipoAccesoAPaginaTLB* cualReemplazarTLB();
 
 int cualReemplazarRAM();
 
@@ -29,13 +29,13 @@ int cualReemplazarRAMFIFO(t_list* listaAccesos);
 
 int cualReemplazarRAMLRU(t_list* listaAccesos);
 
-int cualReemplazarRAMCLOCKM();
+int cualReemplazarRAMCLOCKM(tipoTablaPaginas* tablaDePagina);
 
-int cualReemplazarTLBFIFO();
+bool ejecutarPaso1CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplazar);
 
-int cualReemplazarTLBLRU();
+bool ejecutarPaso2CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplazar);
 
-int cualReemplazarTLBCLOCKM();
+tipoAccesoAPaginaTLB* cualReemplazarTLBFIFO();
 
 void agregarAccesoPorAlgoritmo(int nroPagina,int pid);//Agrega un acceso dependiendo del algoritmo a utilizar
 
@@ -45,10 +45,14 @@ void inicializarPorAlgoritmo(tipoTablaPaginas* tablaDePagina);//Inicializa la li
 
 int ejecutarAlgoritmo(int* nroPagina,int pid,bool* estaModificada);//Setea el nroPagina elegido y si esta modificada, borra el acceso de la lista y retorna la posicion en ram
 
-void agregarAccesoPorFIFO(tipoTablaPaginas* tablaDePaginas,int nroPagina);
+void agregarAccesoPorFIFO(int nroPagina,int pid);//Solo para TLB
 
 void agregarAccesoPorLRU(tipoTablaPaginas* tablaDePaginas,int nroPagina);
 
 void agregarAccesoPorCLOCKM(tipoTablaPaginas* tablaDePaginas,int nroPagina);
+
+void quitarAccesoTLB(int nroPaginaAReemplazar,int pid);
+
+int dondeEstaAccesoTLB(int nroPagina,int pid);
 
 #endif /* ALGORITMOS_H_ */
