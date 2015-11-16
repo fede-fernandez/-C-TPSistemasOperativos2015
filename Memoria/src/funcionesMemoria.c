@@ -363,10 +363,11 @@ tipoRespuesta* escribirPagina(tipoInstruccion instruccion){
 		aumentarPaginasAsignadas(instruccion.pid);
 	}
 
-	else
+	else {
 		modificarPagina(instruccion.nroPagina,instruccion.pid,posicionDePag,instruccion.texto);
 
-	modificarUso(instruccion.nroPagina,instruccion.pid,true);
+		modificarUso(instruccion.nroPagina,instruccion.pid,true);
+	}
 
 	modificarModificado(instruccion.nroPagina,instruccion.pid,true);
 

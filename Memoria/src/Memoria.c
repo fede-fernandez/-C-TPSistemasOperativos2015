@@ -16,7 +16,7 @@ int main(void) {
 
 //////////////////////////INICIALIZACION DE VARIABLES////////////////////////////////
 
-	tipoConfigMemoria* configuracion = cargarArchivoDeConfiguracionDeMemoria("/home/utnso/git/cfgMemoria");
+	tipoConfigMemoria* configuracion = cargarArchivoDeConfiguracionDeMemoria("cfgMemoria");
 
 	int socketParaCpus = crearSocket();
 

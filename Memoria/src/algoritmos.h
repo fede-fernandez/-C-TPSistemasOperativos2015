@@ -10,6 +10,7 @@
 
 #include "configuracion.h"
 #include "funcionesMemoria.h"
+#include <commonsDeAsedio/select.h>
 
 #define FIFO 1
 #define LRU 2
@@ -51,8 +52,12 @@ void agregarAccesoPorLRU(tipoTablaPaginas* tablaDePaginas,int nroPagina);
 
 void agregarAccesoPorCLOCKM(tipoTablaPaginas* tablaDePaginas,int nroPagina);
 
+void agregarEnHuecoCLOCKM(tipoTablaPaginas* tablaDePaginas,int nroPagina);
+
 void quitarAccesoTLB(int nroPaginaAReemplazar,int pid);
 
 int dondeEstaAccesoTLB(int nroPagina,int pid);
+
+int minimoEntre(int x,int y);
 
 #endif /* ALGORITMOS_H_ */
