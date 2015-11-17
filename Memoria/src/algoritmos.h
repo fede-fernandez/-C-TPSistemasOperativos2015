@@ -46,7 +46,7 @@ void inicializarPorAlgoritmo(tipoTablaPaginas* tablaDePagina);//Inicializa la li
 
 int ejecutarAlgoritmo(int* nroPagina,int pid,bool* estaModificada);//Setea el nroPagina elegido y si esta modificada, borra el acceso de la lista y retorna la posicion en ram
 
-void agregarAccesoPorFIFO(int nroPagina,int pid);//Solo para TLB
+void agregarAccesoPorFIFO(tipoTablaPaginas* tablaDePAginas,int nroPagina);//Esto es para Ram aunque no lo vayan a evaluar
 
 void agregarAccesoPorLRU(tipoTablaPaginas* tablaDePaginas,int nroPagina);
 

@@ -17,10 +17,32 @@ void setearEstructuraMemoria(tipoEstructuraMemoria* datos) {
 
 	setearParaAlgoritmos();
 
+	iniciarListaHuecosRAM();
+
 }
 
 
 /************************FUNCIONES********************************/
+
+void iniciarListaHuecosRAM(){
+
+	datosMemoria->listaHuecosRAM = list_create();
+
+	int var;
+	for (var = 0; var < datosMemoria->configuracion->cantidadDeMarcos; ++var) {
+
+		bool* hueco = malloc(sizeof(bool));
+
+		*hueco = true;
+
+		list_add(datosMemoria->listaHuecosRAM,hueco);
+
+		char* contenidoHueco = string_duplicate("");
+
+		list_add(datosMemoria->listaRAM,contenidoHueco);
+	}
+
+}
 
 void tratarPeticion(int cpuAtendida) {
 
@@ -419,11 +441,11 @@ void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam){
 
 	if(TLBLlena()){
 
-		tipoAccesoAPaginaTLB*  cualReemplazar = cualReemplazarTLB();
+		/*tipoAccesoAPaginaTLB*  cualReemplazar = cualReemplazarTLB();
 
-		int posicionAReemplazar = dondeEstaPaginaEnTLB(cualReemplazar->nroPagina,cualReemplazar->pid);
+		int posicionAReemplazar = dondeEstaPaginaEnTLB(cualReemplazar->nroPagina,cualReemplazar->pid);*/
 
-		list_remove_and_destroy_element(datosMemoria->listaTLB,posicionAReemplazar,free);
+		list_remove_and_destroy_element(datosMemoria->listaTLB,0/*posicionAReemplazar*/,free);//Como siempre agrego al final,la primera va a ser la q hay q sacar
 	}
 
 	tipoTLB* instanciaTLB = malloc(sizeof(tipoTLB));
@@ -448,6 +470,8 @@ void volcarRamALog(){
 
 int agregarPagina(int nroPagina,int pid,char* contenido){
 
+	printf("Entrando a agregar pagina..\n");
+
 	int posicionEnRam;
 
 	if(RAMLlena()||excedeMaximoDeMarcos(pid)){
@@ -471,15 +495,22 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 		printf("La posicion en la que se escribira la pagina es:%d\n",posicionEnRam);
 
 		}
-
-		list_replace_and_destroy_element(datosMemoria->listaRAM,posicionEnRam,contenido,free);
 	}
 
 	else {
-		posicionEnRam = list_size(datosMemoria->listaRAM);
 
-		list_add_in_index(datosMemoria->listaRAM,posicionEnRam,contenido);
+		printf("Detecto que hay espacio en ram..\n");
+
+		posicionEnRam = buscarHuecoRAM();//list_size(datosMemoria->listaRAM);
+
+		setearHuecoEnListaHuecosRAM(posicionEnRam,false);
+
+		printf("La posicion vacia de ram es :%d\n",posicionEnRam);
 	}
+
+	list_replace_and_destroy_element(datosMemoria->listaRAM,posicionEnRam,contenido,free);//Esto es nuevo porque para manejar los huecos la ram ya tiene q estar inicializada con ""
+
+	printf("No rompio en list_replace..\n");
 
 	modificarDatosDePagina(nroPagina,pid,posicionEnRam,EN_RAM,true,false);
 
@@ -532,10 +563,19 @@ void quitarPaginaDeRam(int nroPagina,int pid){//Aca hay un problema con direccio
 
 	int dondeEstaEnRam = buscarPaginaEnTabla(nroPagina,pid);
 
-	if(dondeEstaEnRam!=EN_SWAP&&dondeEstaEnRam!=NO_EXISTE)
+	if(dondeEstaEnRam!=EN_SWAP&&dondeEstaEnRam!=NO_EXISTE){
 		list_replace_and_destroy_element(datosMemoria->listaRAM,dondeEstaEnRam,"",free);//esto despues hay q verlo pero lo hago para dejar un hueco en ram
 																						//y que no se modifiquen las posiciones de las paginas
+		setearHuecoEnListaHuecosRAM(dondeEstaEnRam,true);
+		}
 	}
+
+void setearHuecoEnListaHuecosRAM(int posicion,bool estado){
+
+bool* hueco = list_get(datosMemoria->listaHuecosRAM,posicion);
+
+*hueco = estado;
+}
 
 int dondeEstaPaginaEnTLB(int nroPagina,int pid){
 
@@ -557,4 +597,19 @@ int dondeEstaPaginaEnTLB(int nroPagina,int pid){
 	return dondeEsta;
 }
 
+int buscarHuecoRAM(){
 
+	int var;
+
+	bool* hueco;
+
+	for (var = 0; var < list_size(datosMemoria->listaHuecosRAM); ++var) {
+
+		hueco = list_get(datosMemoria->listaHuecosRAM,var);
+
+		if(*hueco)
+			return var;
+	}
+
+	return -1;
+}

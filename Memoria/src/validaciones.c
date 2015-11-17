@@ -32,8 +32,12 @@ bool TLBLlena(){
 }
 
 bool RAMLlena(){
-	return (list_size(datosMemoria->listaRAM)>=datosMemoria->configuracion->cantidadDeMarcos);
+
+	int posicionDeHueco = buscarHuecoRAM();
+
+	return posicionDeHueco<0;//(list_size(datosMemoria->listaRAM)>=datosMemoria->configuracion->cantidadDeMarcos);
 }
+
 
 bool tamanioDePaginaMayorAlSoportado(char* texto){
 

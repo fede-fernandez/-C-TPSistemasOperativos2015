@@ -53,6 +53,8 @@ tipoTablaPaginas* traerTablaDePaginas(int pid);//Retorna la tabla de paginas cor
 
 int dondeEstaPaginaEnTLB(int nroPagina,int pid);//Busca en que posicion de la TLB se encuentra determinada instancia
 
+int buscarHuecoRAM();//Retorna la posicion del primer hueco de RAM que encuentra
+
 /*####################################MODIFICACIONES###################################################*/
 
 void modificarDatosDePagina(int nroPagina,int pid,int posicionEnRam,int presente,bool uso,bool modificado);
@@ -65,6 +67,8 @@ void modificarPagina(int nroPagina,int pid,int posicionDePag,char* texto);//Modi
 
 void aumentarPaginasAsignadas(int pid);//Aumenta la cantidad de paginas asignadas a un proceso
 
+void setearHuecoEnListaHuecosRAM(int posicion,bool estado);//Setea si hay o no un hueco en ram
+
 /*####################################CREACIONES O AGREGADOS###################################################*/
 
 void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam);
@@ -74,6 +78,8 @@ void agregarATablaDePaginas(tipoTablaPaginas* tablaDePaginas,int nroPagina,int p
 tipoPagina* crearPagina(int nroPagina,int posEnRAM,char presente,bool usado,bool modificado);
 
 void inicializarPaginas(tipoTablaPaginas* tablaDePaginasNueva);
+
+void iniciarListaHuecosRAM();//Inicializa la RAM con huecos
 
 int agregarPagina(int nroPagina,int pid,char* contenido);
 

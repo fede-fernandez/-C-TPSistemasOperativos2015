@@ -50,7 +50,8 @@ typedef struct{
 	tipoConfigMemoria* configuracion;
 	bool* memoriaActiva;
 	int socketCpus;
-	t_list* colaFIFOTLB;
+	//t_list* colaFIFOTLB;
+	t_list* listaHuecosRAM;
 	char tipoDeAlgoritmoRAM;
 }tipoEstructuraMemoria;
 

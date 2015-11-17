@@ -11,15 +11,15 @@ void setearParaAlgoritmos(){
 
 	datosMemoria->tipoDeAlgoritmoRAM = CLOCK_MODIFICADO;//Hardcodeado hasta que no se
 
-	if(estaHabilitadaLaTLB())
-		datosMemoria->colaFIFOTLB = list_create();//agregue en el archivo de config
+	/*if(estaHabilitadaLaTLB())
+		datosMemoria->colaFIFOTLB = list_create();//agregue en el archivo de config*/
 
 }
 
-tipoAccesoAPaginaTLB* cualReemplazarTLB(){
+/*tipoAccesoAPaginaTLB* cualReemplazarTLB(){
 
 return cualReemplazarTLBFIFO();
-}
+}*/
 
 int cualReemplazarRAM(tipoTablaPaginas* tablaDePaginas){
 
@@ -54,7 +54,7 @@ int cualReemplazarRAMFIFO(t_list* listaAccesos){
 	return paginaAReemplazar;
 }
 
-tipoAccesoAPaginaTLB* cualReemplazarTLBFIFO(){
+/*tipoAccesoAPaginaTLB* cualReemplazarTLBFIFO(){
 
 	int var,dondeEstaElAccesoAReemplazar;
 
@@ -73,7 +73,7 @@ tipoAccesoAPaginaTLB* cualReemplazarTLBFIFO(){
 	list_remove(datosMemoria->colaFIFOTLB,dondeEstaElAccesoAReemplazar);
 
 	return accesoAux;
-}
+}*/
 
 int cualReemplazarRAMLRU(t_list* listaAccesos){
 
@@ -225,9 +225,9 @@ void agregarAccesoPorAlgoritmo(int nroPagina,int pid){
 
 	switch (datosMemoria->tipoDeAlgoritmoRAM) {
 
-	/*case FIFO:
+	case FIFO:
 				agregarAccesoPorFIFO(tablaDePaginas,nroPagina);
-		break;*/
+		break;
 
 	case LRU:
 
@@ -240,8 +240,8 @@ void agregarAccesoPorAlgoritmo(int nroPagina,int pid){
 			break;
 	}
 
-	if(estaHabilitadaLaTLB())
-		agregarAccesoPorFIFO(nroPagina,pid);
+	//if(estaHabilitadaLaTLB())
+		//agregarAccesoPorFIFO(nroPagina,pid);
 }
 
 void inicializarPorAlgoritmo(tipoTablaPaginas* tablaDePagina){
@@ -292,14 +292,14 @@ int ejecutarAlgoritmo(int* nroPagina,int pid,bool* estaModificada){
 
 	if(estaHabilitadaLaTLB()){
 	quitarDeTLB(nroPaginaAReemplazar,pid);
-	quitarAccesoTLB(nroPaginaAReemplazar,pid);
+	//quitarAccesoTLB(nroPaginaAReemplazar,pid);
 	}
 
 	return dondeEstaEnRam;
 
 }
 
-void agregarAccesoPorFIFO(int nroPagina,int pid){
+/*void agregarAccesoPorFIFO(int nroPagina,int pid){
 
 	if(dondeEstaAccesoTLB(nroPagina,pid)<0){
 
@@ -312,6 +312,15 @@ void agregarAccesoPorFIFO(int nroPagina,int pid){
 	list_add(datosMemoria->colaFIFOTLB,nuevoAcceso);
 
 	}
+}*/
+
+void agregarAccesoPorFIFO(tipoTablaPaginas* tablaDePAginas,int nroPagina){
+
+	int* nuevoAcceso = malloc(sizeof(int));
+
+	*nuevoAcceso = nroPagina;
+
+	list_add(tablaDePAginas->listaParaAlgoritmo,nuevoAcceso);
 }
 
 void agregarAccesoPorLRU(tipoTablaPaginas* tablaDePaginas,int nroPagina){
@@ -372,15 +381,15 @@ void agregarEnHuecoCLOCKM(tipoTablaPaginas* tablaDePaginas,int nroPagina){
 	}
 }
 
-void quitarAccesoTLB(int nroPagina,int pid){
+/*void quitarAccesoTLB(int nroPagina,int pid){
 
 	int dondeEstaAcceso = dondeEstaAccesoTLB(nroPagina,pid);
 
 	if(dondeEstaAcceso>=0)
 		list_remove_and_destroy_element(datosMemoria->colaFIFOTLB,dondeEstaAcceso,free);
-}
+}*/
 
-int dondeEstaAccesoTLB(int nroPagina,int pid){
+/*int dondeEstaAccesoTLB(int nroPagina,int pid){
 
 	tipoAccesoAPaginaTLB* acceso;
 
@@ -399,7 +408,7 @@ int dondeEstaAccesoTLB(int nroPagina,int pid){
 	}
 
 	return posicionDeAcceso;
-}
+}*/
 
 int minimoEntre(int x,int y){
 
