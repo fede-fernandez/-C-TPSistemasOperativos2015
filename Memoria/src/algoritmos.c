@@ -27,9 +27,9 @@ int cualReemplazarRAM(tipoTablaPaginas* tablaDePaginas){
 
 	switch (datosMemoria->tipoDeAlgoritmoRAM) {
 
-	/*case FIFO:
+	case FIFO:
 		cualReemplazar = cualReemplazarRAMFIFO(tablaDePaginas->listaParaAlgoritmo);
-			break;*/
+			break;
 
 	case LRU:
 		cualReemplazar = cualReemplazarRAMLRU(tablaDePaginas->listaParaAlgoritmo);
@@ -96,11 +96,13 @@ int cualReemplazarRAMLRU(t_list* listaAccesos){
 		}
 	}
 
-	int* nuevoAcceso = malloc(sizeof(int));
+	*aux = -1;
+
+	/*int* nuevoAcceso = malloc(sizeof(int));
 
 	*nuevoAcceso = -1;
 
-	list_replace_and_destroy_element(listaAccesos,paginaAReemplazar,nuevoAcceso,free);
+	list_replace_and_destroy_element(listaAccesos,paginaAReemplazar,nuevoAcceso,free);*/
 
 	return paginaAReemplazar;
 }
@@ -118,7 +120,7 @@ int cualReemplazarRAMCLOCKM(tipoTablaPaginas* tablaDePagina){
 	if(noFunciono)
 	noFunciono = !ejecutarPaso2CLOCKM(tablaDePagina,nroPaginaAReemplazar);
 }
-//Falta el tema de quitar el acceso e intercambiarlo por otro
+
 	return *nroPaginaAReemplazar;
 }
 
@@ -146,6 +148,8 @@ bool ejecutarPaso1CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplaz
 			encontrado = true;
 
 			*nroPaginaAReemplazar = *acceso;
+
+			*acceso = -1;
 
 			break;
 		}
@@ -188,6 +192,8 @@ bool ejecutarPaso2CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplaz
 			encontrado = true;
 
 			*nroPaginaAReemplazar = *acceso;
+
+			*acceso = -1;
 
 			break;
 		}

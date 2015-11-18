@@ -379,7 +379,7 @@ tipoRespuesta* escribirPagina(tipoInstruccion instruccion){
 
 	if(posicionDePag==NO_EXISTE){
 
-		posicionDePag = agregarPagina(instruccion.nroPagina,instruccion.pid,instruccion.texto);
+		posicionDePag = agregarPagina(instruccion.nroPagina,instruccion.pid,string_duplicate(instruccion.texto));
 
 		aumentarPaginasAsignadas(instruccion.pid);
 	}
