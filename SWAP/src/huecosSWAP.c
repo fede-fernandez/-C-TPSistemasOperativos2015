@@ -194,7 +194,6 @@ tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
 	//buscarHuecoDePIDyBorrarHuecoDeLista
 	tipoHuecoUtilizado* aux;
 	int i;
-
 	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
 		aux = list_get(listaDeHuecosUtilizados,i);
 		if (aux->pid == pidProceso) {
@@ -202,7 +201,12 @@ tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
 		}
 	}
 
-	respuestaASolicitudDeLiberacion = crearTipoRespuesta(PERFECTO,OK_ESPACIO_LIBERADO);
+	if(i == 1){
+		respuestaASolicitudDeLiberacion = crearTipoRespuesta(PERFECTO,OK_ESPACIO_LIBERADO);
+	}
+	else {
+		respuestaASolicitudDeLiberacion = crearTipoRespuesta(MANQUEADO,"No existe el proceso.\n");
+	}
 
 	return respuestaASolicitudDeLiberacion;
 }
@@ -223,15 +227,8 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 	contenidoDePagina = string_duplicate(leerBloqueMapeado(particion,direccionFisicaEnParticion,tamanioDePagina));
 
 	//retornarContenidoDePagina
-	//return contenidoDePagina;
-	printf("Pagina leida\n");
 
-	if (string_equals_ignore_case(contenidoDePagina,"")) {
-		respuestaASolicitudDeLectura = crearTipoRespuesta(MANQUEADO,"No tengo la pagina");
-	}
-	else {
-		respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
-	}
+	respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
 
 	return respuestaASolicitudDeLectura;
 }
