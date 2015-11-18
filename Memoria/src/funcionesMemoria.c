@@ -78,16 +78,20 @@ tipoRespuesta* quitarProceso(tipoInstruccion instruccion){
 
 	tipoRespuesta* respuesta ;
 
-	if(instruccionASwapRealizada(&instruccion,&respuesta)){
+	if(instruccionASwapRealizada(&instruccion,&respuesta)){//Aca swap me devolvio todo ok aunque el proceso no existia!!
 
 		tipoTablaPaginas* tablaDePaginas = traerTablaDePaginas(instruccion.pid);
+
+		tipoPagina* pagina;
 
 		int var;
 		for (var = 0; var < list_size(tablaDePaginas->frames); ++var) {
 
 			quitarDeTLB(instruccion.nroPagina,instruccion.pid);
 
-			quitarPaginaDeRam(instruccion.nroPagina,instruccion.pid);
+			pagina = list_get(tablaDePaginas->frames,var);
+
+			quitarPaginaDeRam(pagina->posicionEnRAM);
 		}
 
 		quitarTablaDePaginas(instruccion.pid);
@@ -290,14 +294,9 @@ int buscarPaginaEnTabla(int nroPagina,int pid){//Me hace ruido que no haya que h
 
 tipoTablaPaginas* traerTablaDePaginas(pid){
 
-
 	int posicionDeTabla = buscarTabla(pid);
 
-	printf("Aca no rompio..\n");
-
 	tipoTablaPaginas* tabla = list_get(datosMemoria->listaTablaPaginas,posicionDeTabla);
-
-	printf("Ya deberia de finalizar..\n");
 
 	return tabla;
 }
@@ -530,21 +529,15 @@ void modificarDatosDePagina(int nroPagina,int pid,int posicionEnRam,int presente
 
 void quitarDeTLB(int nroPagina,int pid){
 
-	tipoTLB* instanciaTLB;
+	printf("Entre a quitar de tlb..\n");
 
-	int var;
-	for (var = 0; var < list_size(datosMemoria->listaTLB); ++var) {
+int posicionEnTLB = dondeEstaPaginaEnTLB(nroPagina,pid);
 
-		instanciaTLB = list_get(datosMemoria->listaTLB,var);
+printf("La posicion en tlb es :%d\n",posicionEnTLB);
 
-		if(instanciaTLB->pid==pid&&instanciaTLB->numeroDePagina==nroPagina){
+	if(posicionEnTLB>=0)
+		list_remove_and_destroy_element(datosMemoria->listaTLB,posicionEnTLB,free);
 
-			list_remove(datosMemoria->listaTLB,var);
-
-			break;
-		}
-
-	}
 }
 
 void quitarTablaDePaginas(int pid){
@@ -559,14 +552,11 @@ void quitarTablaDePaginas(int pid){
 
 }
 
-void quitarPaginaDeRam(int nroPagina,int pid){//Aca hay un problema con direcciones invalidas de otras paginas
+void quitarPaginaDeRam(int posicion){
 
-	int dondeEstaEnRam = buscarPaginaEnTabla(nroPagina,pid);
-
-	if(dondeEstaEnRam!=EN_SWAP&&dondeEstaEnRam!=NO_EXISTE){
-		list_replace_and_destroy_element(datosMemoria->listaRAM,dondeEstaEnRam,"",free);//esto despues hay q verlo pero lo hago para dejar un hueco en ram
-																						//y que no se modifiquen las posiciones de las paginas
-		setearHuecoEnListaHuecosRAM(dondeEstaEnRam,true);
+	if(posicion>=0){
+		list_replace_and_destroy_element(datosMemoria->listaRAM,posicion,string_duplicate(""),free);
+		setearHuecoEnListaHuecosRAM(posicion,true);
 		}
 	}
 

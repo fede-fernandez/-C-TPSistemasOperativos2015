@@ -89,7 +89,7 @@ void quitarDeTLB(int nroPagina,int pid);//Quita pagina de TLB
 
 void quitarTablaDePaginas(int pid);//Borra toda la tabla de paginas (incluido accesos)
 
-void quitarPaginaDeRam(int nroPagina,int pid);//Quita una pagina de la ram , esto hay que revisarlo al igual que RAMLlena()
+void quitarPaginaDeRam(int posicion);//Quita una pagina de la ram (mete una cadena vacia y setea el hueco en la lista de huecos)
 
 /*####################################OTROS###################################################*/
 

@@ -9,7 +9,7 @@
 
 void setearParaAlgoritmos(){
 
-	datosMemoria->tipoDeAlgoritmoRAM = CLOCK_MODIFICADO;//Hardcodeado hasta que no se
+	datosMemoria->tipoDeAlgoritmoRAM = FIFO;//Hardcodeado hasta que no se
 
 	/*if(estaHabilitadaLaTLB())
 		datosMemoria->colaFIFOTLB = list_create();//agregue en el archivo de config*/
