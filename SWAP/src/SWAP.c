@@ -42,6 +42,7 @@ int main(void) {
 
 	//FILE* particion = fopen("swap","r+");
 
+
 /*************Sockets***************/
 	int socketParaAdministrador = crearSocket();
 	asociarAPuerto(socketParaAdministrador,configuracion->puertoDeEscucha);
