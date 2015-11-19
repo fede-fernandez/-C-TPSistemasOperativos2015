@@ -110,23 +110,6 @@ int cantidadDePaginasOcupadas(t_list* listaDeHuecosOcupados){
 	return paginasOcupadas;
 }
 
-//int indiceDeHuecoAnterior(t_list* listaDeHuecosUtilizados, int baseNuevo){
-//	tipoHuecoUtilizado* aux;
-//	int i;
-//
-//	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
-//		aux = list_get(listaDeHuecosUtilizados,i);
-//		if (baseNuevo == traducirDireccionLogicaAFisica(aux,aux->cantidadDePaginasQueOcupa)) {
-//			return i;
-//		}
-//		else {
-//			break;
-//		}
-//	}
-//
-//	return -1;
-//
-//}
 
 bool baseMenor(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2){
 	return h1->baseDeMProc < h2->baseDeMProc;
@@ -201,12 +184,7 @@ tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
 		}
 	}
 
-	if(i == 1){
-		respuestaASolicitudDeLiberacion = crearTipoRespuesta(PERFECTO,OK_ESPACIO_LIBERADO);
-	}
-	else {
-		respuestaASolicitudDeLiberacion = crearTipoRespuesta(MANQUEADO,"No existe el proceso.\n");
-	}
+	respuestaASolicitudDeLiberacion = crearTipoRespuesta(PERFECTO,OK_ESPACIO_LIBERADO);
 
 	return respuestaASolicitudDeLiberacion;
 }
