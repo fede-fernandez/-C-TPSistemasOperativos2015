@@ -9,7 +9,7 @@
 
 void setearParaAlgoritmos(){
 
-	datosMemoria->tipoDeAlgoritmoRAM = FIFO;//Hardcodeado hasta que no se
+	datosMemoria->tipoDeAlgoritmoRAM = LRU;//Hardcodeado hasta que no se
 
 	/*if(estaHabilitadaLaTLB())
 		datosMemoria->colaFIFOTLB = list_create();//agregue en el archivo de config*/
@@ -81,7 +81,7 @@ int cualReemplazarRAMLRU(t_list* listaAccesos){
 
 	int* accesoMasViejo = list_get(listaAccesos,0);
 
-	int* aux ;
+	int* aux;
 
 	for (var = 1; var < list_size(listaAccesos); ++var) {
 
@@ -89,21 +89,21 @@ int cualReemplazarRAMLRU(t_list* listaAccesos){
 
 		if(((*accesoMasViejo>*aux)||(*accesoMasViejo<0))&&(*aux>=0)){
 
-			*accesoMasViejo = *aux;
+			accesoMasViejo = aux;
 
 			paginaAReemplazar = var;
 
 		}
 	}
 
-	*aux = -1;
+	*accesoMasViejo = -1;
 
 	/*int* nuevoAcceso = malloc(sizeof(int));
 
 	*nuevoAcceso = -1;
 
-	list_replace_and_destroy_element(listaAccesos,paginaAReemplazar,nuevoAcceso,free);*/
-
+	list_replace_and_destroy_element(listaAccesos,paginaAReemplazar,nuevoAcceso,free);
+*/
 	return paginaAReemplazar;
 }
 
@@ -321,6 +321,13 @@ int ejecutarAlgoritmo(int* nroPagina,int pid,bool* estaModificada){
 }*/
 
 void agregarAccesoPorFIFO(tipoTablaPaginas* tablaDePAginas,int nroPagina){
+
+	int var;
+	for (var = 0; var < list_size(tablaDePAginas->listaParaAlgoritmo); ++var) {
+		int* aux = list_get(tablaDePAginas->listaParaAlgoritmo,var);
+		if(*aux==nroPagina)
+			return;
+	}
 
 	int* nuevoAcceso = malloc(sizeof(int));
 

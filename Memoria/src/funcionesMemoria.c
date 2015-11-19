@@ -245,7 +245,7 @@ int buscarPagina(int nroPagina,int pid){
 
 	tipoInstruccion* instruccion = crearTipoInstruccion(pid,LEER,nroPagina,"");
 
-	posicionDePag = traerPaginaDesdeSwap(*instruccion,respuesta);
+	posicionDePag = traerPaginaDesdeSwap(*instruccion,&respuesta);
 
 	printf("Saliendo de buscarPagina..\n");
 
@@ -338,16 +338,16 @@ return posicionDeTabla;
 
 }
 
-int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta) {
+int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta** respuesta) {
 
 	//instruccion.instruccion = LEER;
 
 	int posicionEnRam = -1;
 
-	if(instruccionASwapRealizada(&instruccion,&respuesta)){
+	if(instruccionASwapRealizada(&instruccion,respuesta)){
 		printf("Pagina traida de swap!!");
 
-		char* nuevaPagina = string_duplicate(respuesta->informacion);
+		char* nuevaPagina = string_duplicate((*respuesta)->informacion);
 
 		posicionEnRam = agregarPagina(instruccion.nroPagina,instruccion.pid,nuevaPagina);
 	}
