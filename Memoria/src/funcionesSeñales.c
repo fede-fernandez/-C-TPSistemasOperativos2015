@@ -122,10 +122,14 @@ void imprimirTablas(t_list* tablas){
 		printf("CON ACCESOS: ");
 		int i;
 		for (i = 0; i < list_size(tabla->listaParaAlgoritmo); ++i) {
-			printf("%d",(int)(*(int*)list_get(tabla->listaParaAlgoritmo,i)));
+			printf("%d | ",(int)(*(int*)list_get(tabla->listaParaAlgoritmo,i)));
 		}
 
 		printf("\n");
+
+		printf("punteroDeAlgoritmo: %d\n\n",tabla->punteroParaAlgoritmo);
+
+
 
 		imprimirPaginas(tabla->frames);
 	}

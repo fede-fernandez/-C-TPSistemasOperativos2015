@@ -78,9 +78,15 @@ tipoRespuesta* quitarProceso(tipoInstruccion instruccion){
 
 	tipoRespuesta* respuesta ;
 
+	int posicionDeTabla = buscarTabla(instruccion.pid);//Esto lo hago xq tengo que consultar si existe el proceso
+	//y ya que estamos de paso si existe en vez de buscarlo de nuevo hago un list_get de la posicion encontrada
+
+	if(posicionDeTabla<0)
+		return crearTipoRespuesta(MANQUEADO,"Proceso no existente");
+
 	if(instruccionASwapRealizada(&instruccion,&respuesta)){//Aca swap me devolvio todo ok aunque el proceso no existia!!
 
-		tipoTablaPaginas* tablaDePaginas = traerTablaDePaginas(instruccion.pid);
+		tipoTablaPaginas* tablaDePaginas = list_get(datosMemoria->listaTablaPaginas,posicionDeTabla);//traerTablaDePaginas(instruccion.pid);
 
 		tipoPagina* pagina;
 
@@ -226,8 +232,7 @@ tipoRespuesta* leerPagina(tipoInstruccion instruccion){
 
 int buscarPagina(int nroPagina,int pid){
 
-
-	int posicionDePag;
+	int posicionDePag = -1;
 
 	if(estaHabilitadaLaTLB())
 		posicionDePag = buscarPaginaEnTLB(nroPagina,pid);
