@@ -93,6 +93,8 @@ void quitarPaginaDeRam(int posicion);//Quita una pagina de la ram (mete una cade
 
 /*####################################OTROS###################################################*/
 
+void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam);
+
 bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta** respuesta) ;
 
 bool instruccionASwapRealizada(tipoInstruccion* instruccion,tipoRespuesta** respuesta) ;

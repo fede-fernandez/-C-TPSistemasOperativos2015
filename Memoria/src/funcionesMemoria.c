@@ -475,25 +475,15 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 
 	if(RAMLlena()||excedeMaximoDeMarcos(pid)){
 
-		int* nroPaginaAReemplazar = malloc(sizeof(int));
+		int nroPaginaAReemplazar;// = malloc(sizeof(int));
 
 		bool estaModificada;
 
-		posicionEnRam = ejecutarAlgoritmo(nroPaginaAReemplazar,pid,&estaModificada);
+		posicionEnRam = ejecutarAlgoritmo(&nroPaginaAReemplazar,pid,&estaModificada);
 
-		if(estaModificada){
+		if(estaModificada)
+			llevarPaginaASwap(nroPaginaAReemplazar,pid,posicionEnRam);
 
-		tipoRespuesta* respuesta;
-
-		tipoInstruccion* instruccionASwap = crearTipoInstruccion(pid,ESCRIBIR,*nroPaginaAReemplazar,string_duplicate(traerPaginaDesdeRam(posicionEnRam)));
-
-		instruccionASwapRealizada(instruccionASwap,&respuesta);
-
-		free(instruccionASwap);//esto puede romper porque lo agregue a lo ultimo..
-
-		printf("La posicion en la que se escribira la pagina es:%d\n",posicionEnRam);
-
-		}
 	}
 
 	else {
@@ -516,6 +506,21 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 	return posicionEnRam;
 }
 
+void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam){
+
+	tipoRespuesta* respuesta;
+
+			tipoInstruccion* instruccionASwap = crearTipoInstruccion(pid,ESCRIBIR,nroPaginaAReemplazar,string_duplicate(traerPaginaDesdeRam(posicionEnRam)));
+
+			instruccionASwapRealizada(instruccionASwap,&respuesta);
+
+			free(instruccionASwap);//esto puede romper porque lo agregue a lo ultimo..
+
+			free(respuesta);
+
+			printf("La posicion en la que se escribira la pagina es:%d\n",posicionEnRam);
+
+}
 
 void modificarDatosDePagina(int nroPagina,int pid,int posicionEnRam,int presente,bool uso,bool modificado){
 
