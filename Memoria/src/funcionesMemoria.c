@@ -517,7 +517,8 @@ void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam){
 
 			tipoInstruccion* instruccionASwap = crearTipoInstruccion(pid,ESCRIBIR,nroPaginaAReemplazar,string_duplicate(traerPaginaDesdeRam(posicionEnRam)));
 
-			instruccionASwapRealizada(instruccionASwap,&respuesta);
+			if(instruccionASwapRealizada(instruccionASwap,&respuesta))
+				modificarDatosDePagina(nroPaginaAReemplazar,pid,-1,EN_SWAP,false,false);
 
 			free(instruccionASwap);//esto puede romper porque lo agregue a lo ultimo..
 

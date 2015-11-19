@@ -294,8 +294,6 @@ int ejecutarAlgoritmo(int* nroPagina,int pid,bool* estaModificada){
 
 	dondeEstaEnRam = buscarPagina(nroPaginaAReemplazar,pid);
 
-	modificarDatosDePagina(nroPaginaAReemplazar,pid,-1,EN_SWAP,false,false);
-
 	if(estaHabilitadaLaTLB()){
 	quitarDeTLB(nroPaginaAReemplazar,pid);
 	//quitarAccesoTLB(nroPaginaAReemplazar,pid);
