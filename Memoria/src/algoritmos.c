@@ -9,7 +9,7 @@
 
 void setearParaAlgoritmos(){
 
-	datosMemoria->tipoDeAlgoritmoRAM = LRU;//Hardcodeado hasta que no se
+	datosMemoria->tipoDeAlgoritmoRAM = CLOCK_MODIFICADO;//Hardcodeado hasta que no se
 
 	/*if(estaHabilitadaLaTLB())
 		datosMemoria->colaFIFOTLB = list_create();//agregue en el archivo de config*/
@@ -109,19 +109,19 @@ int cualReemplazarRAMLRU(t_list* listaAccesos){
 
 int cualReemplazarRAMCLOCKM(tipoTablaPaginas* tablaDePagina){
 
-	int* nroPaginaAReemplazar = malloc(sizeof(int));
+	int nroPaginaAReemplazar;
 
 	bool noFunciono = true;
 
 	while(noFunciono){
 
-	noFunciono = !ejecutarPaso1CLOCKM(tablaDePagina,nroPaginaAReemplazar);
+	noFunciono = !ejecutarPaso1CLOCKM(tablaDePagina,&nroPaginaAReemplazar);
 
 	if(noFunciono)
-	noFunciono = !ejecutarPaso2CLOCKM(tablaDePagina,nroPaginaAReemplazar);
+	noFunciono = !ejecutarPaso2CLOCKM(tablaDePagina,&nroPaginaAReemplazar);
 }
 
-	return *nroPaginaAReemplazar;
+	return nroPaginaAReemplazar;
 }
 
 bool ejecutarPaso1CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplazar){
@@ -159,7 +159,7 @@ bool ejecutarPaso1CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplaz
 
 	puntero++;
 
-	if(puntero==list_size(tablaDePagina->listaParaAlgoritmo))
+	if(puntero>=list_size(tablaDePagina->listaParaAlgoritmo))
 		puntero = 0;
 
 	tablaDePagina->punteroParaAlgoritmo = puntero;
@@ -205,7 +205,7 @@ bool ejecutarPaso2CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplaz
 
 	puntero++;
 
-	if(puntero==list_size(tablaDePagina->listaParaAlgoritmo))
+	if(puntero>=list_size(tablaDePagina->listaParaAlgoritmo))
 		puntero = 0;
 
 	tablaDePagina->punteroParaAlgoritmo = puntero;
