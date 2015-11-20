@@ -378,6 +378,11 @@ tipoRespuesta* escribirPagina(tipoInstruccion instruccion){
 	if(numeroDePaginaIncorrecto(instruccion.nroPagina,instruccion.pid))
 		return crearTipoRespuesta(MANQUEADO,"Numero de pagina excede el maximo numero");
 
+	if(RAMLlena()&&noUsaMarcos(instruccion.pid)){//Esto hay que ver como se trata (leer issue 25)
+		quitarProceso(instruccion);
+		return crearTipoRespuesta(PERFECTO,"Error de escritura de pagina, proceso finalizado");
+	}
+
 	int posicionDePag = buscarPagina(instruccion.nroPagina,instruccion.pid);
 
 	sleep(datosMemoria->configuracion->retardoDeMemoria);//tengo q tardar tanto como si la creo como si la modifico

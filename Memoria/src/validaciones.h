@@ -27,4 +27,8 @@ bool tamanioDePaginaMayorAlSoportado(char* texto);
 
 bool numeroDePaginaIncorrecto(int nroPagina,int pid);
 
+bool noUsaMarcos(int pid);
+
+int cantidadDeMarcosUsadosPor(int pid);
+
 #endif /* VALIDACIONES_H_ */
