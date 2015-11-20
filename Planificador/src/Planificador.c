@@ -11,6 +11,7 @@
 #include "funcionesPlanificador.h"
 #include <commonsDeAsedio/cliente-servidor.h>
 #include <commonsDeAsedio/estructuras.h>
+#include <commons/log.h>
 
 
 //---->>>>>>>VARIABLES GLOBALES <<<<<<<<<<<<------------
@@ -58,11 +59,24 @@ pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de
 // -------------------------------------------------------------------------------------------------------
 
 
+// ------log
+
+t_log* proceso; //"comienzo y fin de mproc"
+t_log* conexiones; // conexiones a CPUs
+t_log* rafagas; // ragagas de CPUs completadas
+t_log* colita; // colas de ready
+// ---- Mutex log
+
+// falta un mutex ?
+pthread_mutex_t mutex_log2;
+pthread_mutex_t mutex_log3;
+
 
 int main(void) {
 
-
 	configurar();
+
+	logueo();
 
 	inicializar_semaforos();
 
@@ -110,6 +124,8 @@ int correr_path(void){
 	pthread_mutex_unlock(&ready);
 
 	printf("Proceso %s en ejecucion....\n", path);
+
+	log_trace(proceso, "              INICIO --> ID_mproc: %d , nombre: %s ",contador_de_id_procesos, path);
 
 	sem_post(&solicitud_ejecucion);
 
@@ -260,6 +276,8 @@ int recibir_rafagas(){
 
 	}
 
+	log_actividad_cpus(nodo_cpu->id_cpu,"DISPONIBLE", PCB->id, PCB->path, "recibido");
+
 	pthread_mutex_unlock(&pcbs);
 
 	// agregar esa CPU como disponible();
@@ -284,6 +302,8 @@ int llega_quantum(t_PCB *PCB){
 
 	// actualizo el PCB
 	PCB->estado = 'R'; // le cambio el valor que esta en memoria dinamica
+
+	log_colas(PCB->id,PCB->path,"volvio por quantum de:",quantum);
 
 	sem_post(&solicitud_ejecucion);
 
@@ -311,6 +331,8 @@ int llega_entrada_salida(t_PCB *PCB,int T){
 int llega_de_fin(t_PCB *PCB){
 
 	PCB->estado = 'F'; // le cambio el valor que esta en memoria dinamica
+
+	log_trace(proceso, "              FIN --> ID_mproc: %d , nombre: %s ",PCB->id, PCB->path);
 
 	return 0;
 
@@ -349,6 +371,8 @@ void* bloquear_procesos(){
 
 		// modificar su estado de: bloqueado a--> listo y meter de nuevo en "lista_de_PCB"
 		nodo_pcb->estado = 'R'; // le cambio el valor que esta en memoria dinamica
+
+		log_colas(nodo_pcb->id,nodo_pcb->path,"volvio por una E/S de:",nodo_bloqueado->tiempo);
 
 		pthread_mutex_unlock(&pcbs);
 
@@ -411,6 +435,8 @@ void* ejecutar_proceso(){
 
 		// seteo esa cpu como ocupada
 		nodo_cpu->disponibilidad = 0;
+
+		log_actividad_cpus(nodo_cpu->id_cpu,"TRABAJANDO..", pcb.id, pcb.path,"ejecutando" );
 
 		pthread_mutex_unlock(&cpuss);
 
@@ -537,6 +563,9 @@ void inicializar_semaforos(){
 		pthread_mutex_init(&cpuss,NULL);
 		pthread_mutex_init(&ready,NULL);
 		pthread_mutex_init(&bloqueados,NULL);
+		pthread_mutex_init(&mutex_log2,NULL);
+		pthread_mutex_init(&mutex_log3,NULL);
+
 
 		// Inicialización de Semáforos en 0.
 		sem_init(&solicitud_ejecucion, 1, 0);
@@ -602,3 +631,33 @@ void configurar(){
 	destruirConfig(configuracion);
 
 }
+
+void logueo(){
+
+	colita = log_create("cola de ready", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+
+	proceso = log_create("comienzo y fin de mproc", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+	conexiones = log_create("actividad CPUs", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+	//rafagas = log_create("Ráfagas de CPUs completadas", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+
+}
+
+void log_actividad_cpus(int id_cpu, char estado[15],int id_proceso,char path[30], char estado_pcb[15]){
+
+	pthread_mutex_lock(&mutex_log2);
+
+	log_trace(conexiones, "              cpu_ID: %d -->  %s | ID_mProc: %d --> %s ( %s ) ",id_cpu, estado,id_proceso,path,estado_pcb);
+
+	pthread_mutex_unlock(&mutex_log2);
+}
+
+void log_colas(int id_proceso,char path[30],char razon[40],int numero){
+
+	pthread_mutex_lock(&mutex_log3);
+
+	log_trace(colita, "              ID_mProc: %d -->  %s | ingresa a la cola de ready, porque %s %d ",id_proceso, path,razon, numero);
+
+	pthread_mutex_unlock(&mutex_log3);
+
+}
+

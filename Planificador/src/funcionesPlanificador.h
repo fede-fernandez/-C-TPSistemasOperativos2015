@@ -111,5 +111,6 @@ void enviarPCB2(int socketCliente,t_PCB pcb);
 
 t_PCB recibirPCB2(int socketEnviador);
 
+void logueo();
 
 #endif /* FUNCIONESPLANIFICADOR_H_ */
