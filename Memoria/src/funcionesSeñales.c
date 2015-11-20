@@ -99,7 +99,11 @@ void mostrarRAM(t_list* ram){
 	int var;
 	for (var = 0; var < list_size(ram); ++var) {
 
-		printf("MARCO %d :\n%s\n",var,(char*)list_get(ram,var));
+		printf("MARCO %d :\n",var);
+		if(*((bool*)list_get(datosMemoria->listaHuecosRAM,var)))
+			printf("ESTA MARCADO COMO HUECO\n");
+
+		printf("%s\n",(char*)list_get(ram,var));
 
 	}
 }
@@ -118,10 +122,14 @@ void imprimirTablas(t_list* tablas){
 		printf("CON ACCESOS: ");
 		int i;
 		for (i = 0; i < list_size(tabla->listaParaAlgoritmo); ++i) {
-			printf("%d",(int)(*(int*)list_get(tabla->listaParaAlgoritmo,i)));
+			printf("%d | ",(int)(*(int*)list_get(tabla->listaParaAlgoritmo,i)));
 		}
 
 		printf("\n");
+
+		printf("punteroDeAlgoritmo: %d\n\n",tabla->punteroParaAlgoritmo);
+
+
 
 		imprimirPaginas(tabla->frames);
 	}

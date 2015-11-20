@@ -22,10 +22,21 @@ bool procesoExiste(int pid){
 
 bool excedeMaximoDeMarcos(int pid){
 
+return cantidadDeMarcosUsadosPor(pid)>=datosMemoria->configuracion->maximoDeMarcosPorProceso;
+}
+
+int cantidadDeMarcosUsadosPor(int pid){
+
 	tipoTablaPaginas* tablaDePagina = traerTablaDePaginas(pid);
 
-	return tablaDePagina->paginasAsignadas>=datosMemoria->configuracion->maximoDeMarcosPorProceso;
+	return tablaDePagina->paginasAsignadas;
 }
+
+bool noUsaMarcos(int pid){
+
+	return cantidadDeMarcosUsadosPor(pid)==0;
+}
+
 
 bool TLBLlena(){
 	return list_size(datosMemoria->listaTLB)>=datosMemoria->configuracion->entradasDeTLB;

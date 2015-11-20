@@ -110,23 +110,6 @@ int cantidadDePaginasOcupadas(t_list* listaDeHuecosOcupados){
 	return paginasOcupadas;
 }
 
-//int indiceDeHuecoAnterior(t_list* listaDeHuecosUtilizados, int baseNuevo){
-//	tipoHuecoUtilizado* aux;
-//	int i;
-//
-//	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
-//		aux = list_get(listaDeHuecosUtilizados,i);
-//		if (baseNuevo == traducirDireccionLogicaAFisica(aux,aux->cantidadDePaginasQueOcupa)) {
-//			return i;
-//		}
-//		else {
-//			break;
-//		}
-//	}
-//
-//	return -1;
-//
-//}
 
 bool baseMenor(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2){
 	return h1->baseDeMProc < h2->baseDeMProc;
@@ -194,7 +177,6 @@ tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
 	//buscarHuecoDePIDyBorrarHuecoDeLista
 	tipoHuecoUtilizado* aux;
 	int i;
-
 	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
 		aux = list_get(listaDeHuecosUtilizados,i);
 		if (aux->pid == pidProceso) {
@@ -223,15 +205,8 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 	contenidoDePagina = string_duplicate(leerBloqueMapeado(particion,direccionFisicaEnParticion,tamanioDePagina));
 
 	//retornarContenidoDePagina
-	//return contenidoDePagina;
-	printf("Pagina leida\n");
 
-	if (string_equals_ignore_case(contenidoDePagina,"")) {
-		respuestaASolicitudDeLectura = crearTipoRespuesta(MANQUEADO,"No tengo la pagina");
-	}
-	else {
-		respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
-	}
+	respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
 
 	return respuestaASolicitudDeLectura;
 }

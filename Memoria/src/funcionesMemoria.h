@@ -45,7 +45,7 @@ int buscarPaginaEnTLB(int nroPagina,int pid);//Retorna la posicion en ram accedi
 
 int buscarPagina(int nroPagina,int pid);//Encuentra una pagina donde quiera que este
 
-int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta);//Busca una pagina en swap
+int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta** respuesta);//Busca una pagina en swap
 
 char* traerPaginaDesdeRam(int direccion);//Retorna el contenido de la pagina
 
@@ -89,9 +89,11 @@ void quitarDeTLB(int nroPagina,int pid);//Quita pagina de TLB
 
 void quitarTablaDePaginas(int pid);//Borra toda la tabla de paginas (incluido accesos)
 
-void quitarPaginaDeRam(int nroPagina,int pid);//Quita una pagina de la ram , esto hay que revisarlo al igual que RAMLlena()
+void quitarPaginaDeRam(int posicion);//Quita una pagina de la ram (mete una cadena vacia y setea el hueco en la lista de huecos)
 
 /*####################################OTROS###################################################*/
+
+void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam);
 
 bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta** respuesta) ;
 

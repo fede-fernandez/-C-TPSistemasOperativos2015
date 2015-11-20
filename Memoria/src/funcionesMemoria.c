@@ -78,16 +78,26 @@ tipoRespuesta* quitarProceso(tipoInstruccion instruccion){
 
 	tipoRespuesta* respuesta ;
 
-	if(instruccionASwapRealizada(&instruccion,&respuesta)){
+	int posicionDeTabla = buscarTabla(instruccion.pid);//Esto lo hago xq tengo que consultar si existe el proceso
+	//y ya que estamos de paso si existe en vez de buscarlo de nuevo hago un list_get de la posicion encontrada
 
-		tipoTablaPaginas* tablaDePaginas = traerTablaDePaginas(instruccion.pid);
+	if(posicionDeTabla<0)
+		return crearTipoRespuesta(MANQUEADO,"Proceso no existente");
+
+	if(instruccionASwapRealizada(&instruccion,&respuesta)){//Aca swap me devolvio todo ok aunque el proceso no existia!!
+
+		tipoTablaPaginas* tablaDePaginas = list_get(datosMemoria->listaTablaPaginas,posicionDeTabla);//traerTablaDePaginas(instruccion.pid);
+
+		tipoPagina* pagina;
 
 		int var;
 		for (var = 0; var < list_size(tablaDePaginas->frames); ++var) {
 
 			quitarDeTLB(instruccion.nroPagina,instruccion.pid);
 
-			quitarPaginaDeRam(instruccion.nroPagina,instruccion.pid);
+			pagina = list_get(tablaDePaginas->frames,var);
+
+			quitarPaginaDeRam(pagina->posicionEnRAM);
 		}
 
 		quitarTablaDePaginas(instruccion.pid);
@@ -222,8 +232,7 @@ tipoRespuesta* leerPagina(tipoInstruccion instruccion){
 
 int buscarPagina(int nroPagina,int pid){
 
-
-	int posicionDePag;
+	int posicionDePag = -1;
 
 	if(estaHabilitadaLaTLB())
 		posicionDePag = buscarPaginaEnTLB(nroPagina,pid);
@@ -241,7 +250,7 @@ int buscarPagina(int nroPagina,int pid){
 
 	tipoInstruccion* instruccion = crearTipoInstruccion(pid,LEER,nroPagina,"");
 
-	posicionDePag = traerPaginaDesdeSwap(*instruccion,respuesta);
+	posicionDePag = traerPaginaDesdeSwap(*instruccion,&respuesta);
 
 	printf("Saliendo de buscarPagina..\n");
 
@@ -290,14 +299,9 @@ int buscarPaginaEnTabla(int nroPagina,int pid){//Me hace ruido que no haya que h
 
 tipoTablaPaginas* traerTablaDePaginas(pid){
 
-
 	int posicionDeTabla = buscarTabla(pid);
 
-	printf("Aca no rompio..\n");
-
 	tipoTablaPaginas* tabla = list_get(datosMemoria->listaTablaPaginas,posicionDeTabla);
-
-	printf("Ya deberia de finalizar..\n");
 
 	return tabla;
 }
@@ -339,16 +343,16 @@ return posicionDeTabla;
 
 }
 
-int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta* respuesta) {
+int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta** respuesta) {
 
 	//instruccion.instruccion = LEER;
 
 	int posicionEnRam = -1;
 
-	if(instruccionASwapRealizada(&instruccion,&respuesta)){
+	if(instruccionASwapRealizada(&instruccion,respuesta)){
 		printf("Pagina traida de swap!!");
 
-		char* nuevaPagina = string_duplicate(respuesta->informacion);
+		char* nuevaPagina = string_duplicate((*respuesta)->informacion);
 
 		posicionEnRam = agregarPagina(instruccion.nroPagina,instruccion.pid,nuevaPagina);
 	}
@@ -374,13 +378,18 @@ tipoRespuesta* escribirPagina(tipoInstruccion instruccion){
 	if(numeroDePaginaIncorrecto(instruccion.nroPagina,instruccion.pid))
 		return crearTipoRespuesta(MANQUEADO,"Numero de pagina excede el maximo numero");
 
+	if(RAMLlena()&&noUsaMarcos(instruccion.pid)){//Esto hay que ver como se trata (leer issue 25)
+		quitarProceso(instruccion);
+		return crearTipoRespuesta(PERFECTO,"Error de escritura de pagina, proceso finalizado");
+	}
+
 	int posicionDePag = buscarPagina(instruccion.nroPagina,instruccion.pid);
 
 	sleep(datosMemoria->configuracion->retardoDeMemoria);//tengo q tardar tanto como si la creo como si la modifico
 
 	if(posicionDePag==NO_EXISTE){
 
-		posicionDePag = agregarPagina(instruccion.nroPagina,instruccion.pid,instruccion.texto);
+		posicionDePag = agregarPagina(instruccion.nroPagina,instruccion.pid,string_duplicate(instruccion.texto));
 
 		aumentarPaginasAsignadas(instruccion.pid);
 	}
@@ -476,25 +485,15 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 
 	if(RAMLlena()||excedeMaximoDeMarcos(pid)){
 
-		int* nroPaginaAReemplazar = malloc(sizeof(int));
+		int nroPaginaAReemplazar;// = malloc(sizeof(int));
 
 		bool estaModificada;
 
-		posicionEnRam = ejecutarAlgoritmo(nroPaginaAReemplazar,pid,&estaModificada);
+		posicionEnRam = ejecutarAlgoritmo(&nroPaginaAReemplazar,pid,&estaModificada);
 
-		if(estaModificada){
+		if(estaModificada)
+			llevarPaginaASwap(nroPaginaAReemplazar,pid,posicionEnRam);
 
-		tipoRespuesta* respuesta;
-
-		tipoInstruccion* instruccionASwap = crearTipoInstruccion(pid,ESCRIBIR,*nroPaginaAReemplazar,string_duplicate(traerPaginaDesdeRam(posicionEnRam)));
-
-		instruccionASwapRealizada(instruccionASwap,&respuesta);
-
-		free(instruccionASwap);//esto puede romper porque lo agregue a lo ultimo..
-
-		printf("La posicion en la que se escribira la pagina es:%d\n",posicionEnRam);
-
-		}
 	}
 
 	else {
@@ -517,6 +516,22 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 	return posicionEnRam;
 }
 
+void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam){
+
+	tipoRespuesta* respuesta;
+
+			tipoInstruccion* instruccionASwap = crearTipoInstruccion(pid,ESCRIBIR,nroPaginaAReemplazar,string_duplicate(traerPaginaDesdeRam(posicionEnRam)));
+
+			if(instruccionASwapRealizada(instruccionASwap,&respuesta))
+				modificarDatosDePagina(nroPaginaAReemplazar,pid,-1,EN_SWAP,false,false);
+
+			free(instruccionASwap);//esto puede romper porque lo agregue a lo ultimo..
+
+			free(respuesta);
+
+			printf("La posicion en la que se escribira la pagina es:%d\n",posicionEnRam);
+
+}
 
 void modificarDatosDePagina(int nroPagina,int pid,int posicionEnRam,int presente,bool uso,bool modificado){
 
@@ -530,21 +545,15 @@ void modificarDatosDePagina(int nroPagina,int pid,int posicionEnRam,int presente
 
 void quitarDeTLB(int nroPagina,int pid){
 
-	tipoTLB* instanciaTLB;
+	printf("Entre a quitar de tlb..\n");
 
-	int var;
-	for (var = 0; var < list_size(datosMemoria->listaTLB); ++var) {
+int posicionEnTLB = dondeEstaPaginaEnTLB(nroPagina,pid);
 
-		instanciaTLB = list_get(datosMemoria->listaTLB,var);
+printf("La posicion en tlb es :%d\n",posicionEnTLB);
 
-		if(instanciaTLB->pid==pid&&instanciaTLB->numeroDePagina==nroPagina){
+	if(posicionEnTLB>=0)
+		list_remove_and_destroy_element(datosMemoria->listaTLB,posicionEnTLB,free);
 
-			list_remove(datosMemoria->listaTLB,var);
-
-			break;
-		}
-
-	}
 }
 
 void quitarTablaDePaginas(int pid){
@@ -559,14 +568,11 @@ void quitarTablaDePaginas(int pid){
 
 }
 
-void quitarPaginaDeRam(int nroPagina,int pid){//Aca hay un problema con direcciones invalidas de otras paginas
+void quitarPaginaDeRam(int posicion){
 
-	int dondeEstaEnRam = buscarPaginaEnTabla(nroPagina,pid);
-
-	if(dondeEstaEnRam!=EN_SWAP&&dondeEstaEnRam!=NO_EXISTE){
-		list_replace_and_destroy_element(datosMemoria->listaRAM,dondeEstaEnRam,"",free);//esto despues hay q verlo pero lo hago para dejar un hueco en ram
-																						//y que no se modifiquen las posiciones de las paginas
-		setearHuecoEnListaHuecosRAM(dondeEstaEnRam,true);
+	if(posicion>=0){
+		list_replace_and_destroy_element(datosMemoria->listaRAM,posicion,string_duplicate(""),free);
+		setearHuecoEnListaHuecosRAM(posicion,true);
 		}
 	}
 
