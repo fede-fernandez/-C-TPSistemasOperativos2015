@@ -67,6 +67,10 @@ void tratarPeticion(int cpuAtendida) {
 	case FINALIZAR:
 		respuesta = quitarProceso(*instruccion);
 		break;
+
+	case FINALIZAR_PROCESO:
+		respuesta = finalizarMemoria(*instruccion);
+		break;
 	}
 
 	enviarRespuesta(cpuAtendida,respuesta);
@@ -78,32 +82,44 @@ tipoRespuesta* quitarProceso(tipoInstruccion instruccion){
 
 	tipoRespuesta* respuesta ;
 
-	int posicionDeTabla = buscarTabla(instruccion.pid);//Esto lo hago xq tengo que consultar si existe el proceso
-	//y ya que estamos de paso si existe en vez de buscarlo de nuevo hago un list_get de la posicion encontrada
-
-	if(posicionDeTabla<0)
+	if(!procesoExiste(instruccion.pid))
 		return crearTipoRespuesta(MANQUEADO,"Proceso no existente");
 
-	if(instruccionASwapRealizada(&instruccion,&respuesta)){//Aca swap me devolvio todo ok aunque el proceso no existia!!
+	if(instruccionASwapRealizada(&instruccion,&respuesta))//Aca swap me devolvio todo ok aunque el proceso no existia!!
+		destruirProceso(instruccion.pid);
 
-		tipoTablaPaginas* tablaDePaginas = list_get(datosMemoria->listaTablaPaginas,posicionDeTabla);//traerTablaDePaginas(instruccion.pid);
+	return respuesta;
+}
 
-		tipoPagina* pagina;
+tipoRespuesta* finalizarMemoria(tipoInstruccion instruccion){
 
+	tipoRespuesta* respuesta;
+
+	if(instruccionASwapRealizada(&instruccion,&respuesta)){
 		int var;
-		for (var = 0; var < list_size(tablaDePaginas->frames); ++var) {
 
-			quitarDeTLB(instruccion.nroPagina,instruccion.pid);
+		tipoTablaPaginas* tablaActual;
 
-			pagina = list_get(tablaDePaginas->frames,var);
+		for (var = 0; var < list_size(datosMemoria->listaTablaPaginas); ++var) {
 
-			quitarPaginaDeRam(pagina->posicionEnRAM);
+			tablaActual = list_get(datosMemoria->listaTablaPaginas,var);
+
+			destruirProceso(tablaActual->pid);
 		}
 
-		quitarTablaDePaginas(instruccion.pid);
+		list_destroy_and_destroy_elements(datosMemoria->listaRAM,free);
+
+		list_destroy(datosMemoria->listaTablaPaginas);
+
+		list_destroy(datosMemoria->listaTLB);
+
+		list_destroy_and_destroy_elements(datosMemoria->listaHuecosRAM,free);
+
+		datosMemoria->memoriaActiva = false;
 	}
 
 	return respuesta;
+
 }
 
 
@@ -294,7 +310,7 @@ int buscarPaginaEnTLB(int nroPagina,int pid){
 int buscarPaginaEnTabla(int nroPagina,int pid){//Me hace ruido que no haya que hacer sleep//Volvi a leer el enunciado y si hay q hacerlo, el ayudante
 												//se equivoco
 
-	sleep(datosMemoria->configuracion->retardoDeMemoria);
+		dormirPorAccesoARAM();
 
 		tipoTablaPaginas* tablaActual = traerTablaDePaginas(pid);
 
@@ -323,7 +339,7 @@ tipoTablaPaginas* traerTablaDePaginas(pid){
 
 char* traerPaginaDesdeRam(int direccion){
 
-	sleep(datosMemoria->configuracion->retardoDeMemoria);
+	dormirPorAccesoARAM();
 
 	char* pagina = list_get(datosMemoria->listaRAM,direccion);
 
@@ -359,7 +375,6 @@ int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta** respuesta)
 	int posicionEnRam = -1;
 
 	if(instruccionASwapRealizada(&instruccion,respuesta)){
-		printf("Pagina traida de swap!!");
 
 		char* nuevaPagina = string_duplicate((*respuesta)->informacion);
 
@@ -394,7 +409,7 @@ tipoRespuesta* escribirPagina(tipoInstruccion instruccion){
 
 	int posicionDePag = buscarPagina(instruccion.nroPagina,instruccion.pid);
 
-	sleep(datosMemoria->configuracion->retardoDeMemoria);//tengo q tardar tanto como si la creo como si la modifico
+	dormirPorAccesoARAM();//tengo q tardar tanto como si la creo como si la modifico
 
 	if(posicionDePag==NO_EXISTE){
 
@@ -517,6 +532,10 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 	return posicionEnRam;
 }
 
+void dormirPorAccesoARAM(){
+	usleep(1000000*datosMemoria->configuracion->retardoDeMemoria);
+}
+
 void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam){
 
 	tipoRespuesta* respuesta;
@@ -629,6 +648,25 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 void limpiarTLB(){
 
 list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
+}
+
+void destruirProceso(int pid){
+
+	tipoTablaPaginas* tablaDePaginas = traerTablaDePaginas(pid);
+
+			tipoPagina* pagina;
+
+			int var;
+			for (var = 0; var < list_size(tablaDePaginas->frames); ++var) {
+
+				quitarDeTLB(var,pid);
+
+				pagina = list_get(tablaDePaginas->frames,var);
+
+				quitarPaginaDeRam(pagina->posicionEnRAM);
+			}
+
+			quitarTablaDePaginas(pid);
 }
 
 

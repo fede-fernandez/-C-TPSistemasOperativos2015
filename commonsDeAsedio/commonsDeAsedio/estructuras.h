@@ -25,6 +25,7 @@
 #define LEER 			'l'
 #define INICIAR 		'i'
 #define ENTRADA_SALIDA 	's'
+#define FINALIZAR_PROCESO 'h'//Esto lo agrego para que los procesos terminen de forma ordenada
 
 typedef struct{
 	int pid;

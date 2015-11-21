@@ -27,9 +27,6 @@ int main(void) {
 	bool memoriaActiva = true;
 
 //--------------ACA EMPIEZA FERNILANDIA--------------------------
-	//t_list* listaRAM = list_create();
-	//t_list* listaTLB = list_create();
-	//t_list* listaAdministracionPaginas = list_create();
 
 	fd_set listaPrincipal;
 	fd_set listaFiltrada;
@@ -38,23 +35,13 @@ int main(void) {
 	FD_ZERO(&listaFiltrada);
 	FD_SET(socketParaCpus,&listaPrincipal);
 
-	/*tipoEstructuraMemoria* */datosMemoria = malloc(sizeof(tipoEstructuraMemoria));
-
-	//datosMemoria->listaRAM = listaRAM;
-
-	//datosMemoria->listaTLB = listaTLB;
+	datosMemoria = malloc(sizeof(tipoEstructuraMemoria));
 
 	datosMemoria->socketSWAP = socketParaSwap;
 
 	datosMemoria->maximoSocket = socketParaCpus;
 
 	datosMemoria->configuracion = configuracion;
-
-	//datosMemoria->cpusATratar = &listaFiltrada;
-
-	//datosMemoria->listaCpus = &listaPrincipal;
-
-	//datosMemoria->administradorPaginas = listaAdministracionPaginas;
 
 	datosMemoria->memoriaActiva = &memoriaActiva;
 
@@ -74,28 +61,15 @@ int main(void) {
 
 	crearThread(&hiloSignals,funcionPrueba,datosMemoria);
 
-	/*socketCpuEntrante = crearSocketParaAceptarSolicitudes(socketParaCpus);
-	FD_SET(socketParaCpus,&listaPrincipal);
-	datosMemoria->maximoSocket = maximoEntre(datosMemoria->maximoSocket,socketCpuEntrante);*/
-
 
 /////////////////////////////////////////////////////////////////////////////////////
 
 
 	while(memoriaActiva){
 
-		//FD_ZERO(&listaFiltrada);
-
 		listaFiltrada = listaPrincipal;
 
 		select(datosMemoria->maximoSocket+1,&listaFiltrada,NULL,NULL,NULL);
-
-		/*if(FD_ISSET(socketParaCpus,&listaFiltrada)){
-			socketCpuEntrante = crearSocketParaAceptarSolicitudes(socketParaCpus);
-			FD_SET(socketParaCpus,&listaPrincipal);
-			FD_SET(socketCpuEntrante,&listaFiltrada);
-			datosMemoria->maximoSocket = maximoEntre(datosMemoria->maximoSocket,socketCpuEntrante);
-		}*/
 
 		int var;
 		for (var = 0; var <= datosMemoria->maximoSocket; var++) {
@@ -112,12 +86,11 @@ int main(void) {
 		}
 	}
 
-		//mostrarEstado(datosMemoria);
-
-		//funcionPrueba(datosMemoria);
-
 	}
 
+	liberarSocket(socketParaCpus);
+
+	liberarSocket(socketParaSwap);
 
 	destruirConfigMemoria(configuracion);
 

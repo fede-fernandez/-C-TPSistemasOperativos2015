@@ -18,6 +18,7 @@
 #include "configuracion.h"
 #include "algoritmos.h"
 #include "validaciones.h"
+#include <unistd.h>
 
 tipoEstructuraMemoria* datosMemoria;
 
@@ -33,7 +34,9 @@ tipoRespuesta* leerPagina(tipoInstruccion instruccion);
 
 tipoRespuesta* escribirPagina(tipoInstruccion instruccion);
 
-tipoRespuesta* quitarProceso(tipoInstruccion instruccion);
+tipoRespuesta* quitarProceso(tipoInstruccion instruccion);//Destruye un proceso y le avisa a swap
+
+tipoRespuesta* finalizarMemoria(tipoInstruccion instruccion);
 
 /*###############################BUSQUEDAS##########################################*/
 
@@ -101,7 +104,11 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas);//Lleva todas las pagi
 
 void limpiarTLB();//Deja la tlb vacia
 
+void destruirProceso(int pid);//Borra el proceso del sistema
+
 /*####################################OTROS###################################################*/
+
+void dormirPorAccesoARAM();
 
 void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam);
 
