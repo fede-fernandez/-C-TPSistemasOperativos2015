@@ -52,50 +52,52 @@ void tratarPeticion(int cpuAtendida) {
 
 	switch (instruccion->instruccion) {
 	case INICIAR:
-		respuesta = iniciar(*instruccion);
+		respuesta = iniciar(instruccion);
 		break;
 
 	case LEER:
-		respuesta = leerPagina(*instruccion);
+		respuesta = leerPagina(instruccion);
 		break;
 
 	case ESCRIBIR:
-			respuesta = escribirPagina(*instruccion);
+			respuesta = escribirPagina(instruccion);
 
 		break;
 
 	case FINALIZAR:
-		respuesta = quitarProceso(*instruccion);
+		respuesta = quitarProceso(instruccion);
 		break;
 
 	case FINALIZAR_PROCESO:
-		respuesta = finalizarMemoria(*instruccion);
+		respuesta = finalizarMemoria(instruccion);
 		break;
 	}
 
 	enviarRespuesta(cpuAtendida,respuesta);
 
-	free(respuesta);
+	destruirTipoInstruccion(instruccion);
+
+	destruirTipoRespuesta(respuesta);
 }
 
-tipoRespuesta* quitarProceso(tipoInstruccion instruccion){
+tipoRespuesta* quitarProceso(tipoInstruccion* instruccion){
 
 	tipoRespuesta* respuesta ;
 
-	if(!procesoExiste(instruccion.pid))
+	if(!procesoExiste(instruccion->pid))
 		return crearTipoRespuesta(MANQUEADO,"Proceso no existente");
 
-	if(instruccionASwapRealizada(&instruccion,&respuesta))//Aca swap me devolvio todo ok aunque el proceso no existia!!
-		destruirProceso(instruccion.pid);
+	if(instruccionASwapRealizada(instruccion,&respuesta))//Aca swap me devolvio todo ok aunque el proceso no existia!!
+		destruirProceso(instruccion->pid);
 
 	return respuesta;
 }
 
-tipoRespuesta* finalizarMemoria(tipoInstruccion instruccion){
+tipoRespuesta* finalizarMemoria(tipoInstruccion* instruccion){
 
 	tipoRespuesta* respuesta;
 
-	if(instruccionASwapRealizada(&instruccion,&respuesta)){
+	if(instruccionASwapRealizada(instruccion,&respuesta)){
 		int var;
 
 		tipoTablaPaginas* tablaActual;
@@ -128,11 +130,11 @@ tipoRespuesta* finalizarMemoria(tipoInstruccion instruccion){
 //////////////////
 //INICIAR
 /////////////////
-tipoRespuesta* iniciar(tipoInstruccion instruccion) {
+tipoRespuesta* iniciar(tipoInstruccion* instruccion) {
 
 	tipoRespuesta* respuesta;
 
-	if(procesoExiste(instruccion.pid))
+	if(procesoExiste(instruccion->pid))
 		return crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso ya existente");
 
 	if (puedoReservarEnSWAP(instruccion, &respuesta)) {
@@ -145,9 +147,9 @@ tipoRespuesta* iniciar(tipoInstruccion instruccion) {
 
 		tablaDePaginasNueva->listaParaAlgoritmo = list_create();
 
-		tablaDePaginasNueva->paginasPedidas = instruccion.nroPagina;
+		tablaDePaginasNueva->paginasPedidas = instruccion->nroPagina;
 
-		tablaDePaginasNueva->pid = instruccion.pid;
+		tablaDePaginasNueva->pid = instruccion->pid;
 
 		tablaDePaginasNueva->punteroParaAlgoritmo = 0;
 
@@ -210,25 +212,25 @@ bool instruccionASwapRealizada(tipoInstruccion* instruccion,tipoRespuesta** resp
 	return ((*respuesta)->respuesta == PERFECTO);
 }
 
-bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta** respuesta) {
+bool puedoReservarEnSWAP(tipoInstruccion* instruccion, tipoRespuesta** respuesta) {
 
 
-	return instruccionASwapRealizada(&instruccion, respuesta);
+	return instruccionASwapRealizada(instruccion, respuesta);
 }
 
-tipoRespuesta* leerPagina(tipoInstruccion instruccion){
+tipoRespuesta* leerPagina(tipoInstruccion* instruccion){
 
 
 	tipoRespuesta* respuesta;
 
-	if(!procesoExiste(instruccion.pid))
+	if(!procesoExiste(instruccion->pid))
 		return crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso no existente");
 
-	if(numeroDePaginaIncorrecto(instruccion.nroPagina,instruccion.pid))
+	if(numeroDePaginaIncorrecto(instruccion->nroPagina,instruccion->pid))
 		return crearTipoRespuesta(MANQUEADO,"Numero de pagina excede el maximo numero");
 
 
-	int posicionEnRam = buscarPagina(instruccion.nroPagina,instruccion.pid);
+	int posicionEnRam = buscarPagina(instruccion->nroPagina,instruccion->pid);
 
 	if(posicionEnRam>=0){
 
@@ -236,12 +238,12 @@ tipoRespuesta* leerPagina(tipoInstruccion instruccion){
 
 		respuesta = crearTipoRespuesta(PERFECTO,pagina);
 
-		modificarUso(instruccion.nroPagina,instruccion.pid,true);
+		modificarUso(instruccion->nroPagina,instruccion->pid,true);
 
-		agregarAccesoPorAlgoritmo(instruccion.nroPagina,instruccion.pid);
+		agregarAccesoPorAlgoritmo(instruccion->nroPagina,instruccion->pid);
 
 		if(estaHabilitadaLaTLB())
-		agregarPaginaATLB(instruccion.nroPagina,instruccion.pid,posicionEnRam);
+		agregarPaginaATLB(instruccion->nroPagina,instruccion->pid,posicionEnRam);
 	}
 
 	else
@@ -276,8 +278,7 @@ int buscarPagina(int nroPagina,int pid){
 
 	posicionDePag = traerPaginaDesdeSwap(*instruccion,&respuesta);
 
-	free(respuesta);
-
+	destruirTipoRespuesta(respuesta);
 	}
 
 
@@ -391,47 +392,47 @@ int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta** respuesta)
 
 
 
-tipoRespuesta* escribirPagina(tipoInstruccion instruccion){
+tipoRespuesta* escribirPagina(tipoInstruccion* instruccion){
 
-	if(!procesoExiste(instruccion.pid))
+	if(!procesoExiste(instruccion->pid))
 		return crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso no existente");
 
-	if(tamanioDePaginaMayorAlSoportado(instruccion.texto))
+	if(tamanioDePaginaMayorAlSoportado(instruccion->texto))
 		return crearTipoRespuesta(MANQUEADO,"Tamaño de pagina mayor al de marco");
 
-	if(numeroDePaginaIncorrecto(instruccion.nroPagina,instruccion.pid))
+	if(numeroDePaginaIncorrecto(instruccion->nroPagina,instruccion->pid))
 		return crearTipoRespuesta(MANQUEADO,"Numero de pagina excede el maximo numero");
 
-	if(RAMLlena()&&noUsaMarcos(instruccion.pid)){//Esto hay que ver como se trata (leer issue 25)
+	if(RAMLlena()&&noUsaMarcos(instruccion->pid)){//Esto hay que ver como se trata (leer issue 25)
 		quitarProceso(instruccion);
 		return crearTipoRespuesta(PERFECTO,"Error de escritura de pagina, proceso finalizado");
 	}
 
-	int posicionDePag = buscarPagina(instruccion.nroPagina,instruccion.pid);
+	int posicionDePag = buscarPagina(instruccion->nroPagina,instruccion->pid);
 
 	dormirPorAccesoARAM();//tengo q tardar tanto como si la creo como si la modifico
 
 	if(posicionDePag==NO_EXISTE){
 
-		posicionDePag = agregarPagina(instruccion.nroPagina,instruccion.pid,string_duplicate(instruccion.texto));
+		posicionDePag = agregarPagina(instruccion->nroPagina,instruccion->pid,string_duplicate(instruccion->texto));
 
-		aumentarPaginasAsignadas(instruccion.pid);
+		aumentarPaginasAsignadas(instruccion->pid);
 	}
 
 	else {
-		modificarPagina(instruccion.nroPagina,instruccion.pid,posicionDePag,instruccion.texto);
+		modificarPagina(instruccion->nroPagina,instruccion->pid,posicionDePag,instruccion->texto);
 
-		modificarUso(instruccion.nroPagina,instruccion.pid,true);
+		modificarUso(instruccion->nroPagina,instruccion->pid,true);
 	}
 
-	modificarModificado(instruccion.nroPagina,instruccion.pid,true);
+	modificarModificado(instruccion->nroPagina,instruccion->pid,true);
 
-	agregarAccesoPorAlgoritmo(instruccion.nroPagina,instruccion.pid);
+	agregarAccesoPorAlgoritmo(instruccion->nroPagina,instruccion->pid);
 
 	if(estaHabilitadaLaTLB())
-	agregarPaginaATLB(instruccion.nroPagina,instruccion.pid,posicionDePag);
+	agregarPaginaATLB(instruccion->nroPagina,instruccion->pid,posicionDePag);
 
-	return crearTipoRespuesta(PERFECTO,instruccion.texto);
+	return crearTipoRespuesta(PERFECTO,instruccion->texto);
 }
 
 void aumentarPaginasAsignadas(int pid){
@@ -545,10 +546,9 @@ void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam){
 			if(instruccionASwapRealizada(instruccionASwap,&respuesta))
 				modificarDatosDePagina(nroPaginaAReemplazar,pid,-1,EN_SWAP,false,false);
 
-			free(instruccionASwap);//esto puede romper porque lo agregue a lo ultimo..
+			destruirTipoInstruccion(instruccionASwap);//esto puede romper porque lo agregue a lo ultimo..
 
-			free(respuesta);
-
+			destruirTipoRespuesta(respuesta);
 }
 
 void modificarDatosDePagina(int nroPagina,int pid,int posicionEnRam,int presente,bool uso,bool modificado){

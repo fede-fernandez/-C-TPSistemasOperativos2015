@@ -28,15 +28,15 @@ void setearEstructuraMemoria(tipoEstructuraMemoria*);
 
 void tratarPeticion(int cpuAtendida);
 
-tipoRespuesta* iniciar(tipoInstruccion instruccion);
+tipoRespuesta* iniciar(tipoInstruccion* instruccion);
 
-tipoRespuesta* leerPagina(tipoInstruccion instruccion);
+tipoRespuesta* leerPagina(tipoInstruccion* instruccion);
 
-tipoRespuesta* escribirPagina(tipoInstruccion instruccion);
+tipoRespuesta* escribirPagina(tipoInstruccion* instruccion);
 
-tipoRespuesta* quitarProceso(tipoInstruccion instruccion);//Destruye un proceso y le avisa a swap
+tipoRespuesta* quitarProceso(tipoInstruccion* instruccion);//Destruye un proceso y le avisa a swap
 
-tipoRespuesta* finalizarMemoria(tipoInstruccion instruccion);
+tipoRespuesta* finalizarMemoria(tipoInstruccion* instruccion);
 
 /*###############################BUSQUEDAS##########################################*/
 
@@ -112,7 +112,7 @@ void dormirPorAccesoARAM();
 
 void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam);
 
-bool puedoReservarEnSWAP(tipoInstruccion instruccion, tipoRespuesta** respuesta) ;
+bool puedoReservarEnSWAP(tipoInstruccion* instruccion, tipoRespuesta** respuesta) ;
 
 bool instruccionASwapRealizada(tipoInstruccion* instruccion,tipoRespuesta** respuesta) ;
 
