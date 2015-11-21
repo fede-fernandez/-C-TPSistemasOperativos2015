@@ -529,8 +529,6 @@ void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam){
 
 			free(respuesta);
 
-			printf("La posicion en la que se escribira la pagina es:%d\n",posicionEnRam);
-
 }
 
 void modificarDatosDePagina(int nroPagina,int pid,int posicionEnRam,int presente,bool uso,bool modificado){
@@ -575,6 +573,68 @@ void quitarPaginaDeRam(int posicion){
 		setearHuecoEnListaHuecosRAM(posicion,true);
 		}
 	}
+
+void limpiarRam(){
+
+	int var;
+
+	tipoTablaPaginas* tablaDePaginas;
+
+	for (var = 0; var < list_size(datosMemoria->listaTablaPaginas); ++var) {
+
+		tablaDePaginas = list_get(datosMemoria->listaTablaPaginas,var);
+
+		list_clean_and_destroy_elements(tablaDePaginas->listaParaAlgoritmo,free);
+
+		//tablaDePaginas->listaParaAlgoritmo = list_create();
+
+		tablaDePaginas->paginasAsignadas = 0;
+
+		tablaDePaginas->punteroParaAlgoritmo = 0;
+
+		inicializarPorAlgoritmo(tablaDePaginas);
+
+		llevarPaginasASwap(tablaDePaginas);
+
+	}
+
+	limpiarTLB();
+
+}
+
+void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
+
+	int var;
+
+	tipoPagina* pagina;
+
+	for (var = 0; var < list_size(tablaDePaginas->frames); ++var) {
+
+		pagina = list_get(tablaDePaginas->frames,var);
+
+		int posicionEnRam = pagina->posicionEnRAM;
+
+		if(pagina->modificado){
+
+			printf("Llevando a SWAP pagina %d de proceso %d\n",var,tablaDePaginas->pid);
+
+			llevarPaginaASwap(var,tablaDePaginas->pid,posicionEnRam);
+		}
+
+		else {
+			if(pagina->presente==EN_RAM)
+				modificarDatosDePagina(var,tablaDePaginas->pid,-1,EN_SWAP,false,false);
+		}
+
+			quitarPaginaDeRam(posicionEnRam);
+	}
+}
+
+void limpiarTLB(){
+
+list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
+}
+
 
 void setearHuecoEnListaHuecosRAM(int posicion,bool estado){
 

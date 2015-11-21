@@ -16,7 +16,7 @@ int main(void) {
 
 //////////////////////////INICIALIZACION DE VARIABLES////////////////////////////////
 
-	tipoConfigMemoria* configuracion = cargarArchivoDeConfiguracionDeMemoria("/home/utnso/git/tp-2015-2c-los-javimancos/Memoria/Debug/cfgMemoria");//"cfgMemoria");
+	tipoConfigMemoria* configuracion = cargarArchivoDeConfiguracionDeMemoria("cfgMemoria");
 
 	int socketParaCpus = crearSocket();
 

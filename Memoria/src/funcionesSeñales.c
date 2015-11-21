@@ -24,6 +24,10 @@ void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 				mostrarRAM(datosMemoria->listaRAM);
 				printf("\n\n");
 				break;
+
+			case 2:
+				limpiarRam();
+				break;
 		}
 
 	}
