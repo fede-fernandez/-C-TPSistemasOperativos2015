@@ -7,20 +7,37 @@
 
 #include "log.h"
 
-void logearSeguimiento(char* mensajeALogear, char* rutaDeArchivoDeLog, char* nombreDeProceso){
-	t_log* log = log_create(rutaDeArchivoDeLog,nombreDeProceso,false,LOG_LEVEL_TRACE);
 
-	log_trace(log,mensajeALogear);
+t_log* crearLoggerParaSeguimiento(char* rutaDeArchivoDeLog, char* nombreDeProcesoALogear){
 
-	log_destroy(log);
+	return log_create(rutaDeArchivoDeLog,nombreDeProcesoALogear,false,LOG_LEVEL_TRACE);
 }
 
 
-void logearError(char* mensajeALogear, char* rutaDeArchivoDeLog, char* nombreDeProceso){
 
-	t_log* log = log_create(rutaDeArchivoDeLog,nombreDeProceso,false,LOG_LEVEL_ERROR);
 
-	log_error(log,mensajeALogear);
+t_log* crearLoggerParaErrores(char* rutaDeArchivoDeLog, char* nombreDeProcesoALogear){
 
-	log_destroy(log);
+	return log_create(rutaDeArchivoDeLog,nombreDeProcesoALogear,false,LOG_LEVEL_ERROR);
+}
+
+
+
+void destruirLogger(t_log* logger){
+
+	log_destroy(logger);
+}
+
+
+
+void logearSeguimiento(char* mensajeALogear,  t_log* logger){
+
+	log_trace(logger,mensajeALogear);
+}
+
+
+
+void logearError(char* mensajeALogear, t_log* logger){
+
+	log_error(logger,mensajeALogear);
 }

@@ -14,9 +14,15 @@
 #include <commons/log.h>
 
 
-void logearSeguimiento(char* mensajeALogear, char* rutaDeArchivoDeLog, char* nombreDeProceso);
+t_log* crearLoggerParaSeguimiento(char* rutaDeArchivoDeLog, char* nombreDeProcesoALogear);
 
-void logearError(char* mensajeALogear, char* rutaDeArchivoDeLog, char* nombreDeProceso);
+t_log* crearLoggerParaErrores(char* rutaDeArchivoDeLog, char* nombreDeProcesoALogear);
+
+void destruirLogger(t_log* logger);
+
+void logearSeguimiento(char* mensajeALogear,  t_log* logger);
+
+void logearError(char* mensajeALogear, t_log* logger);
 
 
 #endif /* COMMONSDEASEDIO_LOG_H_ */
