@@ -30,7 +30,6 @@ void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 				break;
 
 			case 3:
-
 				scanf("%d",&boton);
 				mostrarTasaPageFaults(boton);
 				break;

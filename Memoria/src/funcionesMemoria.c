@@ -115,7 +115,7 @@ tipoRespuesta* finalizarMemoria(tipoInstruccion instruccion){
 
 		list_destroy_and_destroy_elements(datosMemoria->listaHuecosRAM,free);
 
-		datosMemoria->memoriaActiva = false;
+		*(datosMemoria->memoriaActiva) = false;
 	}
 
 	return respuesta;
