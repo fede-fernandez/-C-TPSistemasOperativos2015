@@ -69,6 +69,10 @@ void aumentarPaginasAsignadas(int pid);//Aumenta la cantidad de paginas asignada
 
 void setearHuecoEnListaHuecosRAM(int posicion,bool estado);//Setea si hay o no un hueco en ram
 
+void aumentarAccesosAProceso(int pid);//Aumenta el acceso a un determinado proceso (esto es para hacer lo de la tasa de aciertos)
+
+void aumentarPageFaults(int pid);
+
 /*####################################CREACIONES O AGREGADOS###################################################*/
 
 void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam);

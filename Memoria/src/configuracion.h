@@ -76,6 +76,8 @@ typedef struct{
 	int punteroParaAlgoritmo;
 	t_list* frames;
 	t_list* listaParaAlgoritmo;
+	int cantidadDeAccesos;
+	int cantidadDePageFaults;
 }tipoTablaPaginas;
 
 #define EN_SWAP -18

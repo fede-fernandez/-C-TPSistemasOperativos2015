@@ -28,10 +28,23 @@ void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 			case 2:
 				limpiarRam();
 				break;
+
+			case 3:
+
+				scanf("%d",&boton);
+				mostrarTasaPageFaults(boton);
+				break;
 		}
 
 	}
 
+}
+
+void mostrarTasaPageFaults(int pid){
+
+	tipoTablaPaginas* tabla = traerTablaDePaginas(pid);
+
+	printf("\nLa tasa de aciertos de busquedas de paginas del proceso %d es de %d / %d \n",tabla->pid,tabla->cantidadDePageFaults,tabla->cantidadDeAccesos);
 }
 
 void mostarEstado(tipoEstructuraMemoria* datosMemoria){

@@ -135,6 +135,10 @@ tipoRespuesta* iniciar(tipoInstruccion instruccion) {
 
 		tablaDePaginasNueva->punteroParaAlgoritmo = 0;
 
+		tablaDePaginasNueva->cantidadDeAccesos = 0;
+
+		tablaDePaginasNueva->cantidadDePageFaults = 0;
+
 		inicializarPaginas(tablaDePaginasNueva);
 
 		inicializarPorAlgoritmo(tablaDePaginasNueva);
@@ -234,6 +238,8 @@ int buscarPagina(int nroPagina,int pid){
 
 	int posicionDePag = -1;
 
+	aumentarAccesosAProceso(pid);
+
 	if(estaHabilitadaLaTLB())
 		posicionDePag = buscarPaginaEnTLB(nroPagina,pid);
 
@@ -242,17 +248,17 @@ int buscarPagina(int nroPagina,int pid){
 		posicionDePag = buscarPaginaEnTabla(nroPagina,pid);
 		}
 
-	if(posicionDePag==EN_SWAP){
+	if(posicionDePag<0)//Documento page fault
+		aumentarPageFaults(pid);
 
-		printf("Pagina buscada en Swap..\n");
+
+	if(posicionDePag==EN_SWAP){
 
 	tipoRespuesta* respuesta;
 
 	tipoInstruccion* instruccion = crearTipoInstruccion(pid,LEER,nroPagina,"");
 
 	posicionDePag = traerPaginaDesdeSwap(*instruccion,&respuesta);
-
-	printf("Saliendo de buscarPagina..\n");
 
 	free(respuesta);
 
@@ -285,7 +291,10 @@ int buscarPaginaEnTLB(int nroPagina,int pid){
 	return posicionDePagina;
 }
 
-int buscarPaginaEnTabla(int nroPagina,int pid){//Me hace ruido que no haya que hacer sleep
+int buscarPaginaEnTabla(int nroPagina,int pid){//Me hace ruido que no haya que hacer sleep//Volvi a leer el enunciado y si hay q hacerlo, el ayudante
+												//se equivoco
+
+	sleep(datosMemoria->configuracion->retardoDeMemoria);
 
 		tipoTablaPaginas* tablaActual = traerTablaDePaginas(pid);
 
@@ -479,8 +488,6 @@ void volcarRamALog(){
 
 int agregarPagina(int nroPagina,int pid,char* contenido){
 
-	printf("Entrando a agregar pagina..\n");
-
 	int posicionEnRam;
 
 	if(RAMLlena()||excedeMaximoDeMarcos(pid)){
@@ -498,18 +505,12 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 
 	else {
 
-		printf("Detecto que hay espacio en ram..\n");
-
 		posicionEnRam = buscarHuecoRAM();//list_size(datosMemoria->listaRAM);
 
 		setearHuecoEnListaHuecosRAM(posicionEnRam,false);
-
-		printf("La posicion vacia de ram es :%d\n",posicionEnRam);
 	}
 
 	list_replace_and_destroy_element(datosMemoria->listaRAM,posicionEnRam,contenido,free);//Esto es nuevo porque para manejar los huecos la ram ya tiene q estar inicializada con ""
-
-	printf("No rompio en list_replace..\n");
 
 	modificarDatosDePagina(nroPagina,pid,posicionEnRam,EN_RAM,true,false);
 
@@ -543,15 +544,10 @@ void modificarDatosDePagina(int nroPagina,int pid,int posicionEnRam,int presente
 
 void quitarDeTLB(int nroPagina,int pid){
 
-	printf("Entre a quitar de tlb..\n");
-
 int posicionEnTLB = dondeEstaPaginaEnTLB(nroPagina,pid);
-
-printf("La posicion en tlb es :%d\n",posicionEnTLB);
 
 	if(posicionEnTLB>=0)
 		list_remove_and_destroy_element(datosMemoria->listaTLB,posicionEnTLB,free);
-
 }
 
 void quitarTablaDePaginas(int pid){
@@ -641,6 +637,20 @@ void setearHuecoEnListaHuecosRAM(int posicion,bool estado){
 bool* hueco = list_get(datosMemoria->listaHuecosRAM,posicion);
 
 *hueco = estado;
+}
+
+void aumentarAccesosAProceso(int pid){
+
+	tipoTablaPaginas* tabla = traerTablaDePaginas(pid);
+
+	tabla->cantidadDeAccesos++;
+}
+
+void aumentarPageFaults(int pid){
+
+	tipoTablaPaginas* tabla = traerTablaDePaginas(pid);
+
+	tabla->cantidadDePageFaults++;
 }
 
 int dondeEstaPaginaEnTLB(int nroPagina,int pid){
