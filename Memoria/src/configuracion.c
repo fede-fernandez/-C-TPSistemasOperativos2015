@@ -18,6 +18,7 @@ tipoConfigMemoria* crearConfigMemoria() {
 	tipoConfigMemoria* cfg = malloc(sizeof(tipoConfigMemoria));
 	cfg->ipSWAP = string_new();
 	cfg->TLBHabilitada = string_new();
+	cfg->algoritmoRAM = string_new();
 
 	return cfg;
 }
@@ -40,7 +41,8 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(
 					&& config_has_property(archivoCfg, TAMANIO_MARCO)
 					&& config_has_property(archivoCfg, ENTRADAS_TLB)
 					&& config_has_property(archivoCfg, TLB_HABILITADA)
-					&& config_has_property(archivoCfg, RETARDO_MEMORIA),
+					&& config_has_property(archivoCfg, RETARDO_MEMORIA)
+					&& config_has_property(archivoCfg, ALGORITMO_RAM),
 			"Las claves del archivo de configuracion no coinciden con las que requiere el Administrador de Memoria.");
 
 	cfg->puertoDeEscucha = config_get_int_value(archivoCfg, PUERTO_ESCUCHA);
@@ -55,6 +57,9 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(
 	cfg->TLBHabilitada = string_duplicate(
 			config_get_string_value(archivoCfg, TLB_HABILITADA));
 	cfg->retardoDeMemoria = config_get_int_value(archivoCfg, RETARDO_MEMORIA);
+	cfg->algoritmoRAM = string_duplicate(
+			config_get_string_value(archivoCfg, ALGORITMO_RAM));
+
 
 	config_destroy(archivoCfg);
 

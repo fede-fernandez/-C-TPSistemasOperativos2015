@@ -9,7 +9,14 @@
 
 void setearParaAlgoritmos(){
 
-	datosMemoria->tipoDeAlgoritmoRAM = CLOCK_MODIFICADO;//Hardcodeado hasta que no se
+	if(string_equals_ignore_case(datosMemoria->configuracion->algoritmoRAM,"FIFO"))
+		datosMemoria->tipoDeAlgoritmoRAM = FIFO;
+
+	if(string_equals_ignore_case(datosMemoria->configuracion->algoritmoRAM,"LRU"))
+		datosMemoria->tipoDeAlgoritmoRAM = LRU;
+
+	if(string_equals_ignore_case(datosMemoria->configuracion->algoritmoRAM,"CLOCK_MODIFICADO"))
+		datosMemoria->tipoDeAlgoritmoRAM = CLOCK_MODIFICADO;
 
 	/*if(estaHabilitadaLaTLB())
 		datosMemoria->colaFIFOTLB = list_create();//agregue en el archivo de config*/
@@ -157,6 +164,7 @@ bool ejecutarPaso1CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplaz
 		puntero++;
 	}
 
+	if(encontrado)
 	puntero++;
 
 	if(puntero>=list_size(tablaDePagina->listaParaAlgoritmo))
@@ -203,6 +211,7 @@ bool ejecutarPaso2CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplaz
 		modificarUso(*acceso,tablaDePagina->pid,false);
 	}
 
+	if(encontrado)
 	puntero++;
 
 	if(puntero>=list_size(tablaDePagina->listaParaAlgoritmo))

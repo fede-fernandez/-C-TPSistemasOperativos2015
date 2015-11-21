@@ -25,6 +25,7 @@
 #define ENTRADAS_TLB "ENTRADAS_TLB"
 #define TLB_HABILITADA "TLB_HABILITADA"
 #define RETARDO_MEMORIA "RETARDO_MEMORIA"
+#define ALGORITMO_RAM "ALGORITMO_RAM"
 
 /*******************ESTRUCTURAS*************************/
 
@@ -38,6 +39,7 @@ typedef struct{
 	int entradasDeTLB;
 	char* TLBHabilitada;
 	int retardoDeMemoria;
+	char* algoritmoRAM;
 }tipoConfigMemoria;
 
 
