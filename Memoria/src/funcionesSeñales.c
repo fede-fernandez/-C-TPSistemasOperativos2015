@@ -30,8 +30,8 @@ void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 				break;
 
 			case 3:
-				scanf("%d",&boton);
-				mostrarTasaPageFaults(boton);
+				//scanf("%d",&boton);
+				mostrarTasasPageFaults(datosMemoria);
 				break;
 		}
 
@@ -39,11 +39,20 @@ void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 
 }
 
-void mostrarTasaPageFaults(int pid){
+void mostrarTasasPageFaults(tipoEstructuraMemoria* datosMemoria){
 
-	tipoTablaPaginas* tabla = traerTablaDePaginas(pid);
+	int var;
+	for (var = 0; var < list_size(datosMemoria->listaTablaPaginas); ++var) {
 
-	printf("\nLa tasa de aciertos de busquedas de paginas del proceso %d es de %d / %d \n",tabla->pid,tabla->cantidadDePageFaults,tabla->cantidadDeAccesos);
+		mostrarTasaPageFaults(var);
+	}
+}
+
+void mostrarTasaPageFaults(int posicion){
+
+	tipoTablaPaginas* tabla = list_get(datosMemoria->listaTablaPaginas,posicion);
+
+	printf("\nLa tasa de fallos de paginas del proceso %d es de %d / %d \n",tabla->pid,tabla->cantidadDePageFaults,tabla->cantidadDeAccesos);
 }
 
 void mostarEstado(tipoEstructuraMemoria* datosMemoria){

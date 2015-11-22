@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <commonsDeAsedio/error.h>
+#include <commonsDeAsedio/log.h>
 
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
@@ -38,7 +39,7 @@ typedef struct{
 	int tamanioDeMarco;
 	int entradasDeTLB;
 	char* TLBHabilitada;
-	int retardoDeMemoria;
+	double retardoDeMemoria;
 	char* algoritmoRAM;
 }tipoConfigMemoria;
 
@@ -55,6 +56,7 @@ typedef struct{
 	//t_list* colaFIFOTLB;
 	t_list* listaHuecosRAM;
 	char tipoDeAlgoritmoRAM;
+	t_log* logDeMemoria;
 }tipoEstructuraMemoria;
 
 typedef struct{

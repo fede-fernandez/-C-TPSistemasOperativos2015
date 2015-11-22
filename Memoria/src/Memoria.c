@@ -47,6 +47,8 @@ int main(void) {
 
 	datosMemoria->socketCpus = socketParaCpus;
 
+	datosMemoria->logDeMemoria = crearLoggerParaSeguimiento("logMemoria","Administrador de Memoria");
+
 	setearEstructuraMemoria(datosMemoria);
 
 //-------------END OF FERNILANDIA-----------------------------------
