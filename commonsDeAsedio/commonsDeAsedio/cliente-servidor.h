@@ -126,7 +126,7 @@ int crearSocketParaAceptarSolicitudes(int socketServidor);
 * 	tamaño del bloque que se recibira
 * 	socket del enviador del bloque
 */
-void* recibirBloque(size_t* tamanioBloque,int socketEnviador);
+size_t recibirBloque(int socketEnviador,void* buffer);
 
 /**
 * @NAME: serializarIntYCadena
