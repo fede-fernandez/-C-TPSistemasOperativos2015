@@ -137,19 +137,17 @@ int crearSocketParaAceptarSolicitudes(int socketServidor){
 
 
 
-void* recibirBloque(size_t* tamanioBloque,int socketEnviador){
+size_t recibirBloque(int socketEnviador,void* buffer){
 
 	size_t tamanio;
 
 	recibirMensajeCompleto(socketEnviador,&tamanio,sizeof(size_t));
 
-	void* buffer = malloc(tamanio);
+	buffer = malloc(tamanio);
 
 	recibirMensajeCompleto(socketEnviador,buffer,tamanio);
 
-	*tamanioBloque = tamanio;
-
-	return buffer;
+	return tamanio;
 }
 
 void serializarIntYCadena(int entero,char* cadena,void* bloque){
