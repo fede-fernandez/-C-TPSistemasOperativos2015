@@ -56,7 +56,7 @@ tipoConfigMemoria* cargarArchivoDeConfiguracionDeMemoria(
 	cfg->entradasDeTLB = config_get_int_value(archivoCfg, ENTRADAS_TLB);
 	cfg->TLBHabilitada = string_duplicate(
 			config_get_string_value(archivoCfg, TLB_HABILITADA));
-	cfg->retardoDeMemoria = config_get_double_value(archivoCfg, RETARDO_MEMORIA);
+	cfg->retardoDeMemoria = config_get_int_value(archivoCfg, RETARDO_MEMORIA);
 	cfg->algoritmoRAM = string_duplicate(
 			config_get_string_value(archivoCfg, ALGORITMO_RAM));
 

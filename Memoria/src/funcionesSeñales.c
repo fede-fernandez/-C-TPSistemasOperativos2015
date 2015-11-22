@@ -33,6 +33,9 @@ void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 				//scanf("%d",&boton);
 				mostrarTasasPageFaults(datosMemoria);
 				break;
+			case 4:
+				volcarRamALog();
+				break;
 		}
 
 	}

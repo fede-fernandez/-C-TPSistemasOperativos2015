@@ -18,7 +18,6 @@
 #include "configuracion.h"
 #include "algoritmos.h"
 #include "validaciones.h"
-#include <unistd.h>
 
 tipoEstructuraMemoria* datosMemoria;
 
@@ -48,7 +47,7 @@ int buscarPaginaEnTLB(int nroPagina,int pid);//Retorna la posicion en ram accedi
 
 int buscarPagina(int nroPagina,int pid);//Encuentra una pagina donde quiera que este
 
-int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta** respuesta);//Busca una pagina en swap
+int traerPaginaDesdeSwap(tipoInstruccion* instruccion, tipoRespuesta** respuesta);//Busca una pagina en swap
 
 char* traerPaginaDesdeRam(int direccion);//Retorna el contenido de la pagina
 

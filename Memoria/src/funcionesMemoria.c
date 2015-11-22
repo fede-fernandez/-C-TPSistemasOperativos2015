@@ -139,6 +139,8 @@ tipoRespuesta* iniciar(tipoInstruccion* instruccion) {
 
 	if (puedoReservarEnSWAP(instruccion, &respuesta)) {
 
+		log_trace(datosMemoria->logDeMemoria,"INICIO DE PROCESO %d DE %d PAGINAS",instruccion->pid,instruccion->nroPagina);
+
 		tipoTablaPaginas* tablaDePaginasNueva = malloc(sizeof(tipoTablaPaginas));
 
 		tablaDePaginasNueva->frames = list_create();
@@ -220,6 +222,7 @@ bool puedoReservarEnSWAP(tipoInstruccion* instruccion, tipoRespuesta** respuesta
 
 tipoRespuesta* leerPagina(tipoInstruccion* instruccion){
 
+	log_trace(datosMemoria->logDeMemoria,"LECTURA DE LA PAGINA %d DEL PROCESO %d ",instruccion->nroPagina,instruccion->pid);
 
 	tipoRespuesta* respuesta;
 
@@ -258,12 +261,15 @@ int buscarPagina(int nroPagina,int pid){
 
 	aumentarAccesosAProceso(pid);
 
-	if(estaHabilitadaLaTLB())
+	if(estaHabilitadaLaTLB()){
+
 		posicionDePag = buscarPaginaEnTLB(nroPagina,pid);
+	}
 
 	if(posicionDePag<0){
 
 		posicionDePag = buscarPaginaEnTabla(nroPagina,pid);
+
 		}
 
 	if(posicionDePag<0)//Documento page fault
@@ -276,7 +282,7 @@ int buscarPagina(int nroPagina,int pid){
 
 	tipoInstruccion* instruccion = crearTipoInstruccion(pid,LEER,nroPagina,"");
 
-	posicionDePag = traerPaginaDesdeSwap(*instruccion,&respuesta);
+	posicionDePag = traerPaginaDesdeSwap(instruccion,&respuesta);
 
 	destruirTipoRespuesta(respuesta);
 	}
@@ -301,26 +307,39 @@ int buscarPaginaEnTLB(int nroPagina,int pid){
 
 			posicionDePagina = estructuraTLBActual->posicionEnRAM;
 
+			log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d ENCONTRADA EN TLB EN EL FRAME %d",nroPagina,pid,posicionDePagina);
+
 			break;
 		}
 	}
+
+	if(posicionDePagina<0)
+		log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d NO ENCONTRADA EN TLB",nroPagina,pid);
+
 
 	return posicionDePagina;
 }
 
 int buscarPaginaEnTabla(int nroPagina,int pid){//Me hace ruido que no haya que hacer sleep//Volvi a leer el enunciado y si hay q hacerlo, el ayudante
 												//se equivoco
-
 		dormirPorAccesoARAM();
 
 		tipoTablaPaginas* tablaActual = traerTablaDePaginas(pid);
 
 		tipoPagina* paginaActual = list_get(tablaActual->frames,nroPagina);
 
-		if(paginaActual->presente!=EN_RAM)
-			return paginaActual->presente;
+		if(paginaActual->presente!=EN_RAM){
 
-		else return paginaActual->posicionEnRAM;
+			log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d NO ENCONTRADA EN TABLA DE PAGINAS",nroPagina,pid);
+
+			return paginaActual->presente;
+		}
+
+		else {
+			log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d ENCONTRADA EN TABLA DE PAGINAS EN EL FRAME %d",nroPagina,pid,paginaActual->posicionEnRAM);
+
+			return paginaActual->posicionEnRAM;
+		}
 }
 
 tipoTablaPaginas* traerTablaDePaginas(pid){
@@ -339,6 +358,8 @@ tipoTablaPaginas* traerTablaDePaginas(pid){
 /////////////////
 
 char* traerPaginaDesdeRam(int direccion){
+
+	log_trace(datosMemoria->logDeMemoria,"ACCESO A RAM EN EL FRAME %d",direccion);
 
 	dormirPorAccesoARAM();
 
@@ -369,17 +390,19 @@ return posicionDeTabla;
 
 }
 
-int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta** respuesta) {
+int traerPaginaDesdeSwap(tipoInstruccion* instruccion, tipoRespuesta** respuesta) {
 
 	//instruccion.instruccion = LEER;
 
 	int posicionEnRam = -1;
 
-	if(instruccionASwapRealizada(&instruccion,respuesta)){
+	if(instruccionASwapRealizada(instruccion,respuesta)){
+
+		log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d TRAIDA DE SWAP",instruccion->nroPagina,instruccion->pid);
 
 		char* nuevaPagina = string_duplicate((*respuesta)->informacion);
 
-		posicionEnRam = agregarPagina(instruccion.nroPagina,instruccion.pid,nuevaPagina);
+		posicionEnRam = agregarPagina(instruccion->nroPagina,instruccion->pid,nuevaPagina);
 	}
 
 	return posicionEnRam;
@@ -393,6 +416,8 @@ int traerPaginaDesdeSwap(tipoInstruccion instruccion, tipoRespuesta** respuesta)
 
 
 tipoRespuesta* escribirPagina(tipoInstruccion* instruccion){
+
+	log_trace(datosMemoria->logDeMemoria,"ESCRITURA DE LA PAGINA %d DEL PROCESO %d ",instruccion->nroPagina,instruccion->pid);
 
 	if(!procesoExiste(instruccion->pid))
 		return crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso no existente");
@@ -498,6 +523,17 @@ void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam){
 
 void volcarRamALog(){
 
+	int var;
+
+	for (var = 0; var < list_size(datosMemoria->listaRAM); ++var) {
+
+		//char* pagina = list_get(datosMemoria->listaRAM,var);
+
+		char* pagina = traerPaginaDesdeRam(var);
+
+		log_trace(datosMemoria->logDeMemoria,"FRAME %d : %s",var,pagina);
+	}
+
 //Aca decia que hay que usar fork, pero me parece quilombo para nada
 }
 
@@ -508,11 +544,13 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 
 	if(RAMLlena()||excedeMaximoDeMarcos(pid)){
 
-		int nroPaginaAReemplazar;// = malloc(sizeof(int));
+		int nroPaginaAReemplazar;
 
 		bool estaModificada;
 
 		posicionEnRam = ejecutarAlgoritmo(&nroPaginaAReemplazar,pid,&estaModificada);
+
+		log_trace(datosMemoria->logDeMemoria,"ALGORITMO ELIGIO PAGINA %d DEL PROCESO %d EN EL FRAME %d PARA REEMPLAZAR",nroPaginaAReemplazar,pid,posicionEnRam);
 
 		if(estaModificada)
 			llevarPaginaASwap(nroPaginaAReemplazar,pid,posicionEnRam);
@@ -526,6 +564,8 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 		setearHuecoEnListaHuecosRAM(posicionEnRam,false);
 	}
 
+	log_trace(datosMemoria->logDeMemoria,"ESCRITURA EN RAM DE PAGINA %d DEL PROCESO %d EN EL MARCO %d",nroPagina,pid,posicionEnRam);
+
 	list_replace_and_destroy_element(datosMemoria->listaRAM,posicionEnRam,contenido,free);//Esto es nuevo porque para manejar los huecos la ram ya tiene q estar inicializada con ""
 
 	modificarDatosDePagina(nroPagina,pid,posicionEnRam,EN_RAM,true,false);
@@ -534,7 +574,7 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 }
 
 void dormirPorAccesoARAM(){
-	usleep(1000000*datosMemoria->configuracion->retardoDeMemoria);
+	sleep(datosMemoria->configuracion->retardoDeMemoria);
 }
 
 void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam){

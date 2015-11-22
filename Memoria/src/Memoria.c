@@ -47,6 +47,8 @@ int main(void) {
 
 	datosMemoria->socketCpus = socketParaCpus;
 
+	system("if [ -f logMemoria ]; then rm logMemoria\nfi");//Si ya existe el log lo borra
+
 	datosMemoria->logDeMemoria = crearLoggerParaSeguimiento("logMemoria","Administrador de Memoria");
 
 	setearEstructuraMemoria(datosMemoria);
@@ -89,6 +91,10 @@ int main(void) {
 	}
 
 	}
+
+	destruirLogger(datosMemoria->logDeMemoria);
+
+	free(datosMemoria);
 
 	liberarSocket(socketParaCpus);
 
