@@ -26,10 +26,11 @@ t_list *lista_de_PCB;
 t_queue *procesos_en_ready; // cola de procesos "listos para ejecutar"
 t_list *CPUs; // lista de cpu disponibles
 t_queue *procesos_bloqueados; // cola donde se encolan los procesos para luego mandarlos a dormir
+t_list *id_finalizados; // mProc finalizados
 
 //-- sockets
-
 int puerto = 4000;//Elijo 7200 pero esto se carga del archivo de configuracion
+int socketMaestro; // socket Maeestro se conecta al principio
 int socketEscucha; // socket que escuche las conecciones entrantes
 fd_set master; // conjunto maestro de descriptores de fichero
 fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
@@ -57,7 +58,9 @@ pthread_t recibir;
 pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de "procesos_bloqueados"
 
 // -------------------------------------------------------------------------------------------------------
+//harcodeos
 
+int idVerificar; // para saver si el id del pcb recibido, esta en la lista de finalizados
 
 // ------log
 
@@ -65,16 +68,36 @@ t_log* proceso; //"comienzo y fin de mproc"
 t_log* conexiones; // conexiones a CPUs
 t_log* rafagas; // ragagas de CPUs completadas
 t_log* colita; // colas de ready
+t_log* metricas;
+
 // ---- Mutex log
 
 // falta un mutex ?
 pthread_mutex_t mutex_log2;
 pthread_mutex_t mutex_log3;
 
+void conectar_maestroCPU(){
+
+	socketEscucha = crearSocket();
+
+	asociarAPuerto(socketEscucha,puerto);
+
+	printf("Esperando a que cpu se conecte.. \n");
+
+	// me pongo a escuchar conexiones
+	escucharConexiones(socketEscucha,5); //se bloquea hasta q haya cpus nuevas
+
+	socketMaestro = crearSocketParaAceptarSolicitudes(socketEscucha); //
+
+
+}
+
 
 int main(void) {
 
 	configurar();
+
+	conectar_maestroCPU();
 
 	logueo();
 
@@ -113,7 +136,7 @@ int correr_path(void){
 
 	pthread_mutex_lock(&pcbs);
 	// Agrego el elemento al final de la lista (para que quede ordenada por ID)
-	list_add(lista_de_PCB, PCB_create(contador_de_id_procesos, 1, 'R', path));
+	list_add(lista_de_PCB, PCB_create(contador_de_id_procesos, 1, 'R', path, time(NULL), time(NULL)));
 
 	pthread_mutex_unlock(&pcbs);
 
@@ -129,6 +152,7 @@ int correr_path(void){
 
 	sem_post(&solicitud_ejecucion);
 
+
 	//sleep(1);
 
 	return 0;
@@ -143,12 +167,6 @@ void* recibir_cpu(){
 
 	FD_ZERO(&master); // borra los conjuntos maestro y temporal
 	FD_ZERO(&read_fds);
-
-	socketEscucha = crearSocket();
-	asociarAPuerto(socketEscucha,puerto);
-
-	// me pongo a escuchar conexiones
-	escucharConexiones(socketEscucha,5); //se bloquea hasta q haya cpus nuevas
 
 	FD_SET(socketEscucha, &master); // Agrega socketEscucha al master set
 
@@ -239,6 +257,8 @@ int recibir_rafagas(){
 	char llegada; // "Quantum", "Bloqueado" y "Fin"
 	int T; // tiempo que se va a dormir el mcod
 
+	size_t tamanioDerafaga; // tamaño de la rafaga
+	char* rafaga= string_new(); // esto es el resultado de la rafaga
 
 	pthread_mutex_lock(&cpuss);
 
@@ -248,13 +268,17 @@ int recibir_rafagas(){
 	// llegada es un protocolo de comunicacion, para saber que hacer con el PCB del proceso llegante
 	recibirMensajeCompleto(nodo_cpu->puerto, &llegada, sizeof(char));// recibo llegada
 
+
 	if(llegada=='B'){
 
 		recibirMensajeCompleto(nodo_cpu->puerto, &T, sizeof(int));
 	}
 
-
 	PCB_recibido = recibirPCB2(nodo_cpu->puerto); // recibe el PCB
+
+	recibirMensajeCompleto(nodo_cpu->puerto, &tamanioDerafaga, sizeof(size_t));// recibo rafaga
+	recibirMensajeCompleto(nodo_cpu->puerto, rafaga, tamanioDerafaga);//
+	log_info(rafagas, "         Resultado de rafaga: \n %s \n", rafaga);
 
 
 	pthread_mutex_lock(&pcbs);
@@ -262,8 +286,15 @@ int recibir_rafagas(){
 	// buscar id de proceso en "lista_de_PCB"
 	PCB =list_get(lista_de_PCB, PCB_recibido.id - 1);
 
-	*PCB = PCB_recibido; // actualizo PCB ---> la magia de c =)
+	//cuento el tiempo q estuvo ejecutandose
+	PCB->tiempoEjecucion = PCB->tiempoEjecucion + (difftime(time(NULL),PCB->ultimaEjecucion));
 
+
+	if( !(estas_finalizado(PCB->id)) ){ // verifico que ese id NO este finalizado Forsazamente
+
+		PCB->pc = PCB_recibido.pc; // actualizo el contador de programa PCB
+
+	}
 
 
 	switch (llegada) {
@@ -298,6 +329,8 @@ int llega_quantum(t_PCB *PCB){
 	// meter procesos en la cola de ready
 	queue_push(procesos_en_ready,id_create(PCB->id));
 
+	PCB->ultimaEspera = time(NULL); // guardo el tiempo en que entro a la cola de ready
+
 	pthread_mutex_unlock(&ready);
 
 	// actualizo el PCB
@@ -330,9 +363,15 @@ int llega_entrada_salida(t_PCB *PCB,int T){
 
 int llega_de_fin(t_PCB *PCB){
 
+	double respuesta;
+
 	PCB->estado = 'F'; // le cambio el valor que esta en memoria dinamica
 
-	log_trace(proceso, "              FIN --> ID_mproc: %d , nombre: %s ",PCB->id, PCB->path);
+	log_trace(proceso, "              FIN --> ID_mProc: %d , mcod: %s ",PCB->id, PCB->path);
+
+	respuesta = difftime(time(NULL),PCB->ultimaRespuesta);
+
+	log_info(metricas, "        ID_mProc: %d -> %s | tiempo de respuesta: %f seg | tiempo de ejecucion: %f seg | tiempo de espera: %f seg \n", PCB->id, PCB->path , respuesta,PCB->tiempoEjecucion, PCB->tiempoEspera);
 
 	return 0;
 
@@ -373,6 +412,8 @@ void* bloquear_procesos(){
 		nodo_pcb->estado = 'R'; // le cambio el valor que esta en memoria dinamica
 
 		log_colas(nodo_pcb->id,nodo_pcb->path,"volvio por una E/S de:",nodo_bloqueado->tiempo);
+
+		nodo_pcb->ultimaEspera = time(NULL); // guardo el tiempo en que entro a la cola de ready
 
 		pthread_mutex_unlock(&pcbs);
 
@@ -422,6 +463,11 @@ void* ejecutar_proceso(){
 
 		pcb = *nodo_pcb;
 
+		nodo_pcb->ultimaEjecucion = time(NULL); // grabo los segundos del sistema
+
+		//guardo el tiempo final desde que entro a ready hasta que salio
+		nodo_pcb->tiempoEspera = nodo_pcb->tiempoEspera + (difftime(time(NULL),nodo_pcb->ultimaEspera));
+
 		pthread_mutex_unlock(&pcbs);
 
 		pthread_mutex_lock(&cpuss);
@@ -452,6 +498,8 @@ int menu(void) {
 
 	int opcion;
 	char opchar[2];
+	char fin= 'S'; // mando una 'S' para q todos los procesos terminen
+
 
 	while(1) // el menu tiene que estar presente siempre
 
@@ -491,15 +539,26 @@ int menu(void) {
 
 		 switch (opcion) {
 			case 1:
+
 			   correr_path();	break; // las demas funciones las puedo desarrollar a lo ultimo
-			//case 2:
-			   //finalizar_PID(); break;
+
+			case 2:
+
+			   finalizar_PID(); break;
+
 			case 3:
+
 			   ps();	        break;
+
 			//case 4:
+
 			   //cpu();	        break;
+
 			case 5:
-			   return 0;	    break;
+
+				enviarMensaje(socketMaestro, &fin, sizeof(char));
+
+			    return 0;	    break;
 
 			default: printf("Opción incorrecta. Por favor ingrese una opción del 1 al 4 \n \n \n"); break;
 		  }
@@ -510,12 +569,53 @@ int menu(void) {
 
 }
 
+void finalizar_PID(){
+
+	char mensajito = 'C';
+	int ultima; // cantidad de instrucciones
+	int id;
+	int tamanno;
+
+	t_PCB *nodo_pcb;
+
+	printf("Ingrese el ID de proceso que desea finalizar \n");
+
+	scanf("%d",&id);
+
+	enviarMensaje(socketMaestro,&mensajito,sizeof(char)); // le mando el quantum, que es un int
+
+
+	pthread_mutex_lock(&pcbs);
+
+	nodo_pcb =list_get(lista_de_PCB, id-1); //PCB=buscar_id_de_proceso (sin desarmar la lista)
+
+	tamanno =sizeof(nodo_pcb->path);
+
+	enviarMensaje(socketMaestro, &tamanno, sizeof(int));
+
+	enviarMensaje(socketMaestro,&nodo_pcb->path,sizeof(nodo_pcb->path));
+
+	pthread_mutex_unlock(&pcbs);
+
+	recibirMensajeCompleto(socketMaestro, &ultima, sizeof(int));// recibo la ultima instruccion
+
+	pthread_mutex_lock(&pcbs);
+
+	nodo_pcb->pc = ultima; // le cambio el estado a finalizado
+
+	list_add(id_finalizados,id_create(nodo_pcb->id));
+
+	pthread_mutex_unlock(&pcbs);
+
+
+}
+
 void ps(){
 
 	int i=0;
 	t_PCB *PCB;
 	int tamano;
-	char timer[1];
+	char timer[10];
 
 	pthread_mutex_lock(&pcbs);
 
@@ -545,6 +645,35 @@ int buscar_por_puerto(t_CPU *nodo){
 	return 0;
 }
 
+
+int id_en_lista(int *idFinalizado){
+
+	if(*idFinalizado == idVerificar ){
+
+		return 1;
+
+	}else{
+
+		return 0;
+	}
+}
+
+int estas_finalizado(int id){
+
+	int booleno;
+
+	idVerificar = id;
+
+	booleno= list_any_satisfy(id_finalizados,(void*)(id_en_lista));
+
+	return booleno;
+
+}
+
+
+
+
+
 //----------------------Iniciallizo y libero memoria
 
 void crear_lista(){
@@ -553,6 +682,7 @@ void crear_lista(){
 	procesos_en_ready = queue_create(); //Crea la cola de pocesos en ready
 	CPUs = list_create(); // crea lista de CPUs conectadas
 	procesos_bloqueados = queue_create(); // crea cola de procesos bloqueados
+	id_finalizados = list_create();
 }
 
 
@@ -637,8 +767,13 @@ void logueo(){
 	colita = log_create("cola de ready", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
 
 	proceso = log_create("comienzo y fin de mproc", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+
 	conexiones = log_create("actividad CPUs", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
-	//rafagas = log_create("Ráfagas de CPUs completadas", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+
+	rafagas = log_create("resultado de Ráfagas", "PLANIFICADOR", 0, LOG_LEVEL_INFO);
+
+	metricas = log_create(" metricas ", "PLANIFICADOR", 0, LOG_LEVEL_INFO);
+
 
 }
 
@@ -660,4 +795,7 @@ void log_colas(int id_proceso,char path[30],char razon[40],int numero){
 	pthread_mutex_unlock(&mutex_log3);
 
 }
+
+
+
 

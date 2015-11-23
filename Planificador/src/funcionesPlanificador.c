@@ -48,11 +48,15 @@ tipoConfig* cargarArchivoDeConfiguracion(char* rutaDelArchivoDeConfiguracion){
 	return cfg;
 }
 
- t_PCB *PCB_create(int id, int pc, char estado, char path[30]) { // esta funcion crea la estructura
+ t_PCB *PCB_create(int id, int pc, char estado, char path[30],time_t ultimaRespuesta, time_t ultimaEspera ) { // esta funcion crea la estructura
 	t_PCB *new = malloc(sizeof(t_PCB));
     new->id = id;
     new->pc = pc;
     new->estado = estado;
+    new->ultimaRespuesta = ultimaRespuesta;
+    new->tiempoEjecucion = 0;
+    new->tiempoEspera = 0;
+    new->ultimaEspera = ultimaEspera;
     memset(new->path, '\0', 30);
     strcpy(new->path,path);
     return new;
@@ -156,4 +160,6 @@ void enviarPCB2(int socketReceptor, t_PCB PCB_leo)
 
 		enviarMensaje(socketReceptor, PCB.ruta, tamanioRuta);
 }
+
+
 

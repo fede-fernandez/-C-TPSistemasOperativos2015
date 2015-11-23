@@ -16,6 +16,7 @@
 #include <commonsDeAsedio/error.h>
 #include <commonsDeAsedio/cliente-servidor.h>
 #include <commonsDeAsedio/estructuras.h>
+#include <time.h>
 
 
 typedef struct{
@@ -23,6 +24,11 @@ typedef struct{
 	int pc;
 	char estado;
 	char path[30];
+	time_t ultimaRespuesta; //El tiempo real desde que empieza, hasta qué termina
+	double tiempoEjecucion; // La suma de los periodos de tiempo en la CPU
+	time_t ultimaEjecucion;
+	double tiempoEspera; //La suma de los periodos de tiempo en la cola de listos
+	time_t ultimaEspera;
 } t_PCB;
 
 typedef struct{
@@ -69,6 +75,8 @@ int menu(void) ;
 
 int correr_path(void);
 
+void finalizar_PID();
+
 void ps();
 //-------------------------------------------------------------------
 
@@ -92,7 +100,7 @@ void destruirConfig(tipoConfig* estructuraDeConfiguracion);
 /*********Fin de Archivo de Config de PLANIFICADOR************/
 
 //-----------------------------------------------------------------------
-t_PCB* PCB_create(int id, int pc, char estado, char path[30]);
+t_PCB* PCB_create(int id, int pc, char estado, char path[30],time_t ultimaRespuesta, time_t ultimaEspera);
 
 int *id_create(int id);
 
@@ -105,12 +113,21 @@ t_bloqueados *bloquedito_create(int id, int tiempo);
 int diponibilidad(t_CPU * nodo);
 
 int buscar_por_puerto(t_CPU *nodo );
+
+int estas_finalizado(int id); // pregunta si el id fue finalizado forsozamente
 //-------------------------------------------------------
 
 void enviarPCB2(int socketCliente,t_PCB pcb);
 
 t_PCB recibirPCB2(int socketEnviador);
 
+//---Logueo----------------------------------
+
 void logueo();
+
+void log_actividad_cpus(int id_cpu, char estado[15],int id_proceso,char path[30], char estado_pcb[15]);
+
+void log_colas(int id_proceso,char path[30],char razon[40],int numero);
+
 
 #endif /* FUNCIONESPLANIFICADOR_H_ */
