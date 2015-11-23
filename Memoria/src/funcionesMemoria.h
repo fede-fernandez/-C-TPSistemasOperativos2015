@@ -89,6 +89,10 @@ void iniciarListaHuecosRAM();//Inicializa la RAM con huecos
 
 int agregarPagina(int nroPagina,int pid,char* contenido);
 
+char* generarPaginaCompleta(char* pagina);
+
+char* crearPaginaManqueada();
+
 /*####################################LIMPIEZA DE LISTAS###################################################*/
 
 void quitarDeTLB(int nroPagina,int pid);//Quita pagina de TLB

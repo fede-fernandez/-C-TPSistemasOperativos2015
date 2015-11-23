@@ -250,7 +250,7 @@ tipoRespuesta* leerPagina(tipoInstruccion* instruccion){
 	}
 
 	else
-		respuesta = crearTipoRespuesta(MANQUEADO,"Pagina no existente");
+		respuesta = crearTipoRespuesta(PERFECTO,crearPaginaManqueada());//Esto hay que revisarlo bien pero retorno una pag vacia
 
 	return respuesta;
 }
@@ -572,6 +572,30 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 
 	return posicionEnRam;
 }
+
+char* generarPaginaCompleta(char* pagina){
+
+	int tamanioPag = string_length(pagina);
+
+	char* paginaConEspacios = string_duplicate(pagina);
+
+	int espaciosFaltantes = datosMemoria->configuracion->tamanioDeMarco-tamanioPag;
+
+	char* espacios = string_repeat('\0',espaciosFaltantes);
+
+	string_append(&paginaConEspacios,espacios);
+
+	return paginaConEspacios;
+
+}
+
+char* crearPaginaManqueada(){
+
+	char byteManco = 177;
+
+	return string_repeat(byteManco,datosMemoria->configuracion->tamanioDeMarco-1);
+}
+
 
 void dormirPorAccesoARAM(){
 	sleep(datosMemoria->configuracion->retardoDeMemoria);
