@@ -42,7 +42,10 @@ int main(void) {
 	tipoInstruccion* instruccionAEjecutar;
 	tipoRespuesta* respuestaParaMemoria;
 
-	//FILE* particion = fopen("swap","r+");
+	char* textoALogear = string_new();
+	string_append(&textoALogear,"Inicio de ejecucion de proceso SWAP");
+	logearSeguimiento(textoALogear,logger);
+
 
 
 /*************Sockets***************/
@@ -57,11 +60,16 @@ int main(void) {
 
 	//int i = 1;
 /***********Recibir instrucciones y ejecutarlas***********/
-	while(1){
+	while(INFINITO){
 
 		printf("Esperando instruccion\n");
 		instruccionAEjecutar = recibirInstruccion(socketParaRecibirInstrucciones);
 		printf("Instruccion recibida\n");
+
+
+		if (instruccionAEjecutar->instruccion == 'h') {
+			break;
+		}
 
 
 		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion,logger);
@@ -69,13 +77,15 @@ int main(void) {
 		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
 		printf("Respuesta enviada\n\n");
 
-//		destruirTipoRespuesta(respuestaParaMemoria);
-//		destruirTipoInstruccion(instruccionAEjecutar);
+		imprimirListaDeHuecos(listaDeHuecosUtilizados);
+
+		destruirTipoRespuesta(respuestaParaMemoria);
+		destruirTipoInstruccion(instruccionAEjecutar);
 	//	i++;
+	}
 
-}
+	destruirTipoInstruccion(instruccionAEjecutar);
 
-	imprimirListaDeHuecos(listaDeHuecosUtilizados);
 
 
 
@@ -90,6 +100,8 @@ int main(void) {
 	list_destroy_and_destroy_elements(listaDeHuecosUtilizados,(void*)destruirHuecoUtilizado);
 	destruirConfigSWAP(configuracion);
 	destruirLogger(logger);
+
+	free(textoALogear);
 
 
 
