@@ -18,6 +18,7 @@ typedef struct{
 	int cantidadDePaginas;
 	int tamanioDePagina;
 	int retardoDeCompactacion;
+	int retardoDeSWAP;
 }tipoConfigSWAP;
 
 //------------CONTROL DE HUECOS-------------

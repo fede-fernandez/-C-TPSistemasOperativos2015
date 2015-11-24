@@ -22,11 +22,11 @@ tipoRespuesta* ejecutarInstruccion(tipoInstruccion* instruccion,t_list* listaDeH
 			break;
 
 		case LEER:
-			respuesta = leerPagina(listaDeHuecos,instruccion->pid,instruccion->nroPagina,configuracion->tamanioDePagina,configuracion->nombreDeSWAP, logger);
+			respuesta = leerPagina(listaDeHuecos,instruccion->pid,instruccion->nroPagina,configuracion->tamanioDePagina,configuracion->nombreDeSWAP, logger,configuracion->retardoDeSWAP);
 			break;
 
 		case ESCRIBIR:
-			respuesta = escribirPagina(listaDeHuecos,instruccion->pid,instruccion->texto,instruccion->nroPagina,configuracion->tamanioDePagina,configuracion->nombreDeSWAP, logger);
+			respuesta = escribirPagina(listaDeHuecos,instruccion->pid,instruccion->texto,instruccion->nroPagina,configuracion->tamanioDePagina,configuracion->nombreDeSWAP, logger,configuracion->retardoDeSWAP);
 			break;
 
 		case FINALIZAR:
