@@ -11,6 +11,8 @@
 
 char* recuperarBloque(char* bloqueAVaciar);
 char* completarBloque(char* bloqueACompletar, int tamanioDeBloque);
+void borrarBloque(char* rutaDeParticion, int numeroDeBloque, int tamanioDeBloque);
+
 
 
 //////////////FUNCIONES PARA EL ARCHIVO DE PARTICION///////////////////////
@@ -68,6 +70,17 @@ char* leerBloqueMapeado(char* rutaDeParticion,int numDeBloque, int tamanioDeBloq
 }
 
 
+void borrarMProcDeParticion(char* rutaDeParticion,int baseDeMProc,int cantidadDePaginasDeMProc,int tamanioDeBloque){
+
+	int i;
+	for (i = 0; i < cantidadDePaginasDeMProc; ++i) {
+
+		borrarBloque(rutaDeParticion,baseDeMProc,tamanioDeBloque);
+		baseDeMProc++;
+	}
+}
+
+
 /////////AUXILIARES/////////
 
 
@@ -94,3 +107,8 @@ char* recuperarBloque(char* bloqueAVaciar){
 
 	return bloque;
 }
+
+void borrarBloque(char* rutaDeParticion, int numeroDeBloque, int tamanioDeBloque){
+	escribirBloqueMapeado(rutaDeParticion,"",numeroDeBloque,tamanioDeBloque);
+}
+

@@ -23,6 +23,8 @@ void escribirBloqueMapeado(char* archivo,char* contenidoAEscribir,int numDeBloqu
 
 char* leerBloqueMapeado(char* archivo,int numDeBloque, int tamanioDeBloque);
 
+void borrarMProcDeParticion(char* rutaDeParticion,int baseDeMProc,int cantidadDePaginasDeMProc,int tamanioDeBloque);
+
 
 
 #endif /* PARTICIONSWAP_H_ */

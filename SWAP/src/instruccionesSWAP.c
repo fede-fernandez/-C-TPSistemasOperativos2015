@@ -30,7 +30,7 @@ tipoRespuesta* ejecutarInstruccion(tipoInstruccion* instruccion,t_list* listaDeH
 			break;
 
 		case FINALIZAR:
-			respuesta = liberarEspacio(listaDeHuecos,instruccion->pid, configuracion->tamanioDePagina, logger);
+			respuesta = liberarEspacio(listaDeHuecos,instruccion->pid, configuracion->tamanioDePagina, logger,configuracion->nombreDeSWAP);
 			break;
 	}
 
