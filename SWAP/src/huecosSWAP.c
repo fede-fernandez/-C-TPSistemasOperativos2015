@@ -247,6 +247,9 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 	string_append_with_format(&textoALogear,"Lectura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length(contenidoDePagina),contenidoDePagina);
 	logearSeguimiento(textoALogear,logger);
 
+	free(textoALogear);
+	free(contenidoDePagina);
+
 	return respuestaASolicitudDeLectura;
 }
 
@@ -270,6 +273,8 @@ tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,cha
 
 	string_append_with_format(&textoALogear,"Escritura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length(contenidoAEscribir),contenidoAEscribir);
 	logearSeguimiento(textoALogear,logger);
+
+	free(textoALogear);
 
 	return respuestaASolicitudDeEscritura;
 }

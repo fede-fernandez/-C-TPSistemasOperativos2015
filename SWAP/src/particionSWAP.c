@@ -33,6 +33,8 @@ void inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantid
 
 	printf("Particion inicializada. \n");
 
+	free(instruccion);
+
 	//particion = fopen(nombreDeParticion,"r+");//modo actualizacion, el archivo debe existir
 	//return particion;
 }
@@ -50,6 +52,8 @@ void escribirBloqueMapeado(char* rutaDeParticion,char* contenidoAEscribir,int nu
 
 	fwrite(aux,tamanioDeBloque,1,archivo);
 
+	//free(aux);
+
 	fclose(archivo);
 }
 
@@ -65,6 +69,8 @@ char* leerBloqueMapeado(char* rutaDeParticion,int numDeBloque, int tamanioDeBloq
 	char* aux = recuperarBloque(leido);
 
 	fclose(archivo);
+	free(leido);
+	//free(aux);
 
 	return aux;
 }
