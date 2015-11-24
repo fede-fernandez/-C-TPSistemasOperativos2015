@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>
@@ -42,6 +43,8 @@ int main(void) {
 	tipoInstruccion* instruccionAEjecutar;
 	tipoRespuesta* respuestaParaMemoria;
 
+	bool finalizarProceso = false;
+
 	char* textoALogear = string_new();
 	string_append(&textoALogear,"Inicio de ejecucion de proceso SWAP");
 	logearSeguimiento(textoALogear,logger);
@@ -60,7 +63,7 @@ int main(void) {
 
 	//int i = 1;
 /***********Recibir instrucciones y ejecutarlas***********/
-	while(INFINITO){
+	while(!finalizarProceso){
 
 		printf("Esperando instruccion\n");
 		instruccionAEjecutar = recibirInstruccion(socketParaRecibirInstrucciones);
@@ -68,7 +71,8 @@ int main(void) {
 
 
 		if (instruccionAEjecutar->instruccion == 'h') {
-			break;
+			finalizarProceso = true;
+			destruirTipoInstruccion(instruccionAEjecutar);
 		}
 
 
@@ -84,7 +88,7 @@ int main(void) {
 	//	i++;
 	}
 
-	destruirTipoInstruccion(instruccionAEjecutar);
+
 
 
 
@@ -102,7 +106,6 @@ int main(void) {
 	destruirLogger(logger);
 
 	free(textoALogear);
-
 
 
 	return EXIT_SUCCESS;
