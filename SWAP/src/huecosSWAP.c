@@ -140,17 +140,29 @@ t_list* inicializarListaDeHuecosUtilizados(){
 
 
 /////////////////////FUNCIONES PRINCIPALES//////////////
-tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion, int retardoDeCompactacion){
+tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion, int retardoDeCompactacion, t_log* logger){
 
 	tipoRespuesta* respuestaASolicitudDeReserva;
 	int baseParaNuevoPID;
+	char* textoALogear = string_new();
+	char* textoALogearPorCompactacion = string_new();
+
 
 	//puedo reservar la cantidad de paginas que el mproc necesita?
 	if (cantidadDePaginasDisponibles(listaDeHuecosUtilizados,cantDePaginasDeSWAP) >= cantPaginasSolicitadas) {
 		//tengo espacio contiguo para almacenar las paginas que el mprc necesita?
 		if((baseParaNuevoPID = baseParaMProcSiTengoEspacioContiguo(listaDeHuecosUtilizados,cantPaginasSolicitadas,cantDePaginasDeSWAP)) == -1){
 
+			string_append(&textoALogearPorCompactacion,"Compactacion iniciada por fragmentacion externa");
+			logearSeguimiento(textoALogearPorCompactacion,logger);
+
 			compactacionAlpha(listaDeHuecosUtilizados,particion,tamanioDePagina,retardoDeCompactacion);
+
+			textoALogearPorCompactacion = string_new();
+			string_append(&textoALogearPorCompactacion,"Compactacion finalizada");
+			logearSeguimiento(textoALogearPorCompactacion,logger);
+			free(textoALogearPorCompactacion);
+
 			//baseNuevo = ultima pagina ocupada para asignar al final
 			tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,list_size(listaDeHuecosUtilizados)-1);
 			baseParaNuevoPID = traducirDireccionLogicaAFisica(aux,aux->cantidadDePaginasQueOcupa);
@@ -159,20 +171,30 @@ tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNue
 
 		respuestaASolicitudDeReserva = crearTipoRespuesta(PERFECTO,OK_ESPACIO_RESERVADO);
 
+		string_append_with_format(&textoALogear,"Proceso mProc asignado  |  PID: %d  |  Byte inicial: %d  | Tamanio en bytes: %d", pidProcesoNuevo, baseParaNuevoPID*tamanioDePagina, cantPaginasSolicitadas*tamanioDePagina);
+		logearSeguimiento(textoALogear,logger);
 	}
 	else {
 		//enviar error a memoria
 		//printf("Error al asignar pid: %d, no hay espacio contiguo suficiente para almacenar %d paginas\n",pidProcesoNuevo,cantPaginasSolicitadas);
 		respuestaASolicitudDeReserva = crearTipoRespuesta(MANQUEADO,ERROR_NO_HAY_ESPACIO_EN_SWAP);
+
+		string_append_with_format(&textoALogear,"Proceso mProc rechazado | Solicitud: %d paginas | Espacio disponible: %d paginas", cantPaginasSolicitadas,cantidadDePaginasDisponibles(listaDeHuecosUtilizados,cantDePaginasDeSWAP));
+		logearSeguimiento(textoALogear,logger);
+
 	}
+
+	free(textoALogear);
 
 	printf("Paginas inicializadas\n");
 	return respuestaASolicitudDeReserva;
 }
 
-tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
+tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso, int tamanioDePagina, t_log* logger){
 
 	tipoRespuesta* respuestaASolicitudDeLiberacion;
+	char* textoALogear = string_new();
+	int base, cantidadDePaginas;
 
 	//buscarHuecoDePIDyBorrarHuecoDeLista
 	tipoHuecoUtilizado* aux;
@@ -180,19 +202,29 @@ tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso){
 	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
 		aux = list_get(listaDeHuecosUtilizados,i);
 		if (aux->pid == pidProceso) {
-			list_remove(listaDeHuecosUtilizados,i);
+
+			base = aux->baseDeMProc;
+			cantidadDePaginas = aux->cantidadDePaginasQueOcupa;
+
+			list_remove_and_destroy_element(listaDeHuecosUtilizados,i,(void*)destruirHuecoUtilizado);
 		}
 	}
 
+
 	respuestaASolicitudDeLiberacion = crearTipoRespuesta(PERFECTO,OK_ESPACIO_LIBERADO);
+
+	string_append_with_format(&textoALogear,"Proceso mProc liberado  |  PID: %d  |  Byte inicial: %d  | Tamanio en bytes liberado: %d", pidProceso, base*tamanioDePagina, cantidadDePaginas*tamanioDePagina);
+	logearSeguimiento(textoALogear,logger);
+	free(textoALogear);
 
 	return respuestaASolicitudDeLiberacion;
 }
 
-tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion){
+tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion, t_log* logger){
 	tipoRespuesta* respuestaASolicitudDeLectura;
 
 	char* contenidoDePagina;
+	char* textoALogear = string_new();
 
 	//buscarPIDEnListaDeHuecos
 	tipoHuecoUtilizado* huecoDelProceso = buscarHuecoPorPID(listaDeHuecosUtilizados,pidProceso);
@@ -208,11 +240,15 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 
 	respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
 
+	string_append_with_format(&textoALogear,"Lectura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length(contenidoDePagina),contenidoDePagina);
+	logearSeguimiento(textoALogear,logger);
+
 	return respuestaASolicitudDeLectura;
 }
 
-tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion){
+tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion, t_log* logger){
 	tipoRespuesta* respuestaASolicitudDeEscritura;
+	char* textoALogear = string_new();
 
 	//buscarPIDEnListaDeHuecos
 	tipoHuecoUtilizado* huecoDelProceso = buscarHuecoPorPID(listaDeHuecosUtilizados,pidProceso);
@@ -225,6 +261,10 @@ tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,cha
 
 
 	respuestaASolicitudDeEscritura = crearTipoRespuesta(PERFECTO,OK_PAGINA_ESCRITA);
+
+	string_append_with_format(&textoALogear,"Escritura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length(contenidoAEscribir),contenidoAEscribir);
+	logearSeguimiento(textoALogear,logger);
+
 	return respuestaASolicitudDeEscritura;
 }
 

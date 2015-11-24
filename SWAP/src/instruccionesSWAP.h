@@ -13,8 +13,10 @@
 
 
 #include <commonsDeAsedio/estructuras.h>
+#include <commons/log.h>
+#include <commons/collections/list.h>
 
 
-tipoRespuesta* ejecutarInstruccion(tipoInstruccion* instruccion,t_list* listaDeHuecos,tipoConfigSWAP* configuracion);
+tipoRespuesta* ejecutarInstruccion(tipoInstruccion* instruccion,t_list* listaDeHuecos,tipoConfigSWAP* configuracion, t_log* logger);
 
 #endif /* INSTRUCCIONESSWAP_H_ */

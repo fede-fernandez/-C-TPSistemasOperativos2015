@@ -18,8 +18,10 @@
 
 #include <commonsDeAsedio/mmap.h>
 #include <commonsDeAsedio/estructuras.h>
+#include <commonsDeAsedio/log.h>
 
 #include <commons/string.h>
+
 
 
 #define ERROR_NO_HAY_ESPACIO_EN_SWAP "No se pudo asignar la pagina. No hay espacio disponible en SWAP"
@@ -32,10 +34,10 @@ bool baseMenor(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);
 
 /********Funciones principales de SWAP**************/
 
-tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion, int retardoDeCompactacion);
-tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso);
-tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion);
-tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion);
+tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion, int retardoDeCompactacion, t_log* logger);
+tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso, int tamanioDePagina, t_log* logger);
+tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion, t_log* logger);
+tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion, t_log* logger);
 
 /********Fin de funciones principales de SWAP**************/
 

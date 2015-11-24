@@ -7,6 +7,7 @@
 
 #include <commonsDeAsedio/cliente-servidor.h>
 #include <commonsDeAsedio/estructuras.h>
+#include <commonsDeAsedio/log.h>
 
 #include "estructurasSWAP.h"
 #include "funcionesSWAP.h"
@@ -34,6 +35,7 @@ int main(void) {
 
 	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("cfgSWAP");
 	t_list* listaDeHuecosUtilizados = inicializarListaDeHuecosUtilizados();
+	t_log* logger = crearLoggerParaSeguimiento("logSWAP","Administrador de SWAP");
 
 	inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
 
@@ -61,11 +63,12 @@ int main(void) {
 		instruccionAEjecutar = recibirInstruccion(socketParaRecibirInstrucciones);
 		printf("Instruccion recibida\n");
 
-		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion);
+
+		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion,logger);
 
 		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
 		printf("Respuesta enviada\n\n");
-//
+
 //		destruirTipoRespuesta(respuestaParaMemoria);
 //		destruirTipoInstruccion(instruccionAEjecutar);
 	//	i++;
@@ -86,6 +89,7 @@ int main(void) {
 	printf("Libero estructuras\n");
 	list_destroy_and_destroy_elements(listaDeHuecosUtilizados,(void*)destruirHuecoUtilizado);
 	destruirConfigSWAP(configuracion);
+	destruirLogger(logger);
 
 
 
