@@ -26,7 +26,7 @@ t_list *lista_de_PCB;
 t_queue *procesos_en_ready; // cola de procesos "listos para ejecutar"
 t_list *CPUs; // lista de cpu disponibles
 t_queue *procesos_bloqueados; // cola donde se encolan los procesos para luego mandarlos a dormir
-t_list *id_finalizados; // mProc finalizados
+t_list *id_finalizados; // mProc finalizados forsozamente
 
 //-- sockets
 int puerto = 4000;//Elijo 7200 pero esto se carga del archivo de configuracion
@@ -58,9 +58,7 @@ pthread_t recibir;
 pthread_t bloquear; // hilo que manda a dormir procesos que estan en la lista de "procesos_bloqueados"
 
 // -------------------------------------------------------------------------------------------------------
-//harcodeos
 
-int idVerificar; // para saver si el id del pcb recibido, esta en la lista de finalizados
 
 // ------log
 
@@ -82,7 +80,7 @@ void conectar_maestroCPU(){
 
 	asociarAPuerto(socketEscucha,puerto);
 
-	printf("Esperando a que cpu se conecte.. \n");
+	printf("\n\n    ********* Esperando a que cpu se conecte.. \n\n");
 
 	// me pongo a escuchar conexiones
 	escucharConexiones(socketEscucha,5); //se bloquea hasta q haya cpus nuevas
@@ -257,8 +255,6 @@ int recibir_rafagas(){
 	char llegada; // "Quantum", "Bloqueado" y "Fin"
 	int T; // tiempo que se va a dormir el mcod
 
-	size_t tamanioDerafaga; // tamaño de la rafaga
-	char* rafaga= string_new(); // esto es el resultado de la rafaga
 
 	pthread_mutex_lock(&cpuss);
 
@@ -276,21 +272,19 @@ int recibir_rafagas(){
 
 	PCB_recibido = recibirPCB2(nodo_cpu->puerto); // recibe el PCB
 
-	recibirMensajeCompleto(nodo_cpu->puerto, &tamanioDerafaga, sizeof(size_t));// recibo rafaga
-	recibirMensajeCompleto(nodo_cpu->puerto, rafaga, tamanioDerafaga);//
-	log_info(rafagas, "         Resultado de rafaga: \n %s \n", rafaga);
 
 
 	pthread_mutex_lock(&pcbs);
 
 	// buscar id de proceso en "lista_de_PCB"
-	PCB =list_get(lista_de_PCB, PCB_recibido.id - 1);
+	PCB = buscar_PCB(lista_de_PCB, PCB_recibido.id);
+
 
 	//cuento el tiempo q estuvo ejecutandose
 	PCB->tiempoEjecucion = PCB->tiempoEjecucion + (difftime(time(NULL),PCB->ultimaEjecucion));
 
 
-	if( !(estas_finalizado(PCB->id)) ){ // verifico que ese id NO este finalizado Forsazamente
+	if( !(estas_finalizado(id_finalizados,PCB->id))){ // verifico que ese id NO este finalizado Forsazamente
 
 		PCB->pc = PCB_recibido.pc; // actualizo el contador de programa PCB
 
@@ -373,6 +367,8 @@ int llega_de_fin(t_PCB *PCB){
 
 	log_info(metricas, "        ID_mProc: %d -> %s | tiempo de respuesta: %f seg | tiempo de ejecucion: %f seg | tiempo de espera: %f seg \n", PCB->id, PCB->path , respuesta,PCB->tiempoEjecucion, PCB->tiempoEspera);
 
+	liberar_pcb(lista_de_PCB, PCB);
+
 	return 0;
 
 }
@@ -406,7 +402,7 @@ void* bloquear_procesos(){
 		pthread_mutex_lock(&pcbs);
 
 		// una vez transcurrido ese tiempo buscar con la id en "lista_de_PCB" y sacar su PCB
-		nodo_pcb =list_get(lista_de_PCB, nodo_bloqueado->id - 1);
+		nodo_pcb = buscar_PCB(lista_de_PCB, nodo_bloqueado->id);
 
 		// modificar su estado de: bloqueado a--> listo y meter de nuevo en "lista_de_PCB"
 		nodo_pcb->estado = 'R'; // le cambio el valor que esta en memoria dinamica
@@ -457,7 +453,7 @@ void* ejecutar_proceso(){
 
 		pthread_mutex_lock(&pcbs);
 
-		nodo_pcb =list_get(lista_de_PCB, *id-1); //PCB=buscar_id_de_proceso (sin desarmar la lista)
+		nodo_pcb = buscar_PCB(lista_de_PCB, *id); //PCB=buscar_id_de_proceso (sin desarmar la lista)
 
 		nodo_pcb->estado = 'E'; // le cambio el valor que esta en memoria dinamica
 
@@ -511,7 +507,7 @@ int menu(void) {
 		opcion = 0;
 
 
-		    printf("################################################################\n");
+		    printf("############################################# T ##################\n");
 			printf("################################################################\n");
 			printf("##     --------> *****                  ***** <------------   ##\n");
 			printf("##   *****             LOS  JAVIMANCOS         ***** -------  ##\n");
@@ -556,7 +552,7 @@ int menu(void) {
 
 			case 5:
 
-				enviarMensaje(socketMaestro, &fin, sizeof(char));
+				//enviarMensaje(socketMaestro, &fin, sizeof(char));
 
 			    return 0;	    break;
 
@@ -574,11 +570,10 @@ void finalizar_PID(){
 	char mensajito = 'C';
 	int ultima; // cantidad de instrucciones
 	int id;
-	int tamanno;
 
 	t_PCB *nodo_pcb;
 
-	printf("Ingrese el ID de proceso que desea finalizar \n");
+	printf("\n   Ingrese el ID_mProc que desea finalizar: \n\n");
 
 	scanf("%d",&id);
 
@@ -587,13 +582,11 @@ void finalizar_PID(){
 
 	pthread_mutex_lock(&pcbs);
 
-	nodo_pcb =list_get(lista_de_PCB, id-1); //PCB=buscar_id_de_proceso (sin desarmar la lista)
+	nodo_pcb = buscar_PCB(lista_de_PCB, id); //PCB=buscar_id_de_proceso (sin desarmar la lista)
 
-	tamanno =sizeof(nodo_pcb->path);
 
-	enviarMensaje(socketMaestro, &tamanno, sizeof(int));
+	enviarPath(socketMaestro ,nodo_pcb->path); // envio el path al CPU
 
-	enviarMensaje(socketMaestro,&nodo_pcb->path,sizeof(nodo_pcb->path));
 
 	pthread_mutex_unlock(&pcbs);
 
@@ -630,10 +623,73 @@ void ps(){
 
 	pthread_mutex_unlock(&pcbs);
 
+	printf("\n   Ingrese un caracter y presione enter para volver al menu \n\n");
+
 	scanf("%s",timer);
 }
 
 
+
+// porcenjes de usos de CPUs
+void cpu(){
+
+	int i=0;
+	int tamano;
+	int porcentaje;
+	char timer[10];
+
+	pthread_mutex_lock(&cpuss);
+
+	tamano = list_size(CPUs);
+
+	pthread_mutex_unlock(&cpuss);
+
+	for(i = 0; i < tamano; i++){
+
+		recibirMensajeCompleto(socketMaestro, &porcentaje, sizeof(int));// recibo los porcentajes
+
+		printf("ID_CPU: %d --> %d (por ciento) \n", i, porcentaje);
+
+	}
+
+
+
+	printf("\n   Ingrese un caracter y presione enter para volver al menu \n\n");
+
+
+	scanf("%s",timer);
+
+
+}
+
+
+
+
+
+void liberar_PCBs(){
+
+	int i=0;
+	t_PCB *PCB;
+	int tamano;
+
+
+	pthread_mutex_lock(&pcbs);
+
+	tamano = list_size(lista_de_PCB);
+
+
+	for(i = 0; i < tamano; i++) {
+
+		PCB =list_get(lista_de_PCB, i);
+
+		free(PCB);
+
+	}
+
+	pthread_mutex_unlock(&pcbs);
+
+
+}
 
 int buscar_por_puerto(t_CPU *nodo){
 
@@ -645,30 +701,6 @@ int buscar_por_puerto(t_CPU *nodo){
 	return 0;
 }
 
-
-int id_en_lista(int *idFinalizado){
-
-	if(*idFinalizado == idVerificar ){
-
-		return 1;
-
-	}else{
-
-		return 0;
-	}
-}
-
-int estas_finalizado(int id){
-
-	int booleno;
-
-	idVerificar = id;
-
-	booleno= list_any_satisfy(id_finalizados,(void*)(id_en_lista));
-
-	return booleno;
-
-}
 
 
 
@@ -708,6 +740,8 @@ int liberar_memoria(){
 
 
 	liberarSocket(socketEscucha);
+
+
 
 
 	//list_destroy_and_destroy_elements(CPUs,(void*)liberar_pcb);s
@@ -797,5 +831,15 @@ void log_colas(int id_proceso,char path[30],char razon[40],int numero){
 }
 
 
+void log_rafagas(int sockCpu,t_PCB* PCB){
 
+	char* rafaga;
+
+	recibirBloque(sockCpu,rafaga);
+
+	log_info(rafagas, "          ID_mProc: %d --> Rafaga de CPU completada: \n %s \n\n", PCB->id, rafaga);
+
+	free(rafaga);
+
+}
 

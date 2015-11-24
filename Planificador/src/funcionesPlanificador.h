@@ -43,12 +43,16 @@ typedef struct{
 } t_bloqueados;
 
 
+// finciones basicas -------------------------------------
+
 void inicializar_semaforos();
 int liberar_memoria();
 void crear_lista();
 void liberar_puertos();
 
-void liberar_pcb(t_PCB *PCB);
+void liberar_pcb(t_list*lista_de_PCB, t_PCB *PCB);
+
+void liberar_PCBs();
 //------Funciones HILOS prototipadas----------------
 
 
@@ -78,6 +82,8 @@ int correr_path(void);
 void finalizar_PID();
 
 void ps();
+
+void cpu();
 //-------------------------------------------------------------------
 
 /************Archivo de Config de PLANIFICADOR************/
@@ -110,16 +116,23 @@ t_bloqueados *bloquedito_create(int id, int tiempo);
 //------------------------------------------------------------------------
 
 //-------------------------------------------------------
+
+t_PCB *buscar_PCB(t_list*lista_de_PCB, int pidProcesoBuscado);
+
 int diponibilidad(t_CPU * nodo);
 
 int buscar_por_puerto(t_CPU *nodo );
 
-int estas_finalizado(int id); // pregunta si el id fue finalizado forsozamente
+// saber si un mProc fue finalizado forsozamente
+int estas_finalizado(t_list *id_finalizados, int pidProcesoBuscado); //
+
 //-------------------------------------------------------
 
 void enviarPCB2(int socketCliente,t_PCB pcb);
 
 t_PCB recibirPCB2(int socketEnviador);
+
+void enviarPath(int socketMaestro,char path[30]);
 
 //---Logueo----------------------------------
 
@@ -128,6 +141,8 @@ void logueo();
 void log_actividad_cpus(int id_cpu, char estado[15],int id_proceso,char path[30], char estado_pcb[15]);
 
 void log_colas(int id_proceso,char path[30],char razon[40],int numero);
+
+void log_rafagas(int sockCpu,t_PCB* PCB);
 
 
 #endif /* FUNCIONESPLANIFICADOR_H_ */

@@ -86,6 +86,8 @@ tipoConfig* cargarArchivoDeConfiguracion(char* rutaDelArchivoDeConfiguracion){
 	    return new;
  }
 
+ //------------ Funciones de Busqueda
+
  int diponibilidad(t_CPU * nodo){ // condicion para encontrar un puerto disponible
 
  	if(nodo->disponibilidad == 1){
@@ -97,11 +99,57 @@ tipoConfig* cargarArchivoDeConfiguracion(char* rutaDelArchivoDeConfiguracion){
  }
 
 
-void liberar_pcb(t_PCB *PCB){
+ t_PCB *buscar_PCB(t_list*lista_de_PCB, int pidProcesoBuscado){
 
-	free(PCB);
+ 	t_PCB *aux;
 
-}
+ 	int buscar_PCB2(t_PCB *nodo){
+
+ 		return pidProcesoBuscado == nodo->id;
+ 	}
+
+ 	aux= list_find(lista_de_PCB,(void*)(buscar_PCB2));
+
+ 	return aux;
+ }
+
+ // saber si un mProc fue finalizado forsozamente
+ int estas_finalizado(t_list *id_finalizados, int pidProcesoBuscado){
+
+ 	int booleno;
+
+ 	int id_en_lista(int *idFinalizado){
+
+ 		return pidProcesoBuscado == *idFinalizado;
+ 	}
+
+ 	booleno= list_any_satisfy(id_finalizados,(void*)(id_en_lista));
+
+ 	return booleno;
+
+ }
+
+
+ void liberar_pcb(t_list*lista_de_PCB, t_PCB *PCB){
+
+
+  	t_PCB *aux;
+
+  	int buscar_PCB2(t_PCB *nodo){
+
+  		return PCB->id == nodo->id;
+  	}
+
+
+  	aux = list_remove_by_condition(lista_de_PCB, (void*)(buscar_PCB2));
+
+  	free(aux);
+
+ }
+
+ //--------------------------------------------------------------
+
+
 
 
 t_PCB recibirPCB2(int socketEnviador){
@@ -161,5 +209,15 @@ void enviarPCB2(int socketReceptor, t_PCB PCB_leo)
 		enviarMensaje(socketReceptor, PCB.ruta, tamanioRuta);
 }
 
+void enviarPath(int socketMaestro,char path[30]){
 
+	int tamanno;
+
+	tamanno =sizeof(path);
+
+	enviarMensaje(socketMaestro, &tamanno, sizeof(int));
+
+	enviarMensaje(socketMaestro,&path,sizeof(tamanno));
+
+}
 
