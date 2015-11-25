@@ -547,13 +547,13 @@ int menu(void) {
 
 			   ps();	        break;
 
-			//case 4:
+			case 4:
 
-			   //cpu();	        break;
+			   cpu();	        break;
 
 			case 5:
 
-				//enviarMensaje(socketMaestro, &fin, sizeof(char));
+				enviarMensaje(socketMaestro, &fin, sizeof(char));
 
 			    return 0;	    break;
 
@@ -639,6 +639,11 @@ void cpu(){
 	int porcentaje;
 	char timer[10];
 	int contador = 1;
+	char mensajito = '%';
+
+
+	enviarMensaje(socketMaestro,&mensajito,sizeof(char)); // le mando el %, que es un int
+
 
 	pthread_mutex_lock(&cpuss);
 
