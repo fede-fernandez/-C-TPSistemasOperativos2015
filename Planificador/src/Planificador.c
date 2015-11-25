@@ -835,17 +835,7 @@ void log_colas(int id_proceso,char path[30],char razon[40],int numero){
 }
 
 
-void log_rafagas(int sockCpu){
 
-	char* rafaga;
-
-	recibirBloque(sockCpu,rafaga);
-
-	log_info(rafagas, "            \n %s \n", rafaga);
-
-	free(rafaga);
-
-}
 
 void log_rafagas(int sockCpu){
 	size_t tamanioDeResultadoDeRafaga;
