@@ -639,6 +639,11 @@ void cpu(){
 	int porcentaje;
 	char timer[10];
 	int contador = 1;
+	char mensajito = '%';
+
+
+	enviarMensaje(socketMaestro,&mensajito,sizeof(char)); // le mando el quantum, que es un int
+
 
 	pthread_mutex_lock(&cpuss);
 
