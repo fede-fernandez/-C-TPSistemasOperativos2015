@@ -12,7 +12,7 @@
 #include <commons/collections/list.h>
 
 
-tipoRespuesta* ejecutarInstruccion(tipoInstruccion* instruccion,t_list* listaDeHuecos,tipoConfigSWAP* configuracion, t_log* logger){
+tipoRespuesta* ejecutarInstruccion(tipoInstruccion* instruccion,t_list* listaDeHuecos,tipoConfigSWAP* configuracion, t_log* logger, bool* finalizarProceso){
 
 	tipoRespuesta* respuesta;
 
@@ -31,6 +31,11 @@ tipoRespuesta* ejecutarInstruccion(tipoInstruccion* instruccion,t_list* listaDeH
 
 		case FINALIZAR:
 			respuesta = liberarEspacio(listaDeHuecos,instruccion->pid, configuracion->tamanioDePagina, logger,configuracion->nombreDeSWAP);
+			break;
+
+		case FINALIZAR_PROCESO:
+			respuesta = crearTipoRespuesta(PERFECTO,"");
+			*finalizarProceso = true;
 			break;
 	}
 
