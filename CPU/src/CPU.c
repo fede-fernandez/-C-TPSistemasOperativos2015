@@ -241,6 +241,7 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 			{
 				printf("INSTRUCCION ENVIADA A MEMORIA | pID: %i | instruccion: %c | numeroDePagina: %i | texto: %s\n", instruccionAMemoria.pid, instruccionAMemoria.instruccion, instruccionAMemoria.nroPagina, instruccionAMemoria.texto);
 			}
+			abort();
 		}
 	}
 }
