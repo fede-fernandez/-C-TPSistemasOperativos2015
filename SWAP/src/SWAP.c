@@ -70,21 +70,16 @@ int main(void) {
 		printf("Instruccion recibida\n");
 
 
-		if (instruccionAEjecutar->instruccion == 'h') {
-			finalizarProceso = true;
-			destruirTipoInstruccion(instruccionAEjecutar);
-		}
-		else {
-			respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion,logger);
+		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion,logger, &finalizarProceso);
 
-			enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
-			printf("Respuesta enviada\n\n");
+		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
+		printf("Respuesta enviada\n\n");
 
-			imprimirListaDeHuecos(listaDeHuecosUtilizados);
+		imprimirListaDeHuecos(listaDeHuecosUtilizados);
 
-			destruirTipoRespuesta(respuestaParaMemoria);
-			destruirTipoInstruccion(instruccionAEjecutar);
-		}
+		destruirTipoRespuesta(respuestaParaMemoria);
+		destruirTipoInstruccion(instruccionAEjecutar);
+
 	//	i++;
 	}
 
