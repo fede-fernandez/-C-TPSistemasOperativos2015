@@ -87,8 +87,13 @@ tipoRespuesta* quitarProceso(tipoInstruccion* instruccion){
 	if(!procesoExiste(instruccion->pid))
 		return crearTipoRespuesta(MANQUEADO,"Proceso no existente");
 
-	if(instruccionASwapRealizada(instruccion,&respuesta))//Aca swap me devolvio todo ok aunque el proceso no existia!!
+	if(instruccionASwapRealizada(instruccion,&respuesta)){//Aca swap me devolvio todo ok aunque el proceso no existia!!
+
+		log_trace(datosMemoria->logDeMemoria,"FINALIZACION DEL PROCESO %d CON PORCENTAJE DE PAGE FAULTS DE %f",instruccion->pid,porcentajeDePageFaults(instruccion->pid));
+
 		destruirProceso(instruccion->pid);
+
+	}
 
 	return respuesta;
 }
@@ -544,6 +549,8 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 
 	if(RAMLlena()||excedeMaximoDeMarcos(pid)){
 
+		printf("config max: %d\n",datosMemoria->configuracion->maximoDeMarcosPorProceso);
+
 		int nroPaginaAReemplazar;
 
 		bool estaModificada;
@@ -596,6 +603,16 @@ char* crearPaginaManqueada(){
 	return string_repeat(byteManco,datosMemoria->configuracion->tamanioDeMarco-1);
 }
 
+double porcentajeDePageFaults(int pid){
+
+	tipoTablaPaginas* tabla = traerTablaDePaginas(pid);
+
+	if(tabla->cantidadDeAccesos==0)
+		return 0;
+
+	return (tabla->cantidadDePageFaults/tabla->cantidadDeAccesos)*100;
+
+}
 
 void dormirPorAccesoARAM(){
 	sleep(datosMemoria->configuracion->retardoDeMemoria);

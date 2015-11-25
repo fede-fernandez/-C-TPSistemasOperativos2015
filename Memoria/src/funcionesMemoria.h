@@ -111,6 +111,8 @@ void destruirProceso(int pid);//Borra el proceso del sistema
 
 /*####################################OTROS###################################################*/
 
+double porcentajeDePageFaults(int pid);
+
 void dormirPorAccesoARAM();
 
 void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam);
