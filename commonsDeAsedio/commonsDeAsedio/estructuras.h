@@ -36,20 +36,17 @@ typedef struct{
 
 typedef struct{
 	char instruccion;
-
 	int pid;
-
 	int nroPagina;
-
 	char* texto;
-}tipoInstruccion;
+}__attribute__((packed))tipoInstruccion;
 
 typedef struct{
-
 	char respuesta;
-
 	char* informacion;
-}tipoRespuesta;
+}__attribute__((packed))tipoRespuesta;
+
+
 
 
 tipoPCB* recibirPCB(int socketEnviador);
