@@ -74,17 +74,17 @@ int main(void) {
 			finalizarProceso = true;
 			destruirTipoInstruccion(instruccionAEjecutar);
 		}
+		else {
+			respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion,logger);
 
+			enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
+			printf("Respuesta enviada\n\n");
 
-		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion,logger);
+			imprimirListaDeHuecos(listaDeHuecosUtilizados);
 
-		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
-		printf("Respuesta enviada\n\n");
-
-		imprimirListaDeHuecos(listaDeHuecosUtilizados);
-
-		destruirTipoRespuesta(respuestaParaMemoria);
-		destruirTipoInstruccion(instruccionAEjecutar);
+			destruirTipoRespuesta(respuestaParaMemoria);
+			destruirTipoInstruccion(instruccionAEjecutar);
+		}
 	//	i++;
 	}
 

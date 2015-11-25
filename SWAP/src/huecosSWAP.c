@@ -190,7 +190,7 @@ tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNue
 	return respuestaASolicitudDeReserva;
 }
 
-tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso, int tamanioDePagina, t_log* logger){
+tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso, int tamanioDePagina, t_log* logger, char* rutaDeParticion){
 
 	tipoRespuesta* respuestaASolicitudDeLiberacion;
 	char* textoALogear = string_new();
@@ -205,6 +205,8 @@ tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso, in
 
 			base = aux->baseDeMProc;
 			cantidadDePaginas = aux->cantidadDePaginasQueOcupa;
+
+			borrarMProcDeParticion(rutaDeParticion,base,cantidadDePaginas,tamanioDePagina);
 
 			list_remove_and_destroy_element(listaDeHuecosUtilizados,i,(void*)destruirHuecoUtilizado);
 		}
@@ -245,6 +247,9 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 	string_append_with_format(&textoALogear,"Lectura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length(contenidoDePagina),contenidoDePagina);
 	logearSeguimiento(textoALogear,logger);
 
+	free(textoALogear);
+	free(contenidoDePagina);
+
 	return respuestaASolicitudDeLectura;
 }
 
@@ -268,6 +273,8 @@ tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,cha
 
 	string_append_with_format(&textoALogear,"Escritura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length(contenidoAEscribir),contenidoAEscribir);
 	logearSeguimiento(textoALogear,logger);
+
+	free(textoALogear);
 
 	return respuestaASolicitudDeEscritura;
 }
