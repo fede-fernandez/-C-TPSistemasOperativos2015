@@ -2,12 +2,13 @@
 #ifndef FUNCIONESCPU_H_
 #define FUNCIONESCPU_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <commons/string.h>
 #include <commons/config.h>
 #include <commons/log.h>
 #include <sys/mman.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <commonsDeAsedio/error.h>
 #include <commonsDeAsedio/estructuras.h>
 #include <commonsDeAsedio/cliente-servidor.h>
@@ -29,6 +30,12 @@
 #define SALIDA_BLOQUEANTE_POR_ERROR 1
 #define SALIDA_BLOQUEANTE 2
 /**********Fin de Definiciones de CPU**********/
+
+/**********Definiciones de Instrucciones de Planificador**********/
+#define CANTIDAD_DE_INSTRUCCIONES_DE_UN_PROCESO 'C'
+#define PORCENTAJE_DE_USO_DEL_CPU '%'
+#define FINALIZAR_CPU 'S'
+/**********Fin de Definiciones de Instrucciones de Planificador**********/
 
 
 /**********Archivo de Config de CPU**********/
@@ -55,6 +62,18 @@ tipoConfigCPU* crearConfigCPU();
 void destruirConfigCPU(tipoConfigCPU* estructuraDeConfiguracion);
 /**********Fin de Archivo de Config de CPU**********/
 
+
+/**********Semaforos del CPU**********/
+sem_t semaforoHiloCPU;
+sem_t semaforoConexionMasterPlanificador;
+sem_t semaforoLogs;
+sem_t semaforoInstruccionesCPU;
+sem_t semaforoCPUTrabajando;
+/**********Fin de Semaforos Inicial del CPU**********/
+
+/**********Lista de Instrucciones finalizadas de cada CPU**********/
+t_list* cantidadDeInstruccionesEjecutadasPorCPUs;
+/**********Fin de Lista de Instrucciones finalizadas de cada CPU**********/
 
 
 /**********Estructuras del CPU**********/
@@ -93,6 +112,11 @@ typedef struct respuestaDeInstruccion{
 /*Hilo CPU, se conecta con Planificador y Memoria, espera PCBs y los ejecuta*/
 void* unCPU(t_hiloCPU*);
 
+/*Hilo de conexion master con Planificador que atiende solicitudes de porcentaje de uso, cantidad de instrucciones y finalizar*/
+void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU);
+
+/*Hilo que reinicia los contadores de instrucciones ejecutadas por los hilos CPU cada un minuto*/
+void* resetearInstruccionesDeCPUs(tipoConfigCPU* configuracionCPU);
 
 FILE* abrirProgramaParaLectura(char* rutaDelPrograma);
 int longitudDeStringArray(char** stringArray);
@@ -116,6 +140,15 @@ bool esInstruccionEscribir(char* instruccion);
 bool esInstruccionEntradaSalida(char* instruccion);
 bool esInstruccionFinalizar(char* instruccion);
 char* sacarComillas(char* frase);
+
+/*Funciones de Instrucciones de Planificador*/
+int cantidadDeInstrucciones(char* rutaDelPrograma);
+void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configuracionCPU);
+
+/*Funciones de Porcentaje de Uso*/
+void asignarCantidadDeCPUsALista(tipoConfigCPU configuracionCPU);
+void aumentarCantidadDeInstruccionesEjecutadasEnUno(int idCPU);
+void reiniciarCantidadDeInstrucciones(tipoConfigCPU* configuracionCPU);
 /**********Fin de Funciones del CPU**********/
 
 #endif /* FUNCIONESCPU_H_ */
