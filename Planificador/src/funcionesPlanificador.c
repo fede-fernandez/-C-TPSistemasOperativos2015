@@ -221,6 +221,6 @@ void enviarPath(int socketMaestro,char path[30]){
 	enviarMensaje(socketMaestro, &tamanioRuta, sizeof(size_t));
 
 	enviarMensaje(socketMaestro,ruta,tamanioRuta);
-
+//
 }
 
