@@ -596,8 +596,10 @@ void asignarCantidadDeCPUsAlista(tipoConfigCPU* configuracionCPU)
 //Aumenta en 1 el contador de instrucciones ejecutadas por idCPU
 void aumentarCantidadDeInstruccionesEjecutadasEnUno(int idCPU)
 {
+	sem_wait(&semaforoContadorDeInstrucciones);
 	int* instruccionesEjecutadas = list_get(cantidadDeInstruccionesEjecutadasPorCPUs, idCPU - 1);
 	*instruccionesEjecutadas = *instruccionesEjecutadas + 1;
+	sem_post(&semaforoContadorDeInstrucciones);
 }
 
 
@@ -608,8 +610,10 @@ void reiniciarCantidadDeInstrucciones(tipoConfigCPU* configuracionCPU)
 	int* instruccionesEjecutadas;
 	for(i = 0; i < configuracionCPU->cantidadDeHilos; i++)
 	{
+		sem_wait(&semaforoContadorDeInstrucciones);
 		instruccionesEjecutadas = list_get(cantidadDeInstruccionesEjecutadasPorCPUs, i);
 		*instruccionesEjecutadas = 0;
+		sem_post(&semaforoContadorDeInstrucciones);
 	}
 }
 

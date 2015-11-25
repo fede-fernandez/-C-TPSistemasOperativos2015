@@ -69,6 +69,7 @@ sem_t semaforoConexionMasterPlanificador;
 sem_t semaforoLogs;
 sem_t semaforoInstruccionesCPU;
 sem_t semaforoCPUTrabajando;
+sem_t semaforoContadorDeInstrucciones;
 /**********Fin de Semaforos Inicial del CPU**********/
 
 /**********Lista de Instrucciones finalizadas de cada CPU**********/

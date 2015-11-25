@@ -19,6 +19,9 @@ int main(void)
 	//Inicializo semaforo que avisa cuando CPU comienza a trabajar
 	sem_init(&semaforoCPUTrabajando, 0, 0);
 
+	//Inicializo semaforo para variable compartida
+	sem_init(&semaforoContadorDeInstrucciones, 0, 1);
+
 
 	//Declaro estructura que requiere un hilo de CPU (configuracion y logs)
 	t_hiloCPU hilosCPU;
@@ -164,6 +167,7 @@ void* unCPU(t_hiloCPU* hiloCPU)
 	return 0;
 }
 
+//Hilo de conexion Master con Planificador
 void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 {
 	int socketMasterPlanificador = crearSocket();
@@ -237,6 +241,8 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 	}
 }
 
+
+//Hilo que reinicia el contador de instrucciones a 0 cada un minuto
 void* resetearInstruccionesDeCPUs(tipoConfigCPU* configuracionCPU)
 {
 	sem_wait(&semaforoCPUTrabajando);
