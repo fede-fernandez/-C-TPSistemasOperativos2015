@@ -547,7 +547,7 @@ int menu(void) {
 
 			   ps();	        break;
 
-			//case 4:
+			case 4:
 
 			   cpu();	        break;
 
@@ -642,7 +642,7 @@ void cpu(){
 	char mensajito = '%';
 
 
-	enviarMensaje(socketMaestro,&mensajito,sizeof(char)); // le mando el quantum, que es un int
+	enviarMensaje(socketMaestro,&mensajito,sizeof(char)); // le mando el %, que es un int
 
 
 	pthread_mutex_lock(&cpuss);
