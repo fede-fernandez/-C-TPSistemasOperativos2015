@@ -272,7 +272,7 @@ int recibir_rafagas(){
 
 	PCB_recibido = recibirPCB2(nodo_cpu->puerto); // recibe el PCB
 
-	log_rafagas(nodo_cpu->puerto); // logueo el resultado de las rafagas
+	//log_rafagas(nodo_cpu->puerto); // logueo el resultado de las rafagas
 
 
 	pthread_mutex_lock(&pcbs);
