@@ -37,12 +37,12 @@ int main(void)
 
 	//Creo hilo de conexion master Planificador y continuo con el programa
 	pthread_t hiloConexionMasterPlanificador;
-	pthread_create(&hiloConexionMasterPlanificador, NULL, (void*)conexionMasterPlanificador, &hilosCPU.configuracionCPU);
+	pthread_create(&hiloConexionMasterPlanificador, NULL, (void*)conexionMasterPlanificador, hilosCPU.configuracionCPU);
 	sem_wait(&semaforoConexionMasterPlanificador);
 
 	//Creo hilo que reinicia el contador de instrucciones cada 1 minuto
 	pthread_t hiloResetearInstruccionesDeCPUs;
-	pthread_create(&hiloResetearInstruccionesDeCPUs, NULL, (void*)resetearInstruccionesDeCPUs, &hilosCPU.configuracionCPU);
+	pthread_create(&hiloResetearInstruccionesDeCPUs, NULL, (void*)resetearInstruccionesDeCPUs, hilosCPU.configuracionCPU);
 
 	//Crea tantos "CPUs" (hilos), especificado en el archivo de configuracion
 	pthread_t hiloCPU[hilosCPU.configuracionCPU->cantidadDeHilos];
