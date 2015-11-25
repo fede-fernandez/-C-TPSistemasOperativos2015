@@ -632,7 +632,7 @@ void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configur
 	for(i = 0; i < configuracionCPU->cantidadDeHilos; i++)
 	{
 		instruccionesEjecutadas = list_get(cantidadDeInstruccionesEjecutadasPorCPUs, i);
-		porcentajeDeUso = *instruccionesEjecutadas * 100 / (configuracionCPU->retardo / 1000000); //retardo en segundos
+		porcentajeDeUso = *instruccionesEjecutadas * 100 / (60000000 / configuracionCPU->retardo);
 		enviarMensaje(socketMasterPlanificador, &porcentajeDeUso, sizeof(porcentajeDeUso));
 		if(DEBUG == 1)
 		{
