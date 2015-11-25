@@ -26,7 +26,7 @@ int main(void)
 	//Declaro estructura que requiere un hilo de CPU (configuracion y logs)
 	t_hiloCPU hilosCPU;
 
-	//Inicializo el contador de instrucciones ejecutados por cada CPU
+	//Creo el contador de instrucciones ejecutados por cada CPU
 	cantidadDeInstruccionesEjecutadasPorCPUs = list_create();
 
 	//Carga de archivo de configuracion
@@ -37,6 +37,9 @@ int main(void)
 	{
 		hilosCPU.logCPU = log_create(RUTA_DE_ARCHIVO_DE_LOGS_CPU, "CPU", 1, LOG_LEVEL_TRACE);
 	}
+	
+	//Inicializo contador de instrucciones ejecutados por cada CPU
+	asignarCantidadDeCPUsALista(hilosCPU.configuracionCPU);
 
 	//Creo hilo de conexion master Planificador y continuo con el programa
 	pthread_t hiloConexionMasterPlanificador;
