@@ -553,7 +553,7 @@ int menu(void) {
 
 			case 5:
 
-				//enviarMensaje(socketMaestro, &fin, sizeof(char));
+				enviarMensaje(socketMaestro, &fin, sizeof(char));
 
 			    return 0;	    break;
 
