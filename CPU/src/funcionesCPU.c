@@ -163,9 +163,9 @@ void ejecutarPrograma(tipoPCB *PCB, int quantum, t_datosCPU* datosCPU)
 	}
 
 	//Salida a Planificador de resultados de rafaga
-	size_t tamanioDeRespuestasActumuladas = string_length(respuestasAcumuladas)+sizeof(char);
-	enviarMensaje(datosCPU->socketParaPlanificador, &tamanioDeRespuestasActumuladas, sizeof(size_t));
-	enviarMensaje(datosCPU->socketParaPlanificador, respuestasAcumuladas, tamanioDeRespuestasActumuladas);
+	size_t tamanioDeRespuestasAcumuladas = string_length(respuestasAcumuladas)+sizeof(char);
+	enviarMensaje(datosCPU->socketParaPlanificador, &tamanioDeRespuestasAcumuladas, sizeof(size_t));
+	enviarMensaje(datosCPU->socketParaPlanificador, respuestasAcumuladas, tamanioDeRespuestasAcumuladas);
 
 	if(DEBUG == 1)
 	{
