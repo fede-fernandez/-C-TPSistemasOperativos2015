@@ -142,7 +142,7 @@ void log_actividad_cpus(int id_cpu, char estado[15],int id_proceso,char path[30]
 
 void log_colas(int id_proceso,char path[30],char razon[40],int numero);
 
-void log_rafagas(int sockCpu,t_PCB* PCB);
+void log_rafagas(int sockCpu);
 
 
 #endif /* FUNCIONESPLANIFICADOR_H_ */

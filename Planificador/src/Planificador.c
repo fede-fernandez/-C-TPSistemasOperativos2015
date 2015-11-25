@@ -272,6 +272,7 @@ int recibir_rafagas(){
 
 	PCB_recibido = recibirPCB2(nodo_cpu->puerto); // recibe el PCB
 
+	log_rafagas(nodo_cpu->puerto); // logueo el resultado de las rafagas
 
 
 	pthread_mutex_lock(&pcbs);
@@ -637,6 +638,7 @@ void cpu(){
 	int tamano;
 	int porcentaje;
 	char timer[10];
+	int contador = 1;
 
 	pthread_mutex_lock(&cpuss);
 
@@ -648,7 +650,9 @@ void cpu(){
 
 		recibirMensajeCompleto(socketMaestro, &porcentaje, sizeof(int));// recibo los porcentajes
 
-		printf("ID_CPU: %d --> %d (por ciento) \n", i, porcentaje);
+		printf("ID_CPU: %d --> %d (por ciento) \n", contador, porcentaje);
+
+		contador++;
 
 	}
 
@@ -831,13 +835,13 @@ void log_colas(int id_proceso,char path[30],char razon[40],int numero){
 }
 
 
-void log_rafagas(int sockCpu,t_PCB* PCB){
+void log_rafagas(int sockCpu){
 
 	char* rafaga;
 
 	recibirBloque(sockCpu,rafaga);
 
-	log_info(rafagas, "          ID_mProc: %d --> Rafaga de CPU completada: \n %s \n\n", PCB->id, rafaga);
+	log_info(rafagas, "            \n %s \n", rafaga);
 
 	free(rafaga);
 
