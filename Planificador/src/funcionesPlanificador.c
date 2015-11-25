@@ -209,6 +209,7 @@ void enviarPCB2(int socketReceptor, t_PCB PCB_leo)
 		enviarMensaje(socketReceptor, PCB.ruta, tamanioRuta);
 }
 
+
 void enviarPath(int socketMaestro,char path[30]){
 
 	char* ruta;
@@ -217,9 +218,9 @@ void enviarPath(int socketMaestro,char path[30]){
 
 	size_t tamanioRuta = strlen(ruta) + sizeof(char);
 
-	enviarMensaje(socketMaestro, &tamanioRuta, sizeof(int));
+	enviarMensaje(socketMaestro, &tamanioRuta, sizeof(size_t));
 
-	enviarMensaje(socketMaestro,&path,sizeof(tamanioRuta));
+	enviarMensaje(socketMaestro,ruta,tamanioRuta);
 
 }
 
