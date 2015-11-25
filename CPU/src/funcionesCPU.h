@@ -147,7 +147,7 @@ int cantidadDeInstrucciones(char* rutaDelPrograma);
 void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configuracionCPU);
 
 /*Funciones de Porcentaje de Uso*/
-void asignarCantidadDeCPUsALista(tipoConfigCPU configuracionCPU);
+void asignarCantidadDeCPUsALista(tipoConfigCPU* configuracionCPU);
 void aumentarCantidadDeInstruccionesEjecutadasEnUno(int idCPU);
 void reiniciarCantidadDeInstrucciones(tipoConfigCPU* configuracionCPU);
 /**********Fin de Funciones del CPU**********/

@@ -167,6 +167,11 @@ void ejecutarPrograma(tipoPCB *PCB, int quantum, t_datosCPU* datosCPU)
 	enviarMensaje(datosCPU->socketParaPlanificador, &tamanioDeRespuestasActumuladas, sizeof(tamanioDeRespuestasActumuladas));
 	enviarMensaje(datosCPU->socketParaPlanificador, &respuestasAcumuladas, sizeof(respuestasAcumuladas));
 
+	if(DEBUG == 1)
+	{
+		printf("idCPU: %i | RESPUESTAS DE RAFAGA ENVIADAS A PLANIFICADOR: %s\n", datosCPU->idCPU, respuestasAcumuladas);
+	}
+
 	fclose(programa);
 }
 
@@ -581,7 +586,7 @@ int cantidadDeInstrucciones(char* rutaDelPrograma)
 
 
 //Inicializa la lista de instrucciones ejecutadas en 0, una por CPU
-void asignarCantidadDeCPUsAlista(tipoConfigCPU* configuracionCPU)
+void asignarCantidadDeCPUsALista(tipoConfigCPU* configuracionCPU)
 {
 	int i;
 	for(i = 0; i < configuracionCPU->cantidadDeHilos; i++)
