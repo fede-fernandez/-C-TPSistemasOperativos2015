@@ -847,3 +847,17 @@ void log_rafagas(int sockCpu){
 
 }
 
+void log_rafagas(int sockCpu){
+	size_t tamanioDeResultadoDeRafaga;
+	char* resultadoDeRafaga;
+	recibirMensajeCompleto(sockCpu, &tamanioDeResultadoDeRafaga, sizeof(size_t));
+	resultadoDeRafaga = malloc(tamanioDeResultadoDeRafaga);
+	recibirMensajeCompleto(sockCpu, resultadoDeRafaga, tamanioDeResultadoDeRafaga);
+
+
+
+	log_info(rafagas, "\n %s \n", resultadoDeRafaga);
+
+	free(resultadoDeRafaga);
+
+}
