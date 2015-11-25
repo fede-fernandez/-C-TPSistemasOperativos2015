@@ -72,7 +72,6 @@ void* unCPU(t_hiloCPU* hiloCPU)
 
 	datosCPU.idCPU = idCPUAAsignar;
 	idCPUAAsignar++;
-	sem_post(&semaforoHiloCPU);
 
 
 	datosCPU.configuracionCPU = hiloCPU->configuracionCPU;
@@ -124,6 +123,8 @@ void* unCPU(t_hiloCPU* hiloCPU)
 		log_trace(datosCPU.logCPU, "CPU ID: %i CREADA Y CONECTADA A MEMORIA", datosCPU.idCPU);
 		sem_post(&semaforoLogs);
 	}
+
+	sem_post(&semaforoHiloCPU);
 
 	//Espero a recibir tarea del planificador
 	while(true)
