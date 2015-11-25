@@ -186,8 +186,8 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 	char instruccionDePlanificador;
 
 	int cantidadDeInstruccionesDeUnProceso = 0;
-	int tamanioDeRutaDePrograma;
-	char* rutaDelPrograma = string_new();
+	size_t tamanioDeRutaDePrograma;
+	char* rutaDelPrograma;
 
 	int socketParaMemoria = crearSocket();
 	conectarAServidor(socketParaMemoria, configuracionCPU->ipMemoria, configuracionCPU->puertoMemoria);
@@ -198,7 +198,8 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 		recibirMensajeCompleto(socketMasterPlanificador, &instruccionDePlanificador, sizeof(char));
 		if(instruccionDePlanificador == CANTIDAD_DE_INSTRUCCIONES_DE_UN_PROCESO)
 		{
-			recibirMensajeCompleto(socketMasterPlanificador, &tamanioDeRutaDePrograma, sizeof(int));
+			recibirMensajeCompleto(socketMasterPlanificador, &tamanioDeRutaDePrograma, sizeof(size_t));
+			rutaDelPrograma = malloc(tamanioDeRutaDePrograma);
 			recibirMensajeCompleto(socketMasterPlanificador, rutaDelPrograma, tamanioDeRutaDePrograma);
 
 			if(DEBUG == 1)
@@ -208,7 +209,7 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 
 			cantidadDeInstruccionesDeUnProceso = cantidadDeInstrucciones(rutaDelPrograma);
 			enviarMensaje(socketMasterPlanificador, &cantidadDeInstruccionesDeUnProceso, sizeof(cantidadDeInstruccionesDeUnProceso));
-
+			free(rutaDelPrograma);
 			if(DEBUG == 1)
 			{
 				printf("CANTIDAD DE INSTRUCCIONES DEL PROCESO: %s (CANTIDAD: %i) ENVIADO A PLANIFICADOR\n", rutaDelPrograma, cantidadDeInstruccionesDeUnProceso);
