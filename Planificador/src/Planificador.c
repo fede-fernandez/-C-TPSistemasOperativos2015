@@ -549,7 +549,7 @@ int menu(void) {
 
 			//case 4:
 
-			   //cpu();	        break;
+			   cpu();	        break;
 
 			case 5:
 
