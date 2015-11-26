@@ -23,6 +23,8 @@ tipoEstructuraMemoria* datosMemoria;
 
 void setearEstructuraMemoria(tipoEstructuraMemoria*);
 
+int opcionSignalElegida;
+
 /*###############################FUNCIONES PRINCIPALES##########################################*/
 
 void tratarPeticion(int cpuAtendida);

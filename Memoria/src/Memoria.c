@@ -5,10 +5,10 @@
 #include <commons/collections/list.h>
 #include <commonsDeAsedio/select.h>
 #include <commonsDeAsedio/thread.h>
-#include "funcionesSeñales.h"
-//-----------------------------------------------------------------
 #include <sys/types.h>
 #include <unistd.h>
+
+#include "impresionesEnPantalla.h"
 //---------------------------------------------------------------
 #define maxConexionesEntrantes 10
 

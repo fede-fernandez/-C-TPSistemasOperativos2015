@@ -4,7 +4,7 @@
  *  Created on: 25/10/2015
  *      Author: utnso
  */
-#include "funcionesSeñales.h"
+#include "impresionesEnPantalla.h"
 
 void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 
@@ -156,7 +156,6 @@ void imprimirTablas(t_list* tablas){
 		printf("\n");
 
 		printf("punteroDeAlgoritmo: %d\n\n",tabla->punteroParaAlgoritmo);
-
 
 
 		imprimirPaginas(tabla->frames);

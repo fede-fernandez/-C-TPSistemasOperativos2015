@@ -5,8 +5,8 @@
  *      Author: utnso
  */
 
-#ifndef FUNCIONESSEÑALES_H_
-#define FUNCIONESSEÑALES_H_
+#ifndef IMPRESIONESENPANTALLA_H_
+#define IMPRESIONESENPANTALLA_H_
 
 #include "funcionesMemoria.h"
 
@@ -24,5 +24,15 @@ void mostrarTablaDePaginas(int posicionDeTabla,tipoEstructuraMemoria* datosMemor
 
 void mostrarTasaTLBPeriodicamente();
 
-#endif /* FUNCIONESSEÑALES_H_ */
+void imprimirPaginas(t_list* frames);
+
+void imprimirTablas(t_list* tablas);
+
+void mostrarTasaPageFaults(int posicion);
+
+void mostrarTasasPageFaults(tipoEstructuraMemoria* datosMemoria);
+
+void mostrarRAM(t_list* ram);
+
+#endif /* IMPRESIONESENPANTALLA_H_ */
 
