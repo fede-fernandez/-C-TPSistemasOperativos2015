@@ -4,6 +4,7 @@ int idCPUAAsignar = 1;
 
 int main(void)
 {
+	printf("Proceso CPU Iniciado.\n");
 	//Inicializo semaforo para esperar a que se cree el socket master para planificador antes de que se comiencen a crear hilos de CPU
 	sem_init(&semaforoConexionMasterPlanificador, 0, 0);
 
@@ -239,16 +240,24 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 				printf("INSTRUCCION ENVIADA A MEMORIA | pID: %i | instruccion: %c | numeroDePagina: %i | texto: %s\n", instruccionAMemoria.pid, instruccionAMemoria.instruccion, instruccionAMemoria.nroPagina, instruccionAMemoria.texto);
 			}
 			
-			list_destroy(cantidadDeInstruccionesEjecutadasPorCPUs);
-			sem_destroy(&semaforoConexionMasterPlanificador);
-			sem_destroy(&semaforoHiloCPU);
-			sem_destroy(&semaforoLogs);
-			sem_destroy(&semaforoInstruccionesCPU);
-			sem_destroy(&semaforoCPUTrabajando);
-			sem_destroy(&semaforoContadorDeInstrucciones);
-			liberarSocket(socketMasterPlanificador);
-			liberarSocket(socketParaMemoria);
-			abort();
+			tipoRespuesta* respuestaDeMemoria = recibirRespuesta(socketParaMemoria);
+
+			if(respuestaDeMemoria->respuesta == PERFECTO)
+			{
+				enviarRespuesta(socketMasterPlanificador, respuestaDeMemoria);
+				destruirTipoRespuesta(respuestaDeMemoria);
+				list_destroy(cantidadDeInstruccionesEjecutadasPorCPUs);
+				sem_destroy(&semaforoConexionMasterPlanificador);
+				sem_destroy(&semaforoHiloCPU);
+				sem_destroy(&semaforoLogs);
+				sem_destroy(&semaforoInstruccionesCPU);
+				sem_destroy(&semaforoCPUTrabajando);
+				sem_destroy(&semaforoContadorDeInstrucciones);
+				liberarSocket(socketMasterPlanificador);
+				liberarSocket(socketParaMemoria);
+				printf("Proceso CPU Finalizado.\n");
+				exit(EXIT_SUCCESS);
+			}
 		}
 	}
 }
