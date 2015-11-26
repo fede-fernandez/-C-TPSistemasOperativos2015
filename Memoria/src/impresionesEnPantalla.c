@@ -15,7 +15,7 @@ void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 		scanf("%d",&boton);
 
 		switch (boton) {
-			case 1:
+			case 0:
 				mostrarTablasDePaginas(datosMemoria);
 				printf("\n\n");
 				imprimirTablas(datosMemoria->listaTablaPaginas);
@@ -24,7 +24,7 @@ void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 				mostrarRAM(datosMemoria->listaRAM);
 				printf("\n\n");
 				break;
-
+/*
 			case 2:
 				limpiarRam();
 				break;
@@ -35,7 +35,7 @@ void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 				break;
 			case 4:
 				volcarRamALog();
-				break;
+				break;*/
 		}
 
 	}

@@ -1,7 +1,7 @@
 #include "funcionesMemoria.h"
 #include <commonsDeAsedio/estructuras.h>
 #include <commons/string.h>
-
+#include "funcionesSeniales.h"
 
 
 void setearEstructuraMemoria(tipoEstructuraMemoria* datos) {
@@ -82,6 +82,9 @@ void tratarPeticion(int cpuAtendida) {
 	destruirTipoInstruccion(instruccion);
 
 	destruirTipoRespuesta(respuesta);
+
+	//SEÑALES
+	tratarSenial();
 }
 
 tipoRespuesta* quitarProceso(tipoInstruccion* instruccion){
@@ -714,7 +717,7 @@ void quitarPaginaDeRam(int posicion){
 		}
 	}
 
-void limpiarRam(){
+void limpiarRam(int signal){
 
 	int var;
 
@@ -738,7 +741,7 @@ void limpiarRam(){
 
 	}
 
-	limpiarTLB();
+	limpiarTLB(signal);
 
 }
 
@@ -770,7 +773,7 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 	}
 }
 
-void limpiarTLB(){
+void limpiarTLB(int signal){
 
 list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
 }

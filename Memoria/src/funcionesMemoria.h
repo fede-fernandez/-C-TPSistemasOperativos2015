@@ -23,7 +23,7 @@ tipoEstructuraMemoria* datosMemoria;
 
 void setearEstructuraMemoria(tipoEstructuraMemoria*);
 
-int opcionSignalElegida;
+int opcionSignalElegida; //variable global para las señales
 
 /*###############################FUNCIONES PRINCIPALES##########################################*/
 
@@ -103,11 +103,11 @@ void quitarTablaDePaginas(int pid);//Borra toda la tabla de paginas (incluido ac
 
 void quitarPaginaDeRam(int posicion);//Quita una pagina de la ram (mete una cadena vacia y setea el hueco en la lista de huecos)
 
-void limpiarRam();//Quita todas las pags de ram y las lleva a swap (si es que estan modificadas)
+void limpiarRam(int signal);//Quita todas las pags de ram y las lleva a swap (si es que estan modificadas)
 
 void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas);//Lleva todas las paginas de la tabla modificadas a swap
 
-void limpiarTLB();//Deja la tlb vacia
+void limpiarTLB(int signal);//Deja la tlb vacia
 
 void destruirProceso(int pid);//Borra el proceso del sistema
 

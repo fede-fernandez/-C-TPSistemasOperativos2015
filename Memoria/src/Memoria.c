@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include "impresionesEnPantalla.h"
+#include "funcionesSeniales.h"
 //---------------------------------------------------------------
 #define maxConexionesEntrantes 10
 
@@ -67,6 +68,10 @@ int main(void) {
 
 	crearThread(&hiloSignals,funcionPrueba,datosMemoria);
 
+
+	//SEÑALES
+	pthread_t hiloSeniales;
+	crearThread(&hiloSeniales,imprimirYElegirOpcionesSeniales,NULL);
 
 /////////////////////////////////////////////////////////////////////////////////////
 
