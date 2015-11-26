@@ -35,7 +35,7 @@ int main(void)
 	//Creacion archivo de log
 	if(LOGS_ACTIVADOS == 1)
 	{
-		hilosCPU.logCPU = log_create(RUTA_DE_ARCHIVO_DE_LOGS_CPU, "CPU", 1, LOG_LEVEL_TRACE);
+		hilosCPU.logCPU = log_create(RUTA_DE_ARCHIVO_DE_LOGS_CPU, "CPU", 0, LOG_LEVEL_TRACE);
 	}
 	
 	//Inicializo contador de instrucciones ejecutados por cada CPU
