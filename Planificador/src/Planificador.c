@@ -557,8 +557,11 @@ int menu(void) {
 
 				tipoRespuesta* respuesta = recibirRespuesta(socketMaestro);
 
-				if(respuesta->respuesta==PERFECTO)
-					return 0;
+				if(respuesta->respuesta==PERFECTO){
+				destruirTipoRespuesta(respuesta);
+					return 0;	
+				}
+
 
 				break;
 
