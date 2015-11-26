@@ -175,6 +175,8 @@ tipoRespuesta* iniciar(tipoInstruccion* instruccion) {
 		list_add(datosMemoria->listaTablaPaginas, tablaDePaginasNueva);
 
 			}
+	else
+		log_error(datosMemoria->logDeMemoria,"INICIO DE PROCESO %d DE %d PAGINAS FALLIDO",instruccion->pid,instruccion->nroPagina);
 
 	return respuesta;
 }
@@ -659,8 +661,15 @@ void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam){
 
 			tipoInstruccion* instruccionASwap = crearTipoInstruccion(pid,ESCRIBIR,nroPaginaAReemplazar,string_duplicate(traerPaginaDesdeRam(posicionEnRam)));
 
-			if(instruccionASwapRealizada(instruccionASwap,&respuesta))
+			if(instruccionASwapRealizada(instruccionASwap,&respuesta)){
+
+				log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d ESCRITA EN SWAP",nroPaginaAReemplazar,pid);
+
 				modificarDatosDePagina(nroPaginaAReemplazar,pid,-1,EN_SWAP,false,false);
+			}
+			else
+				log_error(datosMemoria->logDeMemoria,"FALLO DE ESCRITURA EN SWAP DE LA PAGINA %d DEL PROCESO %d",nroPaginaAReemplazar,pid);
+
 
 			destruirTipoInstruccion(instruccionASwap);//esto puede romper porque lo agregue a lo ultimo..
 
