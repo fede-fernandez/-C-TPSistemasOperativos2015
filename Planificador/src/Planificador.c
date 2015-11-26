@@ -655,7 +655,7 @@ void cpu(){
 
 		recibirMensajeCompleto(socketMaestro, &porcentaje, sizeof(int));// recibo los porcentajes
 
-		printf("ID_CPU: %d --> %d (por ciento) \n", contador, porcentaje);
+		printf("ID_CPU: %d --> %d %% \n", contador, porcentaje);
 
 		contador++;
 
