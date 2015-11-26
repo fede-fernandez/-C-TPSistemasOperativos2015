@@ -555,7 +555,12 @@ int menu(void) {
 
 				enviarMensaje(socketMaestro, &fin, sizeof(char));
 
-			    return 0;	    break;
+				tipoRespuesta* respuesta = recibirRespuesta(socketMaestro);
+
+				if(respuesta->respuesta==PERFECTO)
+					return 0;
+
+				break;
 
 			default: printf("Opción incorrecta. Por favor ingrese una opción del 1 al 4 \n \n \n"); break;
 		  }
