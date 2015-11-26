@@ -22,5 +22,7 @@ void mostrarTablasDePaginas(tipoEstructuraMemoria* datosMemoria);
 
 void mostrarTablaDePaginas(int posicionDeTabla,tipoEstructuraMemoria* datosMemoria);
 
+void mostrarTasaTLBPeriodicamente();
+
 #endif /* FUNCIONESSEÑALES_H_ */
 

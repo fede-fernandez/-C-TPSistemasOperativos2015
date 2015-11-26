@@ -57,6 +57,8 @@ typedef struct{
 	t_list* listaHuecosRAM;
 	char tipoDeAlgoritmoRAM;
 	t_log* logDeMemoria;
+	int aciertosTLB;
+	int accesosTLB;
 }tipoEstructuraMemoria;
 
 typedef struct{

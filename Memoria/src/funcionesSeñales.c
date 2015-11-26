@@ -180,3 +180,15 @@ void imprimirPaginas(t_list* frames){
 
 }
 
+void mostrarTasaTLBPeriodicamente(){
+
+	while(true){
+
+			sleep(60);//Espero 1 minuto
+
+			log_trace(datosMemoria->logDeMemoria,"LA TASA DE ACIERTOS DE LA TLB ES DEL %.1f%%",tasaAciertosTLB());
+
+		}
+
+}
+

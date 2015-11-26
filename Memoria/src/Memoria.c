@@ -61,7 +61,9 @@ int main(void) {
 
 	escucharConexiones(socketParaCpus,maxConexionesEntrantes);
 
-	pthread_t hiloSignals;
+	pthread_t hiloSignals,hiloTasaTLB;
+
+	crearThread(&hiloTasaTLB,mostrarTasaTLBPeriodicamente,NULL);
 
 	crearThread(&hiloSignals,funcionPrueba,datosMemoria);
 

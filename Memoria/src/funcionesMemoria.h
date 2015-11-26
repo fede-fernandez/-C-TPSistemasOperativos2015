@@ -113,6 +113,8 @@ void destruirProceso(int pid);//Borra el proceso del sistema
 
 double porcentajeDePageFaults(int pid);
 
+double tasaAciertosTLB();//Retorna la tasa de aciertos de tlb en %
+
 void dormirPorAccesoARAM();
 
 void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam);

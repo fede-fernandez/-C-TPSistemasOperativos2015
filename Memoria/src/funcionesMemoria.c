@@ -12,6 +12,10 @@ void setearEstructuraMemoria(tipoEstructuraMemoria* datos) {
 
 	datosMemoria->listaRAM = list_create();
 
+	datosMemoria->accesosTLB = 0;
+
+	datosMemoria->aciertosTLB = 0;
+
 	if(estaHabilitadaLaTLB())
 	datosMemoria->listaTLB = list_create();
 
@@ -68,7 +72,7 @@ void tratarPeticion(int cpuAtendida) {
 		respuesta = quitarProceso(instruccion);
 		break;
 
-	case FINALIZAR_PROCESO:
+	case 'h'://FINALIZAR_PROCESO:
 		respuesta = finalizarMemoria(instruccion);
 		break;
 	}
@@ -89,7 +93,7 @@ tipoRespuesta* quitarProceso(tipoInstruccion* instruccion){
 
 	if(instruccionASwapRealizada(instruccion,&respuesta)){//Aca swap me devolvio todo ok aunque el proceso no existia!!
 
-		log_trace(datosMemoria->logDeMemoria,"FINALIZACION DEL PROCESO %d CON PORCENTAJE DE PAGE FAULTS DE %f",instruccion->pid,porcentajeDePageFaults(instruccion->pid));
+		log_trace(datosMemoria->logDeMemoria,"FINALIZACION DEL PROCESO %d CON PORCENTAJE DE PAGE FAULTS DEL %.1f%%",instruccion->pid,porcentajeDePageFaults(instruccion->pid));
 
 		destruirProceso(instruccion->pid);
 
@@ -231,11 +235,19 @@ tipoRespuesta* leerPagina(tipoInstruccion* instruccion){
 
 	tipoRespuesta* respuesta;
 
-	if(!procesoExiste(instruccion->pid))
-		return crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso no existente");
+	if(!procesoExiste(instruccion->pid)){
 
-	if(numeroDePaginaIncorrecto(instruccion->nroPagina,instruccion->pid))
-		return crearTipoRespuesta(MANQUEADO,"Numero de pagina excede el maximo numero");
+			log_error(datosMemoria->logDeMemoria,"TABLA DE PAGINAS DE PROCESO NO EXISTENTE");
+
+			return crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso no existente");
+		}
+
+	if(numeroDePaginaIncorrecto(instruccion->nroPagina,instruccion->pid)){
+
+			log_error(datosMemoria->logDeMemoria,"NUMERO DE PAGINA EXCEDE EL MAXIMO NUMERO");
+
+			return crearTipoRespuesta(MANQUEADO,"Numero de pagina excede el maximo numero");
+		}
 
 
 	int posicionEnRam = buscarPagina(instruccion->nroPagina,instruccion->pid);
@@ -299,6 +311,7 @@ int buscarPagina(int nroPagina,int pid){
 
 int buscarPaginaEnTLB(int nroPagina,int pid){
 
+	datosMemoria->accesosTLB++;
 
 	int var, posicionDePagina = -1;
 
@@ -311,6 +324,8 @@ int buscarPaginaEnTLB(int nroPagina,int pid){
 		if (estructuraTLBActual->numeroDePagina == nroPagina&& estructuraTLBActual->pid == pid) {
 
 			posicionDePagina = estructuraTLBActual->posicionEnRAM;
+
+			datosMemoria->aciertosTLB++;
 
 			log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d ENCONTRADA EN TLB EN EL FRAME %d",nroPagina,pid,posicionDePagina);
 
@@ -424,18 +439,34 @@ tipoRespuesta* escribirPagina(tipoInstruccion* instruccion){
 
 	log_trace(datosMemoria->logDeMemoria,"ESCRITURA DE LA PAGINA %d DEL PROCESO %d ",instruccion->nroPagina,instruccion->pid);
 
-	if(!procesoExiste(instruccion->pid))
+	if(!procesoExiste(instruccion->pid)){
+
+		log_error(datosMemoria->logDeMemoria,"TABLA DE PAGINAS DE PROCESO NO EXISTENTE");
+
 		return crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso no existente");
+	}
 
-	if(tamanioDePaginaMayorAlSoportado(instruccion->texto))
+	if(tamanioDePaginaMayorAlSoportado(instruccion->texto)){
+
+		log_error(datosMemoria->logDeMemoria,"TAMAÑO DE PAGINA MAYOR AL DE MARCO");
+
 		return crearTipoRespuesta(MANQUEADO,"Tamaño de pagina mayor al de marco");
+	}
 
-	if(numeroDePaginaIncorrecto(instruccion->nroPagina,instruccion->pid))
+	if(numeroDePaginaIncorrecto(instruccion->nroPagina,instruccion->pid)){
+
+		log_error(datosMemoria->logDeMemoria,"NUMERO DE PAGINA EXCEDE EL MAXIMO NUMERO");
+
 		return crearTipoRespuesta(MANQUEADO,"Numero de pagina excede el maximo numero");
+	}
 
 	if(RAMLlena()&&noUsaMarcos(instruccion->pid)){//Esto hay que ver como se trata (leer issue 25)
+
+		log_error(datosMemoria->logDeMemoria,"ERROR DE ESCRITURA DE PAGINAS, NO HAY MARCOS DISPONIBLES");
+
 		quitarProceso(instruccion);
-		return crearTipoRespuesta(PERFECTO,"Error de escritura de pagina, proceso finalizado");
+
+		return crearTipoRespuesta(MANQUEADO,"Error de escritura de pagina, proceso finalizado");
 	}
 
 	int posicionDePag = buscarPagina(instruccion->nroPagina,instruccion->pid);
@@ -500,7 +531,7 @@ void modificarUso(int nroPagina,int pid,bool uso){
 void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam){
 
 
-	if(buscarPaginaEnTLB(nroPagina,pid)>=0)
+	if(dondeEstaPaginaEnTLB(nroPagina,pid)>=0)
 		return;
 
 	if(TLBLlena()){
@@ -549,19 +580,16 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 
 	if(RAMLlena()||excedeMaximoDeMarcos(pid)){
 
-		printf("config max: %d\n",datosMemoria->configuracion->maximoDeMarcosPorProceso);
-
 		int nroPaginaAReemplazar;
 
 		bool estaModificada;
 
 		posicionEnRam = ejecutarAlgoritmo(&nroPaginaAReemplazar,pid,&estaModificada);
 
-		log_trace(datosMemoria->logDeMemoria,"ALGORITMO ELIGIO PAGINA %d DEL PROCESO %d EN EL FRAME %d PARA REEMPLAZAR",nroPaginaAReemplazar,pid,posicionEnRam);
+		log_trace(datosMemoria->logDeMemoria,"ALGORITMO ELIGIO PARA REEMPLAZAR LA PAGINA %d DEL PROCESO %d EN EL FRAME %d",nroPaginaAReemplazar,pid,posicionEnRam);
 
 		if(estaModificada)
 			llevarPaginaASwap(nroPaginaAReemplazar,pid,posicionEnRam);
-
 	}
 
 	else {
@@ -610,8 +638,15 @@ double porcentajeDePageFaults(int pid){
 	if(tabla->cantidadDeAccesos==0)
 		return 0;
 
-	return (tabla->cantidadDePageFaults/tabla->cantidadDeAccesos)*100;
+	return ((double)(tabla->cantidadDePageFaults)/(double)(tabla->cantidadDeAccesos))*100;
+}
 
+double tasaAciertosTLB(){
+
+	if(datosMemoria->accesosTLB==0)
+		return 0;
+
+	return ((double)(datosMemoria->aciertosTLB)/(double)(datosMemoria->accesosTLB))*100;
 }
 
 void dormirPorAccesoARAM(){
