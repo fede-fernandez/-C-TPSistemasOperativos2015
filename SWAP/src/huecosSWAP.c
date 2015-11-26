@@ -54,10 +54,6 @@ int espacioEntreDosHuecosUtilizados(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* 
 	return (h2->baseDeMProc - (h1->baseDeMProc + h1->cantidadDePaginasQueOcupa));
 }
 
-//int paginaMaxima(tipoHuecoUtilizado* hueco){
-//	return (hueco->baseDeMProc + hueco->cantidadDePaginasQueOcupa);
-//}
-
 tipoHuecoUtilizado* buscarHuecoPorPID(t_list* listaDeHuecosUtilizados,int pidProcesoBuscado){
 	tipoHuecoUtilizado* aux;
 	int i;
@@ -109,7 +105,6 @@ int cantidadDePaginasOcupadas(t_list* listaDeHuecosOcupados){
 
 	return paginasOcupadas;
 }
-
 
 bool baseMenor(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2){
 	return h1->baseDeMProc < h2->baseDeMProc;

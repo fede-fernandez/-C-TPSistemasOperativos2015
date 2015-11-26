@@ -18,25 +18,14 @@
 
 
 #define MAXIMAS_CONEXIONES_ENTRANTES 1
-#define INFINITO 1
-
-
-//tipoInstruccion* crearInstruccion(char ins,int pid,int pag,char* testo){
-//	tipoInstruccion* aux = malloc(sizeof(tipoInstruccion));
-//
-//	aux->instruccion = ins;
-//	aux->pid = pid;
-//	aux->nroPagina = pag;
-//	aux->texto = strdup(testo);
-//
-//	return aux;
-//}
 
 int main(void) {
 
+	t_log* logger = crearLoggerParaSeguimiento("logSWAP","Administrador de SWAP");
+	logearSeguimiento("Inicio de ejecucion de proceso SWAP",logger);
+
 	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("cfgSWAP");
 	t_list* listaDeHuecosUtilizados = inicializarListaDeHuecosUtilizados();
-	t_log* logger = crearLoggerParaSeguimiento("logSWAP","Administrador de SWAP");
 
 	inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
 
@@ -44,10 +33,6 @@ int main(void) {
 	tipoRespuesta* respuestaParaMemoria;
 
 	bool finalizarProceso = false;
-
-	char* textoALogear = string_new();
-	string_append(&textoALogear,"Inicio de ejecucion de proceso SWAP");
-	logearSeguimiento(textoALogear,logger);
 
 
 
@@ -86,8 +71,6 @@ int main(void) {
 
 
 
-
-
 /********Liberar memoria*************/
 
 
@@ -100,7 +83,6 @@ int main(void) {
 	destruirConfigSWAP(configuracion);
 	destruirLogger(logger);
 
-	free(textoALogear);
 
 
 	return EXIT_SUCCESS;
