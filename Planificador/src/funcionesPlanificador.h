@@ -132,7 +132,7 @@ void enviarPCB2(int socketCliente,t_PCB pcb);
 
 t_PCB recibirPCB2(int socketEnviador);
 
-void enviarPath(int socketMaestro,char path[30]);
+void enviarPath(int socketMaestro,t_PCB *pcb);
 
 //---Logueo----------------------------------
 

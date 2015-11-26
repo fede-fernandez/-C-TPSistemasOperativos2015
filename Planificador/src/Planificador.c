@@ -508,7 +508,7 @@ int menu(void) {
 		opcion = 0;
 
 
-		    printf("############################################# T ##################\n");
+		    printf("############################################# L ##################\n");
 			printf("################################################################\n");
 			printf("##     --------> *****                  ***** <------------   ##\n");
 			printf("##   *****             LOS  JAVIMANCOS         ***** -------  ##\n");
@@ -586,7 +586,7 @@ void finalizar_PID(){
 	nodo_pcb = buscar_PCB(lista_de_PCB, id); //PCB=buscar_id_de_proceso (sin desarmar la lista)
 
 
-	enviarPath(socketMaestro ,nodo_pcb->path); // envio el path al CPU
+	enviarPath(socketMaestro ,nodo_pcb); // envio el path al CPU
 
 
 	pthread_mutex_unlock(&pcbs);
@@ -655,7 +655,7 @@ void cpu(){
 
 		recibirMensajeCompleto(socketMaestro, &porcentaje, sizeof(int));// recibo los porcentajes
 
-		printf("ID_CPU: %d --> %d (por ciento) \n", contador, porcentaje);
+		printf("ID_CPU: %d --> %d %% \n", contador, porcentaje);
 
 		contador++;
 
