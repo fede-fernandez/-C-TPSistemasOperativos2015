@@ -53,7 +53,7 @@ int baseParaMProcSiTengoEspacioContiguo(t_list* listaDeHuecosUtilizados, int can
 
 void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas, int base);
 
-void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina, int retardoDeCompactacion);
+void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina, int retardoDeCompactacion,t_log* logger);
 
 void moverHueco(tipoHuecoUtilizado* hueco,char* particion, int ultimaPaginaEscrita,int tamanioDePagina);
 void moverPagina(char* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina);

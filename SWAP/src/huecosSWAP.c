@@ -145,7 +145,6 @@ tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNue
 	tipoRespuesta* respuestaASolicitudDeReserva;
 	int baseParaNuevoPID;
 	char* textoALogear = string_new();
-	char* textoALogearPorCompactacion = string_new();
 
 
 	//puedo reservar la cantidad de paginas que el mproc necesita?
@@ -153,15 +152,8 @@ tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNue
 		//tengo espacio contiguo para almacenar las paginas que el mprc necesita?
 		if((baseParaNuevoPID = baseParaMProcSiTengoEspacioContiguo(listaDeHuecosUtilizados,cantPaginasSolicitadas,cantDePaginasDeSWAP)) == -1){
 
-			string_append(&textoALogearPorCompactacion,"Compactacion iniciada por fragmentacion externa");
-			logearSeguimiento(textoALogearPorCompactacion,logger);
 
-			compactacionAlpha(listaDeHuecosUtilizados,particion,tamanioDePagina,retardoDeCompactacion);
-
-			textoALogearPorCompactacion = string_new();
-			string_append(&textoALogearPorCompactacion,"Compactacion finalizada");
-			logearSeguimiento(textoALogearPorCompactacion,logger);
-			free(textoALogearPorCompactacion);
+			compactacionAlpha(listaDeHuecosUtilizados,particion,tamanioDePagina,retardoDeCompactacion, logger);
 
 			//baseNuevo = ultima pagina ocupada para asignar al final
 			tipoHuecoUtilizado* aux = list_get(listaDeHuecosUtilizados,list_size(listaDeHuecosUtilizados)-1);
@@ -325,10 +317,13 @@ int baseParaMProcSiTengoEspacioContiguo(t_list* listaDeHuecosUtilizados, int can
 	return -1;
 }
 
-void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina, int retardoDeCompactacion){
+void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina, int retardoDeCompactacion, t_log* logger){
 	tipoHuecoUtilizado* hueco;
 	int ultimaPaginaEscrita = 0;
 
+	logearSeguimiento("Compactacion iniciada por fragmentacion externa",logger);
+
+	sleep(retardoDeCompactacion);
 
 	int i;
 	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {
@@ -338,7 +333,8 @@ void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tama
 		ultimaPaginaEscrita = traducirDireccionLogicaAFisica(hueco,hueco->cantidadDePaginasQueOcupa);
 	}
 
-	sleep(retardoDeCompactacion);
+	logearSeguimiento("Compactacion finalizada",logger);
+
 }
 
 void moverHueco(tipoHuecoUtilizado* hueco,char* particion, int ultimaPaginaEscrita,int tamanioDePagina){
@@ -369,7 +365,6 @@ void moverPagina(char* particion, int dirFisVieja, int dirFisNueva,int tamanioDe
 	escribirBloqueMapeado(particion,pagina,dirFisNueva,tamanioDePagina);
 
 }
-
 
 
 
