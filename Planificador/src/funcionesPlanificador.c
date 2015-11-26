@@ -230,6 +230,8 @@ void enviarPath(int socketMaestro,t_PCB *pcb){
 
 	printf("\n   mCod: %s \n\n",ruta);
 
+	free(ruta);
+
 //
 }
 
