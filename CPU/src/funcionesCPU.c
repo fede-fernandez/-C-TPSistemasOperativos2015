@@ -171,7 +171,15 @@ void ejecutarPrograma(tipoPCB *PCB, int quantum, t_datosCPU* datosCPU)
 	{
 		printf("idCPU: %i | RESPUESTAS DE RAFAGA ENVIADAS A PLANIFICADOR: %s\n", datosCPU->idCPU, respuestasAcumuladas);
 	}
-
+	
+	free(respuestasAcumuladas);
+	int i;
+	for(i = 0; i < longitudDeStringArray(instrucciones); i++)
+	{
+        	free(instrucciones[i]);
+	}
+	free(instrucciones);
+	munmap(0, sizeof(programa));
 	fclose(programa);
 }
 
@@ -581,6 +589,9 @@ int cantidadDeInstrucciones(char* rutaDelPrograma)
 
 	char* programaEnMemoria = mmap(0, sizeof(programa), PROT_READ, MAP_SHARED, fileno(programa), 0);
 	char** instrucciones = string_split(programaEnMemoria, "\n");
+	
+	munmap(0, sizeof(programa));
+	fclose(programa);
 	return longitudDeStringArray(instrucciones);
 }
 
