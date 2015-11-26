@@ -164,9 +164,6 @@ void* unCPU(t_hiloCPU* hiloCPU)
 		ejecutarPrograma(PCB, quantum, &datosCPU);
 	}
 
-	liberarSocket(datosCPU.socketParaMemoria);
-	liberarSocket(datosCPU.socketParaPlanificador);
-
 	return 0;
 }
 
@@ -241,6 +238,16 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 			{
 				printf("INSTRUCCION ENVIADA A MEMORIA | pID: %i | instruccion: %c | numeroDePagina: %i | texto: %s\n", instruccionAMemoria.pid, instruccionAMemoria.instruccion, instruccionAMemoria.nroPagina, instruccionAMemoria.texto);
 			}
+			
+			list_destroy(cantidadDeInstruccionesEjecutadasPorCPUs);
+			sem_destroy(&semaforoConexionMasterPlanificador);
+			sem_destroy(&semaforoHiloCPU);
+			sem_destroy(&semaforoLogs);
+			sem_destroy(&semaforoInstruccionesCPU);
+			sem_destroy(&semaforoCPUTrabajando);
+			sem_destroy(&semaforoContadorDeInstrucciones);
+			liberarSocket(socketMasterPlanificador);
+			liberarSocket(socketParaMemoria);
 			abort();
 		}
 	}
