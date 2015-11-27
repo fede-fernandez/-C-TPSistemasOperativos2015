@@ -23,6 +23,7 @@ void crearHijoYPadre(int signal){
 		exit(0);
 	}else {
 		//padre
+		wait(&estado);
 	}
 }
 
