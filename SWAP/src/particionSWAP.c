@@ -48,7 +48,7 @@ void escribirBloqueMapeado(char* rutaDeParticion,char* contenidoAEscribir,int nu
 
 	fwrite(aux,tamanioDeBloque,1,archivo);
 
-	//free(aux);
+	free(aux);
 
 	fclose(archivo);
 }
