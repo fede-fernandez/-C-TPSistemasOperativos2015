@@ -15,7 +15,7 @@
 #define maxConexionesEntrantes 10
 
 //SEÑALES
-void crearHijoYPadre(int signal){
+void crearHijoYPadre(){
 
 	if((idHijo = fork()) == 0){
 		//hijo

@@ -3,7 +3,7 @@
 
 extern int opcionSignalElegida; // variable global, su declaracion esta en funcionesMemoria.h
 
-void crearHijoYPadre(int signal);
+void crearHijoYPadre();
 
 void imprimirYElegirOpcionesSeniales(){
 	while(true){
@@ -44,25 +44,39 @@ void tratarSenial(){
 
 	switch(opcionSignalElegida){
 		case 1:
-			kill(getpid(), SIGUSR1);
+			limpiarTLB();
 			break;
 
 		case 2:
-			kill(getpid(), SIGUSR2);
+			limpiarRam();
 			break;
 
-		default:
-			opcionSignalElegida = 0;
+		case 3:
+			crearHijoYPadre();
 			break;
 	}
+
+	opcionSignalElegida = 0;
+}
+
+void prepararSenialLimpiarTLB(int signal){
+	opcionSignalElegida = 1;
+}
+
+void prepararSenialLimpiarRAM(int signal){
+	opcionSignalElegida = 2;
+}
+
+void prepararSenialVolcarRamALog(int signal){
+	opcionSignalElegida = 3;
 }
 
 void crearSeniales(){
 
 	while(1){
-		signal(SIGUSR1, limpiarTLB);
-		signal(SIGUSR2, limpiarRam);
-		signal(SIGPOLL, crearHijoYPadre);
+		signal(SIGUSR1, prepararSenialLimpiarTLB);
+		signal(SIGUSR2, prepararSenialLimpiarRAM);
+		signal(SIGPOLL, prepararSenialVolcarRamALog);
 	}
 }
 

@@ -84,7 +84,7 @@ void tratarPeticion(int cpuAtendida) {
 	destruirTipoRespuesta(respuesta);
 
 	//SEÑALES
-	//tratarSenial();
+	tratarSenial();
 }
 
 tipoRespuesta* quitarProceso(tipoInstruccion* instruccion){
@@ -782,7 +782,7 @@ void quitarPaginaDeRam(int posicion){
 		}
 	}
 
-void limpiarRam(int signal){
+void limpiarRam(){
 
 	int var;
 
@@ -811,7 +811,7 @@ void limpiarRam(int signal){
 
 	}
 
-	limpiarTLB(-20);
+	limpiarTLB();
 
 }
 
@@ -842,7 +842,7 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 	}
 }
 //señales
-void limpiarTLB(int signal){
+void limpiarTLB(){
 
 	bloquearRecurso(datosMemoria->mutexDeLog);
 	if(signal==SIGUSR1)

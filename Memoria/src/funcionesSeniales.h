@@ -10,5 +10,9 @@ void tratarSenial();
 
 void crearSeniales();
 
+void prepararSenialVolcarRamALog(int signal);
+void prepararSenialLimpiarTLB(int signal);
+void prepararSenialLimpiarRAM(int signal);
+
 #endif /* FUNCIONESSENIALES_H_ */
 
