@@ -56,7 +56,7 @@ int cualReemplazarRAMFIFO(t_list* listaAccesos){
 
 	int paginaAReemplazar = *punteroANroPagina;
 
-	list_remove(listaAccesos,0);
+	list_remove_and_destroy_element(listaAccesos,0,free);
 
 	return paginaAReemplazar;
 }

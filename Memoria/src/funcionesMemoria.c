@@ -811,7 +811,12 @@ void limpiarRam(){
 
 	}
 
-	limpiarTLB();
+	//limpiarTLB();
+	list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
+
+	bloquearRecurso(datosMemoria->mutexDeLog);
+	log_trace(datosMemoria->logDeMemoria,"RAM LIMPIADA");
+	liberarRecurso(datosMemoria->mutexDeLog);
 
 }
 
@@ -829,7 +834,6 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 
 		if(pagina->modificado){
 
-
 			llevarPaginaASwap(var,tablaDePaginas->pid,posicionEnRam);
 		}
 
@@ -843,9 +847,7 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 }
 //señales
 void limpiarTLB(){
-
 	bloquearRecurso(datosMemoria->mutexDeLog);
-	if(signal==SIGUSR1)
 	log_trace(datosMemoria->logDeMemoria,"SEÑAL SIGUSR1 RECIBIDA");
 	log_trace(datosMemoria->logDeMemoria,"TLB LIMPIADA");
 	liberarRecurso(datosMemoria->mutexDeLog);
