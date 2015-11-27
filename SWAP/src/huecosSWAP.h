@@ -29,42 +29,53 @@
 #define OK_ESPACIO_LIBERADO "Espacio en SWAP liberado"
 #define OK_PAGINA_ESCRITA "Pagina escrita correctamente en SWAP"
 
-bool baseMenor(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);
 
 
-/********Funciones principales de SWAP**************/
 
-tipoRespuesta* reservarEspacio(t_list* listaDeHuecosUtilizados,int pidProcesoNuevo, int cantPaginasSolicitadas,int cantDePaginasDeSWAP,int tamanioDePagina, char* particion, int retardoDeCompactacion, t_log* logger);
-tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso, int tamanioDePagina, t_log* logger, char* rutaDeParticion);
-tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion, t_log* logger, int retardoDeLectura);
-tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion, t_log* logger,int retardoDeEscritura);
-
-/********Fin de funciones principales de SWAP**************/
-
-
+//-----------Huecos utilizados------------
 tipoHuecoUtilizado* crearHuecoUtilizado(int pidProceso,int inicio,int cantidadDePaginas);
 void destruirHuecoUtilizado(tipoHuecoUtilizado* huecoUtilizado);
 t_list* inicializarListaDeHuecosUtilizados();
+int ultimaPaginaEscrita(t_list* listaDeHuecosUtilizados);
+tipoHuecoUtilizado* buscarHuecoUtilizadoPorPID(t_list* listaDeHuecosUtilizados,int pidProcesoBuscado);
+
+//------------Huecos libres------------
+tipoHuecoLibre* crearHuecoLibre(int base, int cantidadDePaginas);
+void destruirHuecoLibre(tipoHuecoLibre* huecoLibre);
+t_list* inicializarListaDeHuecosLibres(int cantidadDePaginas);
+int cantidadDePaginasDisponibles(t_list* listaDeHuecosLibres);
+bool tengoEspacioContiguo(t_list* listaDeHuecosLibres, int cantidadDePaginasSolicitadas, int* baseParaNuevoProceso);
+void ocuparEspacioLibre(t_list* listaDeHuecosLibres, int baseOcupada, int cantidadDePaginasSolicitadas);
+bool sonContiguosAIzquierda(tipoHuecoLibre* unHueco, tipoHuecoLibre* otroHueco);
+bool sonContiguosADerecha(tipoHuecoLibre* unHueco, tipoHuecoLibre* otroHueco);
+int ultimaPaginaDeHuecoLibre(tipoHuecoLibre* unHueco);
+void unirHuecosLibresAIzquierda(tipoHuecoLibre* unHueco, tipoHuecoLibre* otroHueco);
+void unirHuecosLibresADerecha(tipoHuecoLibre* unHueco, tipoHuecoLibre* otroHueco);
+bool estaVacio(tipoHuecoLibre* unHueco);
+void actualizarListaDeLibres(t_list* listaDeHuecosLibres);
 
 
-int cantidadDePaginasDisponibles(t_list* listaDeHuecosUtilizados,int cantTotalDePaginas);
-int baseParaMProcSiTengoEspacioContiguo(t_list* listaDeHuecosUtilizados, int cantDePaginasSolicitadas, int cantTotalDePaginas);
 
 
-void asignarEspacio(t_list* listaDeHuecosUtilizados,int pidProceso,int cantDePaginasSolicitadas, int base);
-
-void compactacionAlpha(t_list* listaDeHuecosUtilizados, char* particion,int tamanioDePagina, int retardoDeCompactacion,t_log* logger);
-
+//-------------Funciones auxiliares para reservar espacio----------//
+void asignarEspacio(t_list* listaDeHuecosUtilizados, t_list* listaDeHuecosLibres, int pidProceso,int base,int cantDePaginasSolicitadas);
+void compactacionAlpha(t_list* listaDeHuecosUtilizados,t_list* listaDeHuecosLibres, char* particion,int tamanioDePagina, int cantidadDePaginasSWAP, int retardoDeCompactacion,t_log* logger);
 void moverHueco(tipoHuecoUtilizado* hueco,char* particion, int ultimaPaginaEscrita,int tamanioDePagina);
 void moverPagina(char* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina);
 
-int traducirDireccionLogicaAFisica(tipoHuecoUtilizado* hueco,int dirLogicaDePagina);
-int espacioEntreDosHuecosUtilizados(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);
+
+//-----------Funciones auxiliares para liberar espacio----------//
+void liberarProcesoDeListaDeHuecosUtilizadosYDeParticion(t_list* listaDeHuecosUtilizados,char* rutaDeParticion, int tamanioDePagina, int pidALiberar, int* base, int* cantidadDePaginas);
+void actualizarListaDeHuecosLibres(t_list* listaDeHuecosLibres, int base, int cantidadDePaginas);
 
 
 
 ////////FUNCIONES AUXILIARES///////////
-void imprimirHueco(tipoHuecoUtilizado* hueco);
-void imprimirListaDeHuecos(t_list* lista);
+
+void imprimirListaDeHuecosUtilizados(t_list* lista);
+void imprimirListaDeHuecosLibres(t_list* lista);
+int traducirDireccionLogicaAFisica(tipoHuecoUtilizado* hueco,int dirLogicaDePagina);
+bool baseMenor(tipoHuecoUtilizado* h1, tipoHuecoUtilizado* h2);
+bool baseMenorDeHuecoLibre(tipoHuecoLibre* unHueco, tipoHuecoLibre* otroHueco);
 
 #endif /* HUECOSSWAP_H_ */

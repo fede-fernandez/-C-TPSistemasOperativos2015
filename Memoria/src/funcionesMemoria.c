@@ -429,6 +429,8 @@ int traerPaginaDesdeSwap(tipoInstruccion* instruccion, tipoRespuesta** respuesta
 
 		posicionEnRam = agregarPagina(instruccion->nroPagina,instruccion->pid,nuevaPagina);
 	}
+	else
+		log_error(datosMemoria->logDeMemoria,"FALLO DE LECTURA DE LA PAGINA %d DEL PROCESO %d EN SWAP",instruccion->nroPagina,instruccion->pid);
 
 	return posicionEnRam;
 }
