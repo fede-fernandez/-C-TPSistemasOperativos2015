@@ -195,10 +195,10 @@ void actualizarListaDeLibres(t_list* listaDeHuecosLibres){
 		aux = list_get(listaDeHuecosLibres,var);
 		if (!estaVacio(aux)) {
 			nuevo = crearHuecoLibre(aux->base,aux->cantidadDePaginasQueOcupa);
-			list_add(listaNueva,nuevo);
+			list_add(listaNueva,nuevo);//GorenLPM hace los scripts!!!
 		}
 	}
-
+	
 	list_destroy_and_destroy_elements(listaDeHuecosLibres,(void*)destruirHuecoLibre);
 	listaDeHuecosLibres = listaNueva;
 }
