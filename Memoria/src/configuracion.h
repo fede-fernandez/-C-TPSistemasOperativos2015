@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <commonsDeAsedio/error.h>
 #include <commonsDeAsedio/log.h>
+#include <commonsDeAsedio/semaforos.h>
 
 
 #define PUERTO_ESCUCHA "PUERTO_ESCUCHA"
@@ -59,6 +60,7 @@ typedef struct{
 	t_log* logDeMemoria;
 	int aciertosTLB;
 	int accesosTLB;
+	pthread_mutex_t* mutexDeLog;
 }tipoEstructuraMemoria;
 
 typedef struct{

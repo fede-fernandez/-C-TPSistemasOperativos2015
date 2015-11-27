@@ -46,6 +46,12 @@ int main(void) {
 
 	datosMemoria->memoriaActiva = &memoriaActiva;
 
+	pthread_mutex_t mutex;
+
+	inicializarMutex(&mutex);
+
+	datosMemoria->mutexDeLog = &mutex;
+
 	datosMemoria->socketCpus = socketParaCpus;
 
 	system("if [ -f logMemoria ]; then rm logMemoria\nfi");//Si ya existe el log lo borra
@@ -98,6 +104,8 @@ int main(void) {
 	}
 
 	}
+
+	destruirMutex(datosMemoria->mutexDeLog);
 
 	destruirLogger(datosMemoria->logDeMemoria);
 

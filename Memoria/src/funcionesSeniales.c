@@ -1,8 +1,6 @@
 #include "funcionesSeniales.h"
 #include "funcionesMemoria.h"
 
-#include <signal.h>
-
 extern int opcionSignalElegida; // variable global, su declaracion esta en funcionesMemoria.h
 
 void imprimirYElegirOpcionesSeniales(){
