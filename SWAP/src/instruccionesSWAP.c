@@ -119,19 +119,30 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 		//direccionFisicaEnParticion es la posicion donde comienza la pagina en el archivo de particion
 
 	//buscarEnContenidoEnParticion
-	contenidoDePagina = string_duplicate(leerBloqueMapeado(particion,direccionFisicaEnParticion,tamanioDePagina));
+	contenidoDePagina = leerBloqueMapeado(particion,direccionFisicaEnParticion,tamanioDePagina);//saque string_duplicate
 
 	//retornarContenidoDePagina
 
+	//respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
+
 	respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
+
+	//respuesta hardcodeada
+	respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,"tuvieja");
+
 
 
 
 	string_append_with_format(&textoALogear,"Lectura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length(contenidoDePagina),contenidoDePagina);
 	logearSeguimiento(textoALogear,logger);
 
+
+//	loggeo hardcodeado
+//	string_append_with_format(&textoALogear,"Lectura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length("tuvieja"),"tuvieja");
+//	logearSeguimiento(textoALogear,logger);
+
 	free(textoALogear);
-	free(contenidoDePagina);
+	//free(contenidoDePagina);
 
 	return respuestaASolicitudDeLectura;
 }
