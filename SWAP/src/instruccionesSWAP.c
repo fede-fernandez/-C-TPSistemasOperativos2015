@@ -128,7 +128,7 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 	respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
 
 	//respuesta hardcodeada
-	respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,"tuvieja");
+	//respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,"tuvieja");
 
 
 
