@@ -311,7 +311,7 @@ int buscarPagina(int nroPagina,int pid){
 		aumentarPageFaults(pid);
 
 
-	if(posicionDePag==EN_SWAP){
+	if(posicionDePag==EN_SWAP||posicionDePag==NO_EXISTE){
 
 	tipoRespuesta* respuesta;
 
@@ -319,10 +319,12 @@ int buscarPagina(int nroPagina,int pid){
 
 	posicionDePag = traerPaginaDesdeSwap(instruccion,&respuesta);
 
+	aumentarPaginasAsignadas(pid);
+
 	destruirTipoRespuesta(respuesta);
+
+	destruirTipoInstruccion(instruccion);
 	}
-
-
 
 	return posicionDePag;
 }
@@ -522,18 +524,18 @@ tipoRespuesta* escribirPagina(tipoInstruccion* instruccion){
 
 	dormirPorAccesoARAM();//tengo q tardar tanto como si la creo como si la modifico
 
-	if(posicionDePag==NO_EXISTE){
+	/*if(posicionDePag==NO_EXISTE){
 
 		posicionDePag = agregarPagina(instruccion->nroPagina,instruccion->pid,string_duplicate(instruccion->texto));
 
 		aumentarPaginasAsignadas(instruccion->pid);
-	}
+	}*/
 
-	else {
+	//else {
 		modificarPagina(instruccion->nroPagina,instruccion->pid,posicionDePag,instruccion->texto);
 
 		modificarUso(instruccion->nroPagina,instruccion->pid,true);
-	}
+	//}
 
 	modificarModificado(instruccion->nroPagina,instruccion->pid,true);
 
