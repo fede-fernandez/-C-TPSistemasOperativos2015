@@ -121,6 +121,6 @@ bool puedoReservarEnSWAP(tipoInstruccion* instruccion, tipoRespuesta** respuesta
 
 bool instruccionASwapRealizada(tipoInstruccion* instruccion,tipoRespuesta** respuesta) ;
 
-void volcarRamALog(int signal);
+void volcarRamALog();
 
 #endif /* FUNCIONESMEMORIA_H_ */
