@@ -26,8 +26,9 @@ int main(void) {
 
 	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("cfgSWAP");
 	t_list* listaDeHuecosUtilizados = inicializarListaDeHuecosUtilizados();
-
+	t_list* listaDeHuecosLibres = inicializarListaDeHuecosLibres(configuracion->cantidadDePaginas);
 	inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
+
 
 	tipoInstruccion* instruccionAEjecutar;
 	tipoRespuesta* respuestaParaMemoria;
@@ -55,12 +56,16 @@ int main(void) {
 		printf("Instruccion recibida\n");
 
 
-		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,configuracion,logger, &finalizarProceso);
+		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,listaDeHuecosLibres,configuracion,logger, &finalizarProceso);
 
 		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
 		printf("Respuesta enviada\n\n");
 
-		imprimirListaDeHuecos(listaDeHuecosUtilizados);
+		printf("Lista de huecos utilizados:\n");
+		imprimirListaDeHuecosUtilizados(listaDeHuecosUtilizados);
+
+		printf("Lista de huecos libres:\n");
+		imprimirListaDeHuecosLibres(listaDeHuecosLibres);
 
 		destruirTipoRespuesta(respuestaParaMemoria);
 		destruirTipoInstruccion(instruccionAEjecutar);
@@ -80,6 +85,7 @@ int main(void) {
 
 	printf("Libero estructuras\n");
 	list_destroy_and_destroy_elements(listaDeHuecosUtilizados,(void*)destruirHuecoUtilizado);
+	list_destroy_and_destroy_elements(listaDeHuecosLibres,(void*)destruirHuecoLibre);
 	destruirConfigSWAP(configuracion);
 	destruirLogger(logger);
 
