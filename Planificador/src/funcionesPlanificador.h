@@ -16,6 +16,7 @@
 #include <commonsDeAsedio/error.h>
 #include <commonsDeAsedio/cliente-servidor.h>
 #include <commonsDeAsedio/estructuras.h>
+#include <commonsDeAsedio/configuracion.h>
 #include <time.h>
 
 
