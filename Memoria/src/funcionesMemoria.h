@@ -11,6 +11,7 @@
 #include "configuracion.h"
 #include "algoritmos.h"
 #include "validaciones.h"
+#include <signal.h>
 
 tipoEstructuraMemoria* datosMemoria;
 

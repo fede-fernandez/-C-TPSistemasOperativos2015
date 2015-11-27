@@ -810,7 +810,7 @@ void limpiarRam(int signal){
 
 	}
 
-	limpiarTLB(signal);
+	limpiarTLB(-20);
 
 }
 
@@ -843,15 +843,15 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 }
 //señales
 void limpiarTLB(int signal){
-printf("ªndeberia estar limpiando en la TLB\n");
 
-/*
+
 	bloquearRecurso(datosMemoria->mutexDeLog);
+	if(signal==SIGUSR1)
 	log_trace(datosMemoria->logDeMemoria,"SEÑAL SIGUSR1 RECIBIDA");
 	log_trace(datosMemoria->logDeMemoria,"TLB LIMPIADA");
 	liberarRecurso(datosMemoria->mutexDeLog);
 
-list_clean_and_destroy_elements(datosMemoria->listaTLB,free);*/
+list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
 
 }
 
