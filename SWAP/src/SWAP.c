@@ -22,7 +22,7 @@
 int main(void) {
 
 	t_log* logger = crearLoggerParaSeguimiento("logSWAP","Administrador de SWAP");
-	logearSeguimiento("Inicio de ejecucion de proceso SWAP",logger);
+	logearSeguimiento("Proceso iniciado",logger);
 
 	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("cfgSWAP");
 	t_list* listaDeHuecosUtilizados = inicializarListaDeHuecosUtilizados();
@@ -89,6 +89,7 @@ int main(void) {
 	destruirConfigSWAP(configuracion);
 	destruirLogger(logger);
 
+	logearSeguimiento("Proceso finalizado",logger);
 
 
 	return EXIT_SUCCESS;

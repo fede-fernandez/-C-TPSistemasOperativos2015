@@ -15,11 +15,11 @@
 #define maxConexionesEntrantes 10
 
 //SEÑALES
-void crearHijoYPadre(){
+void crearHijoYPadre(int signal){
 
 	if((idHijo = fork()) == 0){
 		//hijo
-		signal(SIGPOLL, volcarRamALog);
+		volcarRamALog();
 		exit(0);
 	}else {
 		//padre
@@ -96,9 +96,6 @@ int main(void) {
 
 
 	while(memoriaActiva){
-
-		//SEÑALES
-		//crearHijoYPadre();//no se bien donde ponerlo
 
 		listaFiltrada = listaPrincipal;
 		select(datosMemoria->maximoSocket+1,&listaFiltrada,NULL,NULL,NULL);

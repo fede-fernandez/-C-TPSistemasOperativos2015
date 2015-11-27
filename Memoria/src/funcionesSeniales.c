@@ -3,6 +3,8 @@
 
 extern int opcionSignalElegida; // variable global, su declaracion esta en funcionesMemoria.h
 
+void crearHijoYPadre(int signal);
+
 void imprimirYElegirOpcionesSeniales(){
 	while(true){
 		//system("clear");
@@ -60,6 +62,7 @@ void crearSeniales(){
 	while(1){
 		signal(SIGUSR1, limpiarTLB);
 		signal(SIGUSR2, limpiarRam);
+		signal(SIGPOLL, crearHijoYPadre);
 	}
 }
 

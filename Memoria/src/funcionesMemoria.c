@@ -611,7 +611,7 @@ void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam){
 
 
 
-void volcarRamALog(int signal){
+void volcarRamALog(){
 
 	int var;
 

@@ -48,7 +48,7 @@ void escribirBloqueMapeado(char* rutaDeParticion,char* contenidoAEscribir,int nu
 
 	fwrite(aux,tamanioDeBloque,1,archivo);
 
-	//free(aux);
+	free(aux);
 
 	fclose(archivo);
 }
@@ -56,7 +56,7 @@ void escribirBloqueMapeado(char* rutaDeParticion,char* contenidoAEscribir,int nu
 char* leerBloqueMapeado(char* rutaDeParticion,int numDeBloque, int tamanioDeBloque){
 	FILE* archivo = fopen(rutaDeParticion,"r+");
 
-	char* leido = string_new();
+	char* leido = malloc(tamanioDeBloque);// = string_new();
 
 	fseek(archivo,numDeBloque*tamanioDeBloque,SEEK_SET);
 
@@ -97,7 +97,7 @@ char* completarBloque(char* bloqueACompletar, int tamanioDeBloque){
 }
 
 char* recuperarBloque(char* bloqueAVaciar){
-	char* bloque = string_new();
+	char* bloque;// = string_new();
 	int i;
 
 	for (i = 0; i < string_length(bloqueAVaciar); ++i) {
