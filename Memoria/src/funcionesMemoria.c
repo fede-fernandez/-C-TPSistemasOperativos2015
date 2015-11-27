@@ -723,6 +723,8 @@ void limpiarRam(int signal){
 
 	int var;
 
+	log_trace(datosMemoria->logDeMemoria,"COMENZANDO LIMPIEZA DE RAM...");
+
 	tipoTablaPaginas* tablaDePaginas;
 
 	for (var = 0; var < list_size(datosMemoria->listaTablaPaginas); ++var) {
@@ -777,7 +779,11 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 
 void limpiarTLB(int signal){
 
+log_trace(datosMemoria->logDeMemoria,"TLB LIMPIADA");
+
+
 list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
+
 }
 
 void destruirProceso(int pid){
