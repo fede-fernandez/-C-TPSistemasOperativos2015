@@ -72,7 +72,7 @@ void tratarPeticion(int cpuAtendida) {
 		respuesta = quitarProceso(instruccion);
 		break;
 
-	case 'h'://FINALIZAR_PROCESO:
+	case FINALIZAR_PROCESO:
 		respuesta = finalizarMemoria(instruccion);
 		break;
 	}
