@@ -84,7 +84,7 @@ void tratarPeticion(int cpuAtendida) {
 	destruirTipoRespuesta(respuesta);
 
 	//SEÑALES
-	tratarSenial();
+	//tratarSenial();
 }
 
 tipoRespuesta* quitarProceso(tipoInstruccion* instruccion){
@@ -839,17 +839,17 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 			quitarPaginaDeRam(posicionEnRam);
 	}
 }
-
+//señales
 void limpiarTLB(int signal){
+printf("ªndeberia estar limpiando en la TLB\n");
 
-
-
+/*
 	bloquearRecurso(datosMemoria->mutexDeLog);
 	log_trace(datosMemoria->logDeMemoria,"SEÑAL SIGUSR1 RECIBIDA");
 	log_trace(datosMemoria->logDeMemoria,"TLB LIMPIADA");
 	liberarRecurso(datosMemoria->mutexDeLog);
 
-list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
+list_clean_and_destroy_elements(datosMemoria->listaTLB,free);*/
 
 }
 

@@ -54,3 +54,27 @@ void tratarSenial(){
 			break;
 	}
 }
+
+void crearSeniales(){
+
+	while(1){
+		signal(SIGUSR1, limpiarTLB);
+		signal(SIGUSR2, limpiarRam);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

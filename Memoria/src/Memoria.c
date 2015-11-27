@@ -90,7 +90,7 @@ int main(void) {
 
 	//SEÑALES
 	pthread_t hiloSeniales;
-	crearThread(&hiloSeniales,imprimirYElegirOpcionesSeniales,NULL);
+	crearThread(&hiloSeniales,crearSeniales,NULL);
 
 /////////////////////////////////////////////////////////////////////////////////////
 
@@ -98,7 +98,7 @@ int main(void) {
 	while(memoriaActiva){
 
 		//SEÑALES
-		crearHijoYPadre();//no se bien donde ponerlo
+		//crearHijoYPadre();//no se bien donde ponerlo
 
 		listaFiltrada = listaPrincipal;
 		select(datosMemoria->maximoSocket+1,&listaFiltrada,NULL,NULL,NULL);

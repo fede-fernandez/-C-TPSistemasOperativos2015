@@ -8,5 +8,7 @@ void elegirOpcion();
 
 void tratarSenial();
 
+void crearSeniales();
+
 #endif /* FUNCIONESSENIALES_H_ */
 
