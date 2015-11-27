@@ -1,10 +1,3 @@
-/*
- * funcionesMemoria.h
- *
- *  Created on: 4/9/2015
- *      Author: utnso
- */
-
 #ifndef FUNCIONESMEMORIA_H_
 #define FUNCIONESMEMORIA_H_
 
@@ -23,8 +16,10 @@ tipoEstructuraMemoria* datosMemoria;
 
 void setearEstructuraMemoria(tipoEstructuraMemoria*);
 
-int opcionSignalElegida; //variable global para las señales
-
+//SEÑALES
+int opcionSignalElegida;
+int idHijo;
+int estado;
 /*###############################FUNCIONES PRINCIPALES##########################################*/
 
 void tratarPeticion(int cpuAtendida);
@@ -125,6 +120,6 @@ bool puedoReservarEnSWAP(tipoInstruccion* instruccion, tipoRespuesta** respuesta
 
 bool instruccionASwapRealizada(tipoInstruccion* instruccion,tipoRespuesta** respuesta) ;
 
-void volcarRamALog();
+void volcarRamALog(int signal);
 
 #endif /* FUNCIONESMEMORIA_H_ */

@@ -10,8 +10,21 @@
 
 #include "impresionesEnPantalla.h"
 #include "funcionesSeniales.h"
+#include <signal.h>
 //---------------------------------------------------------------
 #define maxConexionesEntrantes 10
+
+//SEÑALES
+void crearHijoYPadre(){
+
+	if((idHijo = fork()) == 0){
+		//hijo
+		signal(SIGPOLL, volcarRamALog);
+		exit(0);
+	}else {
+		//padre
+	}
+}
 
 int main(void) {
 
@@ -78,8 +91,10 @@ int main(void) {
 
 	while(memoriaActiva){
 
-		listaFiltrada = listaPrincipal;
+		//SEÑALES
+		crearHijoYPadre();//no se bien donde ponerlo
 
+		listaFiltrada = listaPrincipal;
 		select(datosMemoria->maximoSocket+1,&listaFiltrada,NULL,NULL,NULL);
 
 		int var;
@@ -92,21 +107,16 @@ int main(void) {
 					FD_SET(socketCpuEntrante,&listaPrincipal);
 					datosMemoria->maximoSocket = maximoEntre(datosMemoria->maximoSocket,socketCpuEntrante);
 				}
-
-				else 	tratarPeticion(var);
+				else tratarPeticion(var);
+			}
 		}
-	}
 
 	}
 
 	destruirLogger(datosMemoria->logDeMemoria);
-
 	free(datosMemoria);
-
 	liberarSocket(socketParaCpus);
-
 	liberarSocket(socketParaSwap);
-
 	destruirConfigMemoria(configuracion);
 
 	return EXIT_SUCCESS;
