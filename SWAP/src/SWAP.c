@@ -87,9 +87,10 @@ int main(void) {
 	list_destroy_and_destroy_elements(listaDeHuecosUtilizados,(void*)destruirHuecoUtilizado);
 	list_destroy_and_destroy_elements(listaDeHuecosLibres,(void*)destruirHuecoLibre);
 	destruirConfigSWAP(configuracion);
-	destruirLogger(logger);
-
+	
 	logearSeguimiento("Proceso finalizado",logger);
+	
+	destruirLogger(logger);
 
 
 	return EXIT_SUCCESS;
