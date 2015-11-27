@@ -296,30 +296,27 @@ int buscarPagina(int nroPagina,int pid){
 
 	aumentarAccesosAProceso(pid);
 
-	if(estaHabilitadaLaTLB()){
-
+	if(estaHabilitadaLaTLB())
 		posicionDePag = buscarPaginaEnTLB(nroPagina,pid);
-	}
 
-	if(posicionDePag<0){
 
+	if(posicionDePag<0)
 		posicionDePag = buscarPaginaEnTabla(nroPagina,pid);
 
-		}
 
-	if(posicionDePag<0)//Documento page fault
-		aumentarPageFaults(pid);
+	if(posicionDePag==NO_EXISTE)
+		aumentarPaginasAsignadas(pid);
 
 
 	if(posicionDePag==EN_SWAP||posicionDePag==NO_EXISTE){
+
+	aumentarPageFaults(pid);//Documento page fault
 
 	tipoRespuesta* respuesta;
 
 	tipoInstruccion* instruccion = crearTipoInstruccion(pid,LEER,nroPagina,"");
 
 	posicionDePag = traerPaginaDesdeSwap(instruccion,&respuesta);
-
-	aumentarPaginasAsignadas(pid);
 
 	destruirTipoRespuesta(respuesta);
 
@@ -332,6 +329,8 @@ int buscarPagina(int nroPagina,int pid){
 int buscarPaginaEnTLB(int nroPagina,int pid){
 
 	datosMemoria->accesosTLB++;
+
+	printf("Accesos de TLB: %d\n",datosMemoria->accesosTLB);
 
 	int var, posicionDePagina = -1;
 
@@ -346,6 +345,8 @@ int buscarPaginaEnTLB(int nroPagina,int pid){
 			posicionDePagina = estructuraTLBActual->posicionEnRAM;
 
 			datosMemoria->aciertosTLB++;
+
+			printf("Aciertos de TLB: %d\n",datosMemoria->aciertosTLB);
 
 			bloquearRecurso(datosMemoria->mutexDeLog);
 			log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d ENCONTRADA EN TLB EN EL FRAME %d",nroPagina,pid,posicionDePagina);
@@ -581,6 +582,8 @@ void modificarUso(int nroPagina,int pid,bool uso){
 
 void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam){
 
+	printf("Agregando a TLB pagina %d del proceso %d en el frame %d",nroPagina,pid,posicionEnRam);
+
 
 	if(dondeEstaPaginaEnTLB(nroPagina,pid)>=0)
 		return;
@@ -660,6 +663,8 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 
 		setearHuecoEnListaHuecosRAM(posicionEnRam,false);
 	}
+
+	printf("Pagina %d del proceso %d agregada en el frame %d",nroPagina,pid,posicionEnRam);
 
 	bloquearRecurso(datosMemoria->mutexDeLog);
 	log_trace(datosMemoria->logDeMemoria,"ESCRITURA EN RAM DE PAGINA %d DEL PROCESO %d EN EL MARCO %d",nroPagina,pid,posicionEnRam);
@@ -844,7 +849,6 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 //señales
 void limpiarTLB(int signal){
 
-
 	bloquearRecurso(datosMemoria->mutexDeLog);
 	if(signal==SIGUSR1)
 	log_trace(datosMemoria->logDeMemoria,"SEÑAL SIGUSR1 RECIBIDA");
@@ -894,6 +898,8 @@ void aumentarPageFaults(int pid){
 	tipoTablaPaginas* tabla = traerTablaDePaginas(pid);
 
 	tabla->cantidadDePageFaults++;
+
+	printf("Page faults: %d\n",tabla->cantidadDePageFaults);
 }
 
 int dondeEstaPaginaEnTLB(int nroPagina,int pid){
