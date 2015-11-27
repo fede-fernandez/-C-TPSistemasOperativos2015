@@ -1,10 +1,11 @@
 #include "funcionesSeniales.h"
 #include "funcionesMemoria.h"
 
-extern int opcionSignalElegida; // variable global, su declaracion esta en funcionesMemoria.h
+//extern int opcionSignalElegida;
+extern t_list* listaSeniales;
+extern void crearHijoYPadre();
 
-void crearHijoYPadre();
-
+/*
 void imprimirYElegirOpcionesSeniales(){
 	while(true){
 		//system("clear");
@@ -38,11 +39,15 @@ void elegirOpcion(){
 			break;
 	}
 }
-
+*/
 
 void tratarSenial(){
 
-	switch(opcionSignalElegida){
+	if (list_size(listaSeniales) == 0) return;
+
+	int* opcionSignalElegida = list_get(listaSeniales,0);
+
+	switch(*opcionSignalElegida){
 		case 1:
 			limpiarTLB();
 			break;
@@ -56,22 +61,34 @@ void tratarSenial(){
 			break;
 	}
 
-	opcionSignalElegida = 0;
+	list_remove_and_destroy_element(listaSeniales, 0, free);
+	//*opcionSignalElegida = 0;
 }
 
 void prepararSenialLimpiarTLB(int signal){
-	opcionSignalElegida = 1;
+	agregarSenialEnLaLista(1);
+	//opcionSignalElegida = 1;
 }
 
 void prepararSenialLimpiarRAM(int signal){
-	opcionSignalElegida = 2;
+	agregarSenialEnLaLista(2);
+	//opcionSignalElegida = 2;
 }
 
 void prepararSenialVolcarRamALog(int signal){
-	opcionSignalElegida = 3;
+	agregarSenialEnLaLista(3);
+	//opcionSignalElegida = 3;
+}
+
+void agregarSenialEnLaLista(int signal){
+	int* opcionSignalElegida = malloc(sizeof(int));
+		*opcionSignalElegida = signal;
+
+	list_add(listaSeniales, opcionSignalElegida);
 }
 
 void crearSeniales(){
+	listaSeniales = list_create();
 
 	while(1){
 		signal(SIGUSR1, prepararSenialLimpiarTLB);

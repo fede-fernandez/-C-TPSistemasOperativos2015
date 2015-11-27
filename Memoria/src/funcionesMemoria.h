@@ -18,7 +18,8 @@ tipoEstructuraMemoria* datosMemoria;
 void setearEstructuraMemoria(tipoEstructuraMemoria*);
 
 //SEÑALES
-int opcionSignalElegida;
+//int opcionSignalElegida;
+t_list* listaSeniales;
 int idHijo;
 int estado;
 /*###############################FUNCIONES PRINCIPALES##########################################*/
