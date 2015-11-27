@@ -103,6 +103,9 @@ tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,t_list* listaDeHue
 }
 
 tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion, t_log* logger, int retardoDeLectura){
+
+	sleep(retardoDeLectura);
+
 	tipoRespuesta* respuestaASolicitudDeLectura;
 
 	char* contenidoDePagina;
@@ -122,7 +125,7 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 
 	respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
 
-	sleep(retardoDeLectura);
+
 
 	string_append_with_format(&textoALogear,"Lectura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length(contenidoDePagina),contenidoDePagina);
 	logearSeguimiento(textoALogear,logger);
@@ -134,6 +137,8 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 }
 
 tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion, t_log* logger, int retardoDeEscritura){
+	sleep(retardoDeEscritura);
+
 	tipoRespuesta* respuestaASolicitudDeEscritura;
 	char* textoALogear = string_new();
 
@@ -149,7 +154,7 @@ tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,cha
 
 	respuestaASolicitudDeEscritura = crearTipoRespuesta(PERFECTO,OK_PAGINA_ESCRITA);
 
-	sleep(retardoDeEscritura);
+
 
 	string_append_with_format(&textoALogear,"Escritura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length(contenidoAEscribir),contenidoAEscribir);
 	logearSeguimiento(textoALogear,logger);

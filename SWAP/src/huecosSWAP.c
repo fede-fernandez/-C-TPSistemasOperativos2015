@@ -319,8 +319,8 @@ void actualizarListaDeHuecosLibres(t_list* listaDeHuecosLibres, int base, int ca
 
 //	actualizarListaDeLibres(listaDeHuecosLibres);
 
-	printf("Lista post-union\n");
-	imprimirListaDeHuecosLibres(listaDeHuecosLibres);
+//	printf("Lista post-union\n");
+//	imprimirListaDeHuecosLibres(listaDeHuecosLibres);
 
 	if (indiceAnterior != -1) {
 		list_remove_and_destroy_element(listaDeHuecosLibres,indiceAnterior,(void*)destruirHuecoLibre);
