@@ -14,6 +14,7 @@ void imprimirYElegirOpcionesSeniales(){
 
 		printf("Elija una opcion opcion: ");
 		scanf("%d",&opcionSignalElegida);
+
 		elegirOpcion();
 	}
 }
@@ -22,12 +23,10 @@ void elegirOpcion(){
 
 	switch(opcionSignalElegida){
 		case 1:
-			//printf("\nEspero la señal para limpiar TLB\n");
 			signal(SIGUSR1, limpiarTLB);
 			break;
 
 		case 2:
-			//printf("\nEspero la señal para limpiar la RAM\n");
 			signal(SIGUSR2, limpiarRam);
 			break;
 
@@ -40,8 +39,6 @@ void elegirOpcion(){
 
 
 void tratarSenial(){
-
-	//printf("\nMando la señal para que ejecute lo que eligio\n");
 
 	switch(opcionSignalElegida){
 		case 1:

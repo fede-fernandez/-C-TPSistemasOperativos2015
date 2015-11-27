@@ -30,7 +30,7 @@ typedef struct{
 }tipoHuecoUtilizado;
 
 typedef struct{
-	int baseDeMProc;
+	int base;
 	int cantidadDePaginasQueOcupa;
 }tipoHuecoLibre;
 
