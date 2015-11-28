@@ -8,9 +8,11 @@ C_SRCS += \
 ../commonsDeAsedio/configuracion.c \
 ../commonsDeAsedio/error.c \
 ../commonsDeAsedio/estructuras.c \
+../commonsDeAsedio/log.c \
 ../commonsDeAsedio/mmap.c \
 ../commonsDeAsedio/select.c \
 ../commonsDeAsedio/semaforos.c \
+../commonsDeAsedio/serializacion.c \
 ../commonsDeAsedio/thread.c 
 
 OBJS += \
@@ -18,9 +20,11 @@ OBJS += \
 ./commonsDeAsedio/configuracion.o \
 ./commonsDeAsedio/error.o \
 ./commonsDeAsedio/estructuras.o \
+./commonsDeAsedio/log.o \
 ./commonsDeAsedio/mmap.o \
 ./commonsDeAsedio/select.o \
 ./commonsDeAsedio/semaforos.o \
+./commonsDeAsedio/serializacion.o \
 ./commonsDeAsedio/thread.o 
 
 C_DEPS += \
@@ -28,9 +32,11 @@ C_DEPS += \
 ./commonsDeAsedio/configuracion.d \
 ./commonsDeAsedio/error.d \
 ./commonsDeAsedio/estructuras.d \
+./commonsDeAsedio/log.d \
 ./commonsDeAsedio/mmap.d \
 ./commonsDeAsedio/select.d \
 ./commonsDeAsedio/semaforos.d \
+./commonsDeAsedio/serializacion.d \
 ./commonsDeAsedio/thread.d 
 
 

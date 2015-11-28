@@ -1,0 +1,23 @@
+[INFO] 03:00:33:98 PLANIFICADOR/(20179:20179): 
+
+
+[INFO] 03:01:13:93 PLANIFICADOR/(20179:20183): 
+ mProc 1 - Iniciado
+ 
+
+[INFO] 03:01:24:213 PLANIFICADOR/(20179:20183): 
+ mProc 1 - Pagina 0 escrita: Corto
+ 
+
+[INFO] 03:01:35:253 PLANIFICADOR/(20179:20183): 
+ mProc 1 - Pagina 1 escrita: Corto
+ 
+
+[INFO] 03:01:46:297 PLANIFICADOR/(20179:20183): 
+ mProc 1 - Pagina 2 escrita: Corto
+ 
+
+[INFO] 03:01:51:299 PLANIFICADOR/(20179:20183): 
+ mProc 1 en entrada-salida de tiempo 30
+ 
+

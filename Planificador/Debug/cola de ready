@@ -1,0 +1,7 @@
+[TRACE] 03:00:33:97 PLANIFICADOR/(20179:20179):          
+
+       
+[TRACE] 03:01:13:93 PLANIFICADOR/(20179:20183):               ID_mProc: 1 -->  corto.cod | ingresa a la cola de ready, porque volvio por quantum de: 1 
+[TRACE] 03:01:24:213 PLANIFICADOR/(20179:20183):               ID_mProc: 1 -->  corto.cod | ingresa a la cola de ready, porque volvio por quantum de: 1 
+[TRACE] 03:01:35:253 PLANIFICADOR/(20179:20183):               ID_mProc: 1 -->  corto.cod | ingresa a la cola de ready, porque volvio por quantum de: 1 
+[TRACE] 03:01:46:297 PLANIFICADOR/(20179:20183):               ID_mProc: 1 -->  corto.cod | ingresa a la cola de ready, porque volvio por quantum de: 1 

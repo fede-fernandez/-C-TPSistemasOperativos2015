@@ -1,0 +1,13 @@
+[TRACE] 03:00:33:98 PLANIFICADOR/(20179:20179):         
+
+      
+[TRACE] 03:01:08:50 PLANIFICADOR/(20179:20182):               cpu_ID: 1 -->  TRABAJANDO.. | ID_mProc: 1 --> corto.cod ( ejecutando ) 
+[TRACE] 03:01:13:93 PLANIFICADOR/(20179:20183):               cpu_ID: 1 -->  DISPONIBLE | ID_mProc: 1 --> corto.cod ( recibido ) 
+[TRACE] 03:01:13:93 PLANIFICADOR/(20179:20182):               cpu_ID: 1 -->  TRABAJANDO.. | ID_mProc: 1 --> corto.cod ( ejecutando ) 
+[TRACE] 03:01:24:213 PLANIFICADOR/(20179:20183):               cpu_ID: 1 -->  DISPONIBLE | ID_mProc: 1 --> corto.cod ( recibido ) 
+[TRACE] 03:01:24:213 PLANIFICADOR/(20179:20182):               cpu_ID: 1 -->  TRABAJANDO.. | ID_mProc: 1 --> corto.cod ( ejecutando ) 
+[TRACE] 03:01:35:253 PLANIFICADOR/(20179:20183):               cpu_ID: 1 -->  DISPONIBLE | ID_mProc: 1 --> corto.cod ( recibido ) 
+[TRACE] 03:01:35:253 PLANIFICADOR/(20179:20182):               cpu_ID: 1 -->  TRABAJANDO.. | ID_mProc: 1 --> corto.cod ( ejecutando ) 
+[TRACE] 03:01:46:297 PLANIFICADOR/(20179:20183):               cpu_ID: 1 -->  DISPONIBLE | ID_mProc: 1 --> corto.cod ( recibido ) 
+[TRACE] 03:01:46:297 PLANIFICADOR/(20179:20182):               cpu_ID: 1 -->  TRABAJANDO.. | ID_mProc: 1 --> corto.cod ( ejecutando ) 
+[TRACE] 03:01:51:299 PLANIFICADOR/(20179:20183):               cpu_ID: 1 -->  DISPONIBLE | ID_mProc: 1 --> corto.cod ( recibido ) 

@@ -59,6 +59,8 @@ typedef struct{
 	char tipoDeAlgoritmoRAM;
 	int aciertosTLB;
 	int accesosTLB;
+	pthread_mutex_t* mutexDeLog;
+
 	//logs
 	t_log* logDeSeniales;
 	t_log* logDeAlgoritmos;
