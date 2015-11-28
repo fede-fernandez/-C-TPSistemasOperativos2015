@@ -319,11 +319,11 @@ void loguearColaDeAlgoritmo(tipoTablaPaginas* tabla){
 	int i;
 	for (i = 0; i < list_size(tabla->listaParaAlgoritmo); ++i) {
 
-		int aux = (int)(*(int*)list_get(tabla->listaParaAlgoritmo,i));
-		log_trace(datosMemoria->logDeAlgoritmos,"%d", aux);
+		int* aux = list_get(tabla->listaParaAlgoritmo,i);
+		log_trace(datosMemoria->logDeAlgoritmos,"%d", *aux);
 
-		if(datosMemoria->tipoDeAlgoritmoRAM == CLOCK_MODIFICADO){
-			tipoPagina* pagina = list_get(tabla->frames, aux);
+		if(datosMemoria->tipoDeAlgoritmoRAM == CLOCK_MODIFICADO&&*aux>=0){
+			tipoPagina* pagina = list_get(tabla->frames, *aux);
 
 			log_trace(datosMemoria->logDeAlgoritmos,"M:%d | U:%d", pagina->modificado, pagina->usado);
 		}
