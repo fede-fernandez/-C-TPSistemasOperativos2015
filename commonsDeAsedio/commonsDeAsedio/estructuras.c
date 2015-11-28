@@ -10,57 +10,57 @@
 
 tipoPCB* recibirPCB(int socketEnviador){
 
-	tipoPCB* unPCBRecibido;
+//	tipoPCB* unPCBRecibido;
+//
+//	int tamanioDeDatos;
+//	recibirMensajeCompleto(socketEnviador,&tamanioDeDatos,sizeof(int));
+//
+//	tipoMensaje* unMensajeRecibido = crearMensaje(tamanioDeDatos);
+//	recibirMensajeCompleto(socketEnviador,unMensajeRecibido->datos,unMensajeRecibido->tamanio);
+//
+//	unPCBRecibido = deserializarPCB(unMensajeRecibido);
+//
+//	destruirMensaje(unMensajeRecibido);
+//
+//	return unPCBRecibido;
 
-	int tamanioDeDatos;
-	recibirMensajeCompleto(socketEnviador,&tamanioDeDatos,sizeof(int));
 
-	tipoMensaje* unMensajeRecibido = crearMensaje(tamanioDeDatos);
-	recibirMensajeCompleto(socketEnviador,unMensajeRecibido->datos,unMensajeRecibido->tamanio);
+	size_t tamanioRuta;
 
-	unPCBRecibido = deserializarPCB(unMensajeRecibido);
+	tipoPCB* respuesta = malloc(sizeof(tipoPCB));
 
-	destruirMensaje(unMensajeRecibido);
+	recibirMensajeCompleto(socketEnviador, &(respuesta->pid), sizeof(int));
 
-	return unPCBRecibido;
+	recibirMensajeCompleto(socketEnviador, &(respuesta->insPointer), sizeof(int));
 
+	recibirMensajeCompleto(socketEnviador, &(respuesta->estado), sizeof(char));
 
-//	size_t tamanioRuta;
-//
-//	tipoPCB* respuesta = malloc(sizeof(tipoPCB));
-//
-//	recibirMensajeCompleto(socketEnviador, &(respuesta->pid), sizeof(int));
-//
-//	recibirMensajeCompleto(socketEnviador, &(respuesta->insPointer), sizeof(int));
-//
-//	recibirMensajeCompleto(socketEnviador, &(respuesta->estado), sizeof(char));
-//
-//	recibirMensajeCompleto(socketEnviador, &tamanioRuta, sizeof(size_t));
-//
-//	respuesta->ruta = malloc(tamanioRuta);
-//
-//	recibirMensajeCompleto(socketEnviador, respuesta->ruta, tamanioRuta);
-//
-//	return respuesta;
+	recibirMensajeCompleto(socketEnviador, &tamanioRuta, sizeof(size_t));
+
+	respuesta->ruta = malloc(tamanioRuta);
+
+	recibirMensajeCompleto(socketEnviador, respuesta->ruta, tamanioRuta);
+
+	return respuesta;
 
 }
 
 void enviarPCB(int socketCliente, tipoPCB* PCB){
 
-	tipoMensaje* unMensajeAEnviar = serializarPCB(PCB);
+//	tipoMensaje* unMensajeAEnviar = serializarPCB(PCB);
+//
+//	enviarMensaje(socketCliente,&unMensajeAEnviar->tamanio,sizeof(int));
+//	enviarMensaje(socketCliente,unMensajeAEnviar->datos,unMensajeAEnviar->tamanio);
+//
+//	destruirMensaje(unMensajeAEnviar);
 
-	enviarMensaje(socketCliente,&unMensajeAEnviar->tamanio,sizeof(int));
-	enviarMensaje(socketCliente,unMensajeAEnviar->datos,unMensajeAEnviar->tamanio);
 
-	destruirMensaje(unMensajeAEnviar);
-
-
-//	size_t tamanioRuta = strlen(PCB->ruta) + sizeof(char);
-//	enviarMensaje(socketCliente, &(PCB->pid), sizeof(int));
-//	enviarMensaje(socketCliente, &(PCB->insPointer), sizeof(int));
-//	enviarMensaje(socketCliente, &(PCB->estado), sizeof(char));
-//	enviarMensaje(socketCliente, &tamanioRuta, sizeof(int));
-//	enviarMensaje(socketCliente, PCB->ruta, tamanioRuta);
+	size_t tamanioRuta = strlen(PCB->ruta) + sizeof(char);
+	enviarMensaje(socketCliente, &(PCB->pid), sizeof(int));
+	enviarMensaje(socketCliente, &(PCB->insPointer), sizeof(int));
+	enviarMensaje(socketCliente, &(PCB->estado), sizeof(char));
+	enviarMensaje(socketCliente, &tamanioRuta, sizeof(int));
+	enviarMensaje(socketCliente, PCB->ruta, tamanioRuta);
 }
 
 void imprimirPCB(tipoPCB* PCB)

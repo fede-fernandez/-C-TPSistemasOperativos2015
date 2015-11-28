@@ -28,9 +28,9 @@
 #define FINALIZAR_PROCESO 'h'//Esto lo agrego para que los procesos terminen de forma ordenada
 
 typedef struct{
-	char estado;
 	int pid;
 	int insPointer;
+	char estado;
 	char* ruta;
 }__attribute__((packed)) tipoPCB;
 
