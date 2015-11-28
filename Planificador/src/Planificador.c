@@ -807,7 +807,7 @@ void configurar(){
 	puerto = configuracion->puertoPlanificador;
 	quantum = configuracion->quantum;
 
-	printf("Quantum: %d \n", quantum);
+
 
 	destruirConfig(configuracion);
 

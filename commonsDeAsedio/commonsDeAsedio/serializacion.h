@@ -13,7 +13,7 @@
 #include <stdlib.h>
 
 #include <commons/string.h>
-#include <commonsDeAsedio/estructuras.h>
+#include "estructuras.h"
 
 typedef struct{
 	int tamanio;
