@@ -96,12 +96,13 @@ tipoRespuesta* quitarProceso(tipoInstruccion* instruccion){
 
 	if(instruccionASwapRealizada(instruccion,&respuesta)){//Aca swap me devolvio todo ok aunque el proceso no existia!!
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
-		log_trace(datosMemoria->logDeMemoria,"FINALIZACION DEL PROCESO %d CON PORCENTAJE DE PAGE FAULTS DEL %.1f%%",instruccion->pid,porcentajeDePageFaults(instruccion->pid));
-		liberarRecurso(datosMemoria->mutexDeLog);
+		double pageFaults = porcentajeDePageFaults(instruccion->pid);
 
 		destruirProceso(instruccion->pid);
 
+		bloquearRecurso(datosMemoria->mutexDeLog);
+		log_trace(datosMemoria->logDeMemoria,"FINALIZACION DEL PROCESO %d CON PORCENTAJE DE PAGE FAULTS DEL %.1f%%",instruccion->pid,pageFaults);
+		liberarRecurso(datosMemoria->mutexDeLog);
 	}
 
 	return respuesta;
@@ -302,11 +303,6 @@ int buscarPagina(int nroPagina,int pid){
 
 	if(posicionDePag<0)
 		posicionDePag = buscarPaginaEnTabla(nroPagina,pid);
-
-
-	if(posicionDePag==NO_EXISTE)
-		aumentarPaginasAsignadas(pid);
-
 
 	if(posicionDePag==EN_SWAP||posicionDePag==NO_EXISTE){
 
@@ -652,6 +648,9 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 
 		if(estaModificada)
 			llevarPaginaASwap(nroPaginaAReemplazar,pid,posicionEnRam);
+		else
+			modificarDatosDePagina(nroPaginaAReemplazar,pid,-1,EN_SWAP,false,false);
+
 	}
 
 	else {
@@ -659,6 +658,8 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 		posicionEnRam = buscarHuecoRAM();//list_size(datosMemoria->listaRAM);
 
 		setearHuecoEnListaHuecosRAM(posicionEnRam,false);
+
+		aumentarPaginasAsignadas(pid);
 	}
 
 
@@ -703,7 +704,7 @@ double porcentajeDePageFaults(int pid){
 	if(tabla->cantidadDeAccesos==0)
 		return 0;
 
-	return ((double)(tabla->cantidadDePageFaults)/(double)(tabla->cantidadDeAccesos))*100;
+	return tabla->cantidadDePageFaults;//((double)(tabla->cantidadDePageFaults)/(double)(tabla->cantidadDeAccesos))*100;
 }
 
 double tasaAciertosTLB(){
@@ -862,12 +863,24 @@ void destruirProceso(int pid){
 
 			tipoPagina* pagina;
 
+			bloquearRecurso(datosMemoria->mutexDeLog);
+			log_trace(datosMemoria->logDeMemoria,"FINALIZANDO PROCESO CON LAS SIGUIENTES PAGINAS EN RAM:");
+			liberarRecurso(datosMemoria->mutexDeLog);
+
+
 			int var;
 			for (var = 0; var < list_size(tablaDePaginas->frames); ++var) {
 
 				quitarDeTLB(var,pid);
 
 				pagina = list_get(tablaDePaginas->frames,var);
+
+				if(pagina->posicionEnRAM>=0){
+					bloquearRecurso(datosMemoria->mutexDeLog);
+					log_trace(datosMemoria->logDeMemoria,"PAGINA %d EN FRAME %d ",var,pagina->posicionEnRAM);
+					liberarRecurso(datosMemoria->mutexDeLog);
+				}
+
 
 				quitarPaginaDeRam(pagina->posicionEnRAM);
 			}
