@@ -7,7 +7,7 @@
 #include <commonsDeAsedio/thread.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <sys/wait.h>
 #include "impresionesEnPantalla.h"
 #include "funcionesSeniales.h"
 #include <signal.h>
@@ -64,13 +64,15 @@ int main(void) {
 
 	inicializarMutex(&mutex);
 
-	datosMemoria->mutexDeLog = &mutex;
-
 	datosMemoria->socketCpus = socketParaCpus;
 
 	listaSeniales = list_create();//Lista de señales
 
 	system("if [ -f logMemoria ]; then rm logMemoria\nfi");//Si ya existe el log lo borra
+	system("if [ -f logDeTLB ]; then rm logDeTLB\nfi");
+	system("if [ -f logDeSwapeo ]; then rm logDeSwapeo\nfi");
+	system("if [ -f logDeSeniales ]; then rm logDeSeniales\nfi");
+	system("if [ -f logDeAlgoritmos ]; then rm logDeAlgoritmos\nfi");
 
 	datosMemoria->logDeAlgoritmos = log_create("logDeAlgoritmos","Administrador de Memoria",false,LOG_LEVEL_TRACE);
 	datosMemoria->logDeTLB = log_create("logDeTLB","Administrador de Memoria",false,LOG_LEVEL_TRACE);
@@ -125,9 +127,11 @@ int main(void) {
 
 	}
 
-	destruirMutex(datosMemoria->mutexDeLog);
-
 	destruirLogger(datosMemoria->logDeMemoria);
+	destruirLogger(datosMemoria->logDeAlgoritmos);
+	destruirLogger(datosMemoria->logDeSeniales);
+	destruirLogger(datosMemoria->logDeSwapeo);
+	destruirLogger(datosMemoria->logDeTLB);
 	free(datosMemoria);
 	liberarSocket(socketParaCpus);
 	liberarSocket(socketParaSwap);
