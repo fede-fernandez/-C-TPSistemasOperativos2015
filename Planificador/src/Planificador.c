@@ -813,20 +813,33 @@ void configurar(){
 
 }
 
+
+
 void logueo(){
 
 	colita = log_create("cola de ready", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+	log_trace(colita, "         \n\n       ");
 
 	proceso = log_create("comienzo y fin de mproc", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+	log_trace(proceso, " \n\n ");
+
 
 	conexiones = log_create("actividad CPUs", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+	log_trace(conexiones, "        \n\n      ");
+
 
 	rafagas = log_create("resultado de Ráfagas", "PLANIFICADOR", 0, LOG_LEVEL_INFO);
+	log_info(rafagas, "\n\n");
+
 
 	metricas = log_create(" metricas ", "PLANIFICADOR", 0, LOG_LEVEL_INFO);
+	log_info(metricas, "     \n\n   ");
+
 
 
 }
+
+
 
 void log_actividad_cpus(int id_cpu, char estado[15],int id_proceso,char path[30], char estado_pcb[15]){
 
