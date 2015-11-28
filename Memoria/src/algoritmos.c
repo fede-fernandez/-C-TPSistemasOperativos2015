@@ -309,7 +309,24 @@ int ejecutarAlgoritmo(int* nroPagina,int pid,bool* estaModificada){
 	}
 
 	return dondeEstaEnRam;
+}
 
+void loguearColaDeAlgoritmo(tipoTablaPaginas* tabla){
+	log_trace(datosMemoria->logDeAlgoritmos,"Cola de algoritmo del proceso %d:", tabla->pid);
+
+	int i;
+	for (i = 0; i < list_size(tabla->listaParaAlgoritmo); ++i) {
+
+		int aux = (int)(*(int*)list_get(tabla->listaParaAlgoritmo,i));
+		log_trace(datosMemoria->logDeAlgoritmos,"%d", aux);
+
+		if(datosMemoria->tipoDeAlgoritmoRAM == CLOCK_MODIFICADO){
+			tipoPagina* pagina = list_get(tabla->frames, aux);
+
+			log_trace(datosMemoria->logDeAlgoritmos,"Modificado:%d | Uso:%d", pagina->modificado, pagina->usado);
+		}
+	}
+	log_trace(datosMemoria->logDeAlgoritmos,"Puntero: %d", tabla->punteroParaAlgoritmo);
 }
 
 /*void agregarAccesoPorFIFO(int nroPagina,int pid){

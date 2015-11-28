@@ -160,7 +160,7 @@ void imprimirTablas(t_list* tablas){
 
 		imprimirPaginas(tabla->frames);
 	}
-	}
+}
 
 void imprimirPaginas(t_list* frames){
 	printf("PAGINAS:\n");

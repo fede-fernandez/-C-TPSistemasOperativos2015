@@ -100,9 +100,7 @@ tipoRespuesta* quitarProceso(tipoInstruccion* instruccion){
 
 		destruirProceso(instruccion->pid);
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
 		log_trace(datosMemoria->logDeMemoria,"FINALIZACION DEL PROCESO %d CON PORCENTAJE DE PAGE FAULTS DEL %.1f%%",instruccion->pid,pageFaults);
-		liberarRecurso(datosMemoria->mutexDeLog);
 	}
 
 	return respuesta;
@@ -154,9 +152,7 @@ tipoRespuesta* iniciar(tipoInstruccion* instruccion) {
 
 	if (puedoReservarEnSWAP(instruccion, &respuesta)) {
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
 		log_trace(datosMemoria->logDeMemoria,"INICIO DE PROCESO %d DE %d PAGINAS",instruccion->pid,instruccion->nroPagina);
-		liberarRecurso(datosMemoria->mutexDeLog);
 
 		tipoTablaPaginas* tablaDePaginasNueva = malloc(sizeof(tipoTablaPaginas));
 
@@ -244,9 +240,7 @@ bool puedoReservarEnSWAP(tipoInstruccion* instruccion, tipoRespuesta** respuesta
 
 tipoRespuesta* leerPagina(tipoInstruccion* instruccion){
 
-	bloquearRecurso(datosMemoria->mutexDeLog);
 	log_trace(datosMemoria->logDeMemoria,"LECTURA DE LA PAGINA %d DEL PROCESO %d ",instruccion->nroPagina,instruccion->pid);
-	liberarRecurso(datosMemoria->mutexDeLog);
 
 	tipoRespuesta* respuesta;
 
@@ -341,19 +335,13 @@ int buscarPaginaEnTLB(int nroPagina,int pid){
 
 			datosMemoria->aciertosTLB++;
 
-
-			bloquearRecurso(datosMemoria->mutexDeLog);
 			log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d ENCONTRADA EN TLB EN EL FRAME %d",nroPagina,pid,posicionDePagina);
-			liberarRecurso(datosMemoria->mutexDeLog);
-
 			break;
 		}
 	}
 
 	if(posicionDePagina<0){
-		bloquearRecurso(datosMemoria->mutexDeLog);
 		log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d NO ENCONTRADA EN TLB",nroPagina,pid);
-		liberarRecurso(datosMemoria->mutexDeLog);
 	}
 
 
@@ -370,18 +358,13 @@ int buscarPaginaEnTabla(int nroPagina,int pid){//Me hace ruido que no haya que h
 
 		if(paginaActual->presente!=EN_RAM){
 
-			bloquearRecurso(datosMemoria->mutexDeLog);
 			log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d NO ENCONTRADA EN TABLA DE PAGINAS",nroPagina,pid);
-			liberarRecurso(datosMemoria->mutexDeLog);
 
 			return paginaActual->presente;
 		}
 
 		else {
-			bloquearRecurso(datosMemoria->mutexDeLog);
 			log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d ENCONTRADA EN TABLA DE PAGINAS EN EL FRAME %d",nroPagina,pid,paginaActual->posicionEnRAM);
-			liberarRecurso(datosMemoria->mutexDeLog);
-
 			return paginaActual->posicionEnRAM;
 		}
 }
@@ -403,10 +386,7 @@ tipoTablaPaginas* traerTablaDePaginas(pid){
 
 char* traerPaginaDesdeRam(int direccion){
 
-	bloquearRecurso(datosMemoria->mutexDeLog);
 	log_trace(datosMemoria->logDeMemoria,"ACCESO A RAM EN EL FRAME %d",direccion);
-	liberarRecurso(datosMemoria->mutexDeLog);
-
 
 	dormirPorAccesoARAM();
 
@@ -445,18 +425,15 @@ int traerPaginaDesdeSwap(tipoInstruccion* instruccion, tipoRespuesta** respuesta
 
 	if(instruccionASwapRealizada(instruccion,respuesta)){
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
+		log_trace(datosMemoria->logDeSwapeo,"PAGINA %d DEL PROCESO %d TRAIDA DE SWAP",instruccion->nroPagina,instruccion->pid);
 		log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d TRAIDA DE SWAP",instruccion->nroPagina,instruccion->pid);
-		liberarRecurso(datosMemoria->mutexDeLog);
 
 		char* nuevaPagina = string_duplicate((*respuesta)->informacion);
 
 		posicionEnRam = agregarPagina(instruccion->nroPagina,instruccion->pid,nuevaPagina);
 	}
 	else{
-		bloquearRecurso(datosMemoria->mutexDeLog);
-		log_error(datosMemoria->logDeMemoria,"FALLO DE LECTURA DE LA PAGINA %d DEL PROCESO %d EN SWAP",instruccion->nroPagina,instruccion->pid);
-		liberarRecurso(datosMemoria->mutexDeLog);
+		log_error(datosMemoria->logDeSwapeo,"FALLO DE LECTURA DE LA PAGINA %d DEL PROCESO %d EN SWAP",instruccion->nroPagina,instruccion->pid);
 	}
 
 	return posicionEnRam;
@@ -471,45 +448,29 @@ int traerPaginaDesdeSwap(tipoInstruccion* instruccion, tipoRespuesta** respuesta
 
 tipoRespuesta* escribirPagina(tipoInstruccion* instruccion){
 
-	bloquearRecurso(datosMemoria->mutexDeLog);
 	log_trace(datosMemoria->logDeMemoria,"ESCRITURA DE LA PAGINA %d DEL PROCESO %d ",instruccion->nroPagina,instruccion->pid);
-	liberarRecurso(datosMemoria->mutexDeLog);
-
 
 	if(!procesoExiste(instruccion->pid)){
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
 		log_error(datosMemoria->logDeMemoria,"TABLA DE PAGINAS DE PROCESO NO EXISTENTE");
-		liberarRecurso(datosMemoria->mutexDeLog);
-
 		return crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso no existente");
 	}
 
 	if(tamanioDePaginaMayorAlSoportado(instruccion->texto)){
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
 		log_error(datosMemoria->logDeMemoria,"TAMAÑO DE PAGINA MAYOR AL DE MARCO");
-		liberarRecurso(datosMemoria->mutexDeLog);
-
 		return crearTipoRespuesta(MANQUEADO,"Tamaño de pagina mayor al de marco");
 	}
 
 	if(numeroDePaginaIncorrecto(instruccion->nroPagina,instruccion->pid)){
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
 		log_error(datosMemoria->logDeMemoria,"NUMERO DE PAGINA EXCEDE EL MAXIMO NUMERO");
-		liberarRecurso(datosMemoria->mutexDeLog);
-
-
 		return crearTipoRespuesta(MANQUEADO,"Numero de pagina excede el maximo numero");
 	}
 
 	if(RAMLlena()&&noUsaMarcos(instruccion->pid)){//Esto hay que ver como se trata (leer issue 25)
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
 		log_error(datosMemoria->logDeMemoria,"ERROR DE ESCRITURA DE PAGINAS, NO HAY MARCOS DISPONIBLES");
-		liberarRecurso(datosMemoria->mutexDeLog);
-
 		quitarProceso(instruccion);
 
 		return crearTipoRespuesta(MANQUEADO,"Error de escritura de pagina, proceso finalizado");
@@ -608,10 +569,8 @@ void volcarRamALog(){
 
 	int var;
 
-	bloquearRecurso(datosMemoria->mutexDeLog);
-	log_trace(datosMemoria->logDeMemoria,"SEÑAL SIGPOLL RECIBIDA");
-	log_trace(datosMemoria->logDeMemoria,"VOLCANDO RAM A LOG...");
-	liberarRecurso(datosMemoria->mutexDeLog);
+	log_trace(datosMemoria->logDeSeniales,"SEÑAL SIGPOLL RECIBIDA");
+	log_trace(datosMemoria->logDeSeniales,"VOLCANDO RAM A LOG...");
 
 	for (var = 0; var < list_size(datosMemoria->listaRAM); ++var) {
 
@@ -619,10 +578,7 @@ void volcarRamALog(){
 
 		char* pagina = traerPaginaDesdeRam(var);
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
-		log_trace(datosMemoria->logDeMemoria,"FRAME %d : %s",var,pagina);
-		liberarRecurso(datosMemoria->mutexDeLog);
-
+		log_trace(datosMemoria->logDeSeniales,"FRAME %d : %s",var,pagina);
 	}
 
 //Aca decia que hay que usar fork, pero me parece quilombo para nada
@@ -641,10 +597,7 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 
 		posicionEnRam = ejecutarAlgoritmo(&nroPaginaAReemplazar,pid,&estaModificada);
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
 		log_trace(datosMemoria->logDeMemoria,"ALGORITMO ELIGIO PARA REEMPLAZAR LA PAGINA %d DEL PROCESO %d EN EL FRAME %d",nroPaginaAReemplazar,pid,posicionEnRam);
-		liberarRecurso(datosMemoria->mutexDeLog);
-
 
 		if(estaModificada)
 			llevarPaginaASwap(nroPaginaAReemplazar,pid,posicionEnRam);
@@ -662,10 +615,7 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 		aumentarPaginasAsignadas(pid);
 	}
 
-
-	bloquearRecurso(datosMemoria->mutexDeLog);
 	log_trace(datosMemoria->logDeMemoria,"ESCRITURA EN RAM DE PAGINA %d DEL PROCESO %d EN EL MARCO %d",nroPagina,pid,posicionEnRam);
-	liberarRecurso(datosMemoria->mutexDeLog);
 
 	list_replace_and_destroy_element(datosMemoria->listaRAM,posicionEnRam,contenido,free);//Esto es nuevo porque para manejar los huecos la ram ya tiene q estar inicializada con ""
 
@@ -726,17 +676,11 @@ void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam){
 			tipoInstruccion* instruccionASwap = crearTipoInstruccion(pid,ESCRIBIR,nroPaginaAReemplazar,string_duplicate(traerPaginaDesdeRam(posicionEnRam)));
 
 			if(instruccionASwapRealizada(instruccionASwap,&respuesta)){
-
-				bloquearRecurso(datosMemoria->mutexDeLog);
-				log_trace(datosMemoria->logDeMemoria,"PAGINA %d DEL PROCESO %d ESCRITA EN SWAP",nroPaginaAReemplazar,pid);
-				liberarRecurso(datosMemoria->mutexDeLog);
-
+				log_trace(datosMemoria->logDeSwapeo,"PAGINA %d DEL PROCESO %d ESCRITA EN SWAP",nroPaginaAReemplazar,pid);
 				modificarDatosDePagina(nroPaginaAReemplazar,pid,-1,EN_SWAP,false,false);
 			}
 			else{
-				bloquearRecurso(datosMemoria->mutexDeLog);
-				log_error(datosMemoria->logDeMemoria,"FALLO DE ESCRITURA EN SWAP DE LA PAGINA %d DEL PROCESO %d",nroPaginaAReemplazar,pid);
-				liberarRecurso(datosMemoria->mutexDeLog);
+				log_error(datosMemoria->logDeSwapeo,"FALLO DE ESCRITURA EN SWAP DE LA PAGINA %d DEL PROCESO %d",nroPaginaAReemplazar,pid);
 			}
 
 
@@ -787,10 +731,8 @@ void limpiarRam(){
 
 	int var;
 
-	bloquearRecurso(datosMemoria->mutexDeLog);
-	log_trace(datosMemoria->logDeMemoria,"SEÑAL SIGUSR2 RECIBIDA");
-	log_trace(datosMemoria->logDeMemoria,"COMENZANDO LIMPIEZA DE RAM...");
-	liberarRecurso(datosMemoria->mutexDeLog);
+	log_trace(datosMemoria->logDeSeniales,"SEÑAL SIGUSR2 RECIBIDA");
+	log_trace(datosMemoria->logDeSeniales,"COMENZANDO LIMPIEZA DE RAM...");
 
 	tipoTablaPaginas* tablaDePaginas;
 
@@ -815,9 +757,7 @@ void limpiarRam(){
 	//limpiarTLB();
 	list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
 
-	bloquearRecurso(datosMemoria->mutexDeLog);
-	log_trace(datosMemoria->logDeMemoria,"RAM LIMPIADA");
-	liberarRecurso(datosMemoria->mutexDeLog);
+	log_trace(datosMemoria->logDeSeniales,"RAM LIMPIADA");
 
 }
 
@@ -848,10 +788,8 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 }
 //señales
 void limpiarTLB(){
-	bloquearRecurso(datosMemoria->mutexDeLog);
-	log_trace(datosMemoria->logDeMemoria,"SEÑAL SIGUSR1 RECIBIDA");
-	log_trace(datosMemoria->logDeMemoria,"TLB LIMPIADA");
-	liberarRecurso(datosMemoria->mutexDeLog);
+	log_trace(datosMemoria->logDeSeniales,"SEÑAL SIGUSR1 RECIBIDA");
+	log_trace(datosMemoria->logDeSeniales,"TLB LIMPIADA");
 
 list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
 
@@ -863,10 +801,7 @@ void destruirProceso(int pid){
 
 			tipoPagina* pagina;
 
-			bloquearRecurso(datosMemoria->mutexDeLog);
 			log_trace(datosMemoria->logDeMemoria,"FINALIZANDO PROCESO CON LAS SIGUIENTES PAGINAS EN RAM:");
-			liberarRecurso(datosMemoria->mutexDeLog);
-
 
 			int var;
 			for (var = 0; var < list_size(tablaDePaginas->frames); ++var) {
@@ -876,11 +811,8 @@ void destruirProceso(int pid){
 				pagina = list_get(tablaDePaginas->frames,var);
 
 				if(pagina->posicionEnRAM>=0){
-					bloquearRecurso(datosMemoria->mutexDeLog);
 					log_trace(datosMemoria->logDeMemoria,"PAGINA %d EN FRAME %d ",var,pagina->posicionEnRAM);
-					liberarRecurso(datosMemoria->mutexDeLog);
 				}
-
 
 				quitarPaginaDeRam(pagina->posicionEnRAM);
 			}
@@ -891,9 +823,9 @@ void destruirProceso(int pid){
 
 void setearHuecoEnListaHuecosRAM(int posicion,bool estado){
 
-bool* hueco = list_get(datosMemoria->listaHuecosRAM,posicion);
+	bool* hueco = list_get(datosMemoria->listaHuecosRAM,posicion);
 
-*hueco = estado;
+	*hueco = estado;
 }
 
 void aumentarAccesosAProceso(int pid){

@@ -72,7 +72,11 @@ int main(void) {
 
 	system("if [ -f logMemoria ]; then rm logMemoria\nfi");//Si ya existe el log lo borra
 
-	datosMemoria->logDeMemoria = log_create("logMemoria","Administrador de Memoria",false,LOG_LEVEL_TRACE);//crearLoggerParaSeguimiento("logMemoria","Administrador de Memoria");
+	datosMemoria->logDeAlgoritmos = log_create("logDeAlgoritmos","Administrador de Memoria",false,LOG_LEVEL_TRACE);
+	datosMemoria->logDeTLB = log_create("logDeTLB","Administrador de Memoria",false,LOG_LEVEL_TRACE);
+	datosMemoria->logDeSwapeo = log_create("logDeSwapeo","Administrador de Memoria",false,LOG_LEVEL_TRACE);
+	datosMemoria->logDeSeniales = log_create("logDeSeniales","Administrador de Memoria",false,LOG_LEVEL_TRACE);
+	datosMemoria->logDeMemoria = log_create("logDeMemoria","Administrador de Memoria",false,LOG_LEVEL_TRACE);
 
 	setearEstructuraMemoria(datosMemoria);
 

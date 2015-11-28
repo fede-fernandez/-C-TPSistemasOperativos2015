@@ -57,10 +57,16 @@ typedef struct{
 	//t_list* colaFIFOTLB;
 	t_list* listaHuecosRAM;
 	char tipoDeAlgoritmoRAM;
-	t_log* logDeMemoria;
 	int aciertosTLB;
 	int accesosTLB;
 	pthread_mutex_t* mutexDeLog;
+
+	//logs
+	t_log* logDeSeniales;
+	t_log* logDeAlgoritmos;
+	t_log* logDeTLB;
+	t_log* logDeSwapeo;
+	t_log* logDeMemoria;
 }tipoEstructuraMemoria;
 
 typedef struct{
