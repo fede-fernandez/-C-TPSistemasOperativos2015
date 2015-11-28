@@ -126,4 +126,6 @@ bool instruccionASwapRealizada(tipoInstruccion* instruccion,tipoRespuesta** resp
 
 void volcarRamALog();
 
+void terminarLogs();
+
 #endif /* FUNCIONESMEMORIA_H_ */

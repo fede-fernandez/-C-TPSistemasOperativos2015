@@ -100,7 +100,7 @@ tipoRespuesta* quitarProceso(tipoInstruccion* instruccion){
 
 		destruirProceso(instruccion->pid);
 
-		log_trace(datosMemoria->logDeMemoria,"FINALIZACION DEL PROCESO %d CON CANTIDAD DE PAGE FAULTS DEL %d",instruccion->pid,fallosDePag);
+		log_trace(datosMemoria->logDeMemoria,"FINALIZACION DEL PROCESO %d CON  %d PAGE FAULTS",instruccion->pid,fallosDePag);
 	}
 
 	return respuesta;
@@ -876,4 +876,19 @@ int buscarHuecoRAM(){
 	}
 
 	return -1;
+}
+
+void terminarLogs(){
+
+	log_trace(datosMemoria->logDeAlgoritmos,"\n\n");
+	log_trace(datosMemoria->logDeMemoria,"\n\n");
+	log_trace(datosMemoria->logDeSeniales,"\n\n");
+	log_trace(datosMemoria->logDeSwapeo,"\n\n");
+	log_trace(datosMemoria->logDeTLB,"\n\n");
+
+	destruirLogger(datosMemoria->logDeMemoria);
+	destruirLogger(datosMemoria->logDeAlgoritmos);
+	destruirLogger(datosMemoria->logDeSeniales);
+	destruirLogger(datosMemoria->logDeSwapeo);
+	destruirLogger(datosMemoria->logDeTLB);
 }

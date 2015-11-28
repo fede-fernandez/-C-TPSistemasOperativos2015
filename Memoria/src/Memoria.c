@@ -68,12 +68,12 @@ int main(void) {
 
 	listaSeniales = list_create();//Lista de señales
 
-	system("if [ -f logDeTLB ]; then rm logDeTLB\nfi");
+	/*system("if [ -f logDeTLB ]; then rm logDeTLB\nfi");
 	system("if [ -f logDeSwapeo ]; then rm logDeSwapeo\nfi");
 	system("if [ -f logDeSeniales ]; then rm logDeSeniales\nfi");
 	system("if [ -f logDeAlgoritmos ]; then rm logDeAlgoritmos\nfi");
 	system("if [ -f logMemoria ]; then rm logMemoria\nfi");//Si ya existe el log lo borra
-
+*/
 	datosMemoria->logDeMemoria = log_create("logDeMemoria","Administrador de Memoria",false,LOG_LEVEL_TRACE);
 	datosMemoria->logDeAlgoritmos = log_create("logDeAlgoritmos","Administrador de Memoria",false,LOG_LEVEL_TRACE);
 	datosMemoria->logDeTLB = log_create("logDeTLB","Administrador de Memoria",false,LOG_LEVEL_TRACE);
@@ -128,11 +128,8 @@ int main(void) {
 
 	}
 
-	destruirLogger(datosMemoria->logDeMemoria);
-	destruirLogger(datosMemoria->logDeAlgoritmos);
-	destruirLogger(datosMemoria->logDeSeniales);
-	destruirLogger(datosMemoria->logDeSwapeo);
-	destruirLogger(datosMemoria->logDeTLB);
+	terminarLogs();
+
 	free(datosMemoria);
 	liberarSocket(socketParaCpus);
 	liberarSocket(socketParaSwap);
