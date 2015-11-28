@@ -68,6 +68,8 @@ int main(void) {
 
 	datosMemoria->socketCpus = socketParaCpus;
 
+	listaSeniales = list_create();//Lista de señales
+
 	system("if [ -f logMemoria ]; then rm logMemoria\nfi");//Si ya existe el log lo borra
 
 	datosMemoria->logDeMemoria = log_create("logMemoria","Administrador de Memoria",false,LOG_LEVEL_TRACE);//crearLoggerParaSeguimiento("logMemoria","Administrador de Memoria");
@@ -91,12 +93,14 @@ int main(void) {
 
 	//SEÑALES
 	pthread_t hiloSeniales;
-	crearThread(&hiloSeniales,crearSeniales,NULL);
 
+	crearThread(&hiloSeniales,crearSeniales,NULL);
 /////////////////////////////////////////////////////////////////////////////////////
 
 
 	while(memoriaActiva){
+
+		tratarSenial();
 
 		listaFiltrada = listaPrincipal;
 		select(datosMemoria->maximoSocket+1,&listaFiltrada,NULL,NULL,NULL);

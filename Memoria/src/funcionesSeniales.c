@@ -88,7 +88,6 @@ void agregarSenialEnLaLista(int signal){
 }
 
 void crearSeniales(){
-	listaSeniales = list_create();
 
 	while(1){
 		signal(SIGUSR1, prepararSenialLimpiarTLB);
