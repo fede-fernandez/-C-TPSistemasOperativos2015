@@ -17,6 +17,13 @@
 #include <semaphore.h>
 
 
+//EN CASO DE EMERGENCIA ROMPA EL VIDRIO CON EL MARTILLO
+//#include <time.h>
+//time_t inicioDeProceso;
+//time_t finDeProceso;
+//EN CASO DE EMERGENCIA ROMPA EL VIDRIO CON EL MARTILLO
+
+
 /**********Configuracion Inicial del CPU**********/
 #define RUTA_DE_ARCHIVO_DE_CONFIGURACION_CPU "cfgCPU"
 #define RUTA_DE_ARCHIVO_DE_LOGS_CPU "logsCPU"
