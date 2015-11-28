@@ -10,39 +10,57 @@
 
 tipoPCB* recibirPCB(int socketEnviador){
 
-	size_t tamanioRuta;
+	tipoPCB* unPCBRecibido;
 
-	tipoPCB* respuesta = malloc(sizeof(tipoPCB));
+	int tamanioDeDatos;
+	recibirMensajeCompleto(socketEnviador,&tamanioDeDatos,sizeof(int));
 
-	recibirMensajeCompleto(socketEnviador, &(respuesta->pid), sizeof(int));
+	tipoMensaje* unMensajeRecibido = crearMensaje(tamanioDeDatos);
+	recibirMensajeCompleto(socketEnviador,unMensajeRecibido->datos,unMensajeRecibido->tamanio);
 
-	recibirMensajeCompleto(socketEnviador, &(respuesta->insPointer), sizeof(int));
+	unPCBRecibido = deserializarPCB(unMensajeRecibido);
 
-	recibirMensajeCompleto(socketEnviador, &(respuesta->estado), sizeof(char));
+	destruirMensaje(unMensajeRecibido);
 
-	recibirMensajeCompleto(socketEnviador, &tamanioRuta, sizeof(size_t));
+	return unPCBRecibido;
 
-	respuesta->ruta = malloc(tamanioRuta);
 
-	recibirMensajeCompleto(socketEnviador, respuesta->ruta, tamanioRuta);
-
-	return respuesta;
+//	size_t tamanioRuta;
+//
+//	tipoPCB* respuesta = malloc(sizeof(tipoPCB));
+//
+//	recibirMensajeCompleto(socketEnviador, &(respuesta->pid), sizeof(int));
+//
+//	recibirMensajeCompleto(socketEnviador, &(respuesta->insPointer), sizeof(int));
+//
+//	recibirMensajeCompleto(socketEnviador, &(respuesta->estado), sizeof(char));
+//
+//	recibirMensajeCompleto(socketEnviador, &tamanioRuta, sizeof(size_t));
+//
+//	respuesta->ruta = malloc(tamanioRuta);
+//
+//	recibirMensajeCompleto(socketEnviador, respuesta->ruta, tamanioRuta);
+//
+//	return respuesta;
 
 }
 
-void enviarPCB(int socketCliente, tipoPCB* PCB)
-{
-		size_t tamanioRuta = strlen(PCB->ruta) + sizeof(char);
+void enviarPCB(int socketCliente, tipoPCB* PCB){
 
-		enviarMensaje(socketCliente, &(PCB->pid), sizeof(int));
+	tipoMensaje* unMensajeAEnviar = serializarPCB(PCB);
 
-		enviarMensaje(socketCliente, &(PCB->insPointer), sizeof(int));
+	enviarMensaje(socketCliente,&unMensajeAEnviar->tamanio,sizeof(int));
+	enviarMensaje(socketCliente,unMensajeAEnviar->datos,unMensajeAEnviar->tamanio);
 
-		enviarMensaje(socketCliente, &(PCB->estado), sizeof(char));
+	destruirMensaje(unMensajeAEnviar);
 
-		enviarMensaje(socketCliente, &tamanioRuta, sizeof(int));
 
-		enviarMensaje(socketCliente, PCB->ruta, tamanioRuta);
+//	size_t tamanioRuta = strlen(PCB->ruta) + sizeof(char);
+//	enviarMensaje(socketCliente, &(PCB->pid), sizeof(int));
+//	enviarMensaje(socketCliente, &(PCB->insPointer), sizeof(int));
+//	enviarMensaje(socketCliente, &(PCB->estado), sizeof(char));
+//	enviarMensaje(socketCliente, &tamanioRuta, sizeof(int));
+//	enviarMensaje(socketCliente, PCB->ruta, tamanioRuta);
 }
 
 void imprimirPCB(tipoPCB* PCB)
@@ -52,52 +70,96 @@ void imprimirPCB(tipoPCB* PCB)
 
 tipoInstruccion* recibirInstruccion(int socketEnviador){
 
-	tipoInstruccion* instruccion = malloc(sizeof(tipoInstruccion));
+	tipoInstruccion* unaInstruccionRecibida;
 
-	size_t tamanioTexto;
+	int tamanioDeDatos;
+	recibirMensajeCompleto(socketEnviador,&tamanioDeDatos,sizeof(int));
 
-	recibirMensajeCompleto(socketEnviador,&(instruccion->pid),sizeof(int));
-	recibirMensajeCompleto(socketEnviador,&(instruccion->instruccion),sizeof(char));
-	recibirMensajeCompleto(socketEnviador,&(instruccion->nroPagina),sizeof(int));
-	recibirMensajeCompleto(socketEnviador,&tamanioTexto,sizeof(size_t));
-	instruccion->texto = malloc(tamanioTexto);
-	recibirMensajeCompleto(socketEnviador,instruccion->texto,tamanioTexto);
+	tipoMensaje* unMensajeRecibido = crearMensaje(tamanioDeDatos);
+	recibirMensajeCompleto(socketEnviador,unMensajeRecibido->datos,unMensajeRecibido->tamanio);
 
-	return instruccion;
+	unaInstruccionRecibida = deserializarInstruccionPosta(unMensajeRecibido);
+
+	destruirMensaje(unMensajeRecibido);
+
+	return unaInstruccionRecibida;
+
+
+
+//	tipoInstruccion* instruccion = malloc(sizeof(tipoInstruccion));
+//
+//	size_t tamanioTexto;
+//
+//	recibirMensajeCompleto(socketEnviador,&(instruccion->pid),sizeof(int));
+//	recibirMensajeCompleto(socketEnviador,&(instruccion->instruccion),sizeof(char));
+//	recibirMensajeCompleto(socketEnviador,&(instruccion->nroPagina),sizeof(int));
+//	recibirMensajeCompleto(socketEnviador,&tamanioTexto,sizeof(size_t));
+//	instruccion->texto = malloc(tamanioTexto);
+//	recibirMensajeCompleto(socketEnviador,instruccion->texto,tamanioTexto);
+//
+//	return instruccion;
 }
 
 void enviarInstruccion(int socketCliente,tipoInstruccion* instruccion){
 
-	size_t tamanioTexto = strlen(instruccion->texto)+sizeof(char);
-	enviarMensaje(socketCliente,&(instruccion->pid),sizeof(int));
-	enviarMensaje(socketCliente,&(instruccion->instruccion),sizeof(char));
-	enviarMensaje(socketCliente,&(instruccion->nroPagina),sizeof(int));
-	enviarMensaje(socketCliente,&tamanioTexto,sizeof(size_t));
-	enviarMensaje(socketCliente,instruccion->texto,tamanioTexto);
+	tipoMensaje* unMensajeAEnviar = serializarInstruccion(instruccion);
+
+	enviarMensaje(socketCliente,&unMensajeAEnviar->tamanio,sizeof(int));
+	enviarMensaje(socketCliente,unMensajeAEnviar->datos,unMensajeAEnviar->tamanio);
+
+	destruirMensaje(unMensajeAEnviar);
+
+//	size_t tamanioTexto = strlen(instruccion->texto)+sizeof(char);
+//	enviarMensaje(socketCliente,&(instruccion->pid),sizeof(int));
+//	enviarMensaje(socketCliente,&(instruccion->instruccion),sizeof(char));
+//	enviarMensaje(socketCliente,&(instruccion->nroPagina),sizeof(int));
+//	enviarMensaje(socketCliente,&tamanioTexto,sizeof(size_t));
+//	enviarMensaje(socketCliente,instruccion->texto,tamanioTexto);
 
 }
 
 void enviarRespuesta(int socketCliente,tipoRespuesta* respuesta){
 
-	size_t tamanioInfo = strlen(respuesta->informacion)+sizeof(char);
+	tipoMensaje* unMensajeAEnviar = serializarRespuesta(respuesta);
 
-	enviarMensaje(socketCliente,&(respuesta->respuesta),sizeof(char));
-	enviarMensaje(socketCliente,&tamanioInfo,sizeof(size_t));
-	enviarMensaje(socketCliente,respuesta->informacion,tamanioInfo);
+	enviarMensaje(socketCliente,&unMensajeAEnviar->tamanio,sizeof(int));
+	enviarMensaje(socketCliente,unMensajeAEnviar->datos,unMensajeAEnviar->tamanio);
+
+	destruirMensaje(unMensajeAEnviar);
+
+
+//	size_t tamanioInfo = strlen(respuesta->informacion)+sizeof(char);
+//
+//	enviarMensaje(socketCliente,&(respuesta->respuesta),sizeof(char));
+//	enviarMensaje(socketCliente,&tamanioInfo,sizeof(size_t));
+//	enviarMensaje(socketCliente,respuesta->informacion,tamanioInfo);
 }
 
 tipoRespuesta* recibirRespuesta(int socketEnviador){
 
-	size_t tamanioInfo;
+	tipoRespuesta* unaRespuestaRecibida;
+	tipoMensaje* unMensajeRecibido;
 
-	tipoRespuesta* respuesta = malloc(sizeof(tipoRespuesta));
+	int tamanioDeDatos;
+	recibirMensajeCompleto(socketEnviador,&tamanioDeDatos,sizeof(int));
 
-	recibirMensajeCompleto(socketEnviador,&(respuesta->respuesta),sizeof(char));
-	recibirMensajeCompleto(socketEnviador,&tamanioInfo,sizeof(size_t));
-	respuesta->informacion = malloc(tamanioInfo);
-	recibirMensajeCompleto(socketEnviador,respuesta->informacion,tamanioInfo);
+	unMensajeRecibido = crearMensaje(tamanioDeDatos);
+	recibirMensajeCompleto(socketEnviador,unMensajeRecibido->datos,unMensajeRecibido->tamanio);
 
-	return respuesta;
+	unaRespuestaRecibida = deserializarRespuesta(unMensajeRecibido);
+
+	return unaRespuestaRecibida;
+
+//	size_t tamanioInfo;
+//
+//	tipoRespuesta* respuesta = malloc(sizeof(tipoRespuesta));
+//
+//	recibirMensajeCompleto(socketEnviador,&(respuesta->respuesta),sizeof(char));
+//	recibirMensajeCompleto(socketEnviador,&tamanioInfo,sizeof(size_t));
+//	respuesta->informacion = malloc(tamanioInfo);
+//	recibirMensajeCompleto(socketEnviador,respuesta->informacion,tamanioInfo);
+//
+//	return respuesta;
 
 }
 
@@ -129,6 +191,151 @@ void destruirTipoRespuesta(tipoRespuesta* respuesta){
 void destruirTipoInstruccion(tipoInstruccion* instruccion){
 	free(instruccion->texto);
 	free(instruccion);
+}
+
+//--------------Serializacion-----------------//
+
+
+
+tipoMensaje* crearMensaje(int unTamanio){
+	tipoMensaje* unMensaje = malloc(sizeof(tipoMensaje));
+
+	unMensaje->tamanio = unTamanio;
+	unMensaje->datos = malloc(unTamanio);
+
+	return unMensaje;
+}
+
+void destruirMensaje(tipoMensaje* unMensaje){
+	free(unMensaje->datos);
+	free(unMensaje);
+}
+
+
+tipoMensaje* serializarInstruccion(tipoInstruccion* unaInstruccion){
+
+	int offset = 0;
+	tipoMensaje* unMensaje = crearMensaje(sizeof(char) + 2*sizeof(int) + string_length(unaInstruccion->texto) + 1);
+
+	memcpy(unMensaje->datos + offset, &unaInstruccion->instruccion, sizeof(char));
+	offset += sizeof(char);
+
+	memcpy(unMensaje->datos + offset, &unaInstruccion->pid, sizeof(int));
+	offset += sizeof(int);
+
+	memcpy(unMensaje->datos + offset, &unaInstruccion->nroPagina, sizeof(int));
+	offset += sizeof(int);
+
+	memcpy(unMensaje->datos + offset, unaInstruccion->texto, string_length(unaInstruccion->texto) + 1);
+
+
+	return unMensaje;
+}
+
+tipoInstruccion* deserializarInstruccion(tipoMensaje* unMensaje){
+
+	int offset = 0;
+	tipoInstruccion* unaInstruccion = malloc(sizeof(tipoInstruccion));
+
+	memcpy(&unaInstruccion->instruccion, unMensaje->datos + offset, sizeof(char));
+	offset += sizeof(char);
+
+	memcpy(&unaInstruccion->pid, unMensaje->datos + offset, sizeof(int));
+	offset += sizeof(int);
+
+	memcpy(&unaInstruccion->pid, unMensaje->datos + offset, sizeof(int));
+	offset += sizeof(int);
+
+	unaInstruccion->texto = string_duplicate(unMensaje->datos + offset);
+
+
+	return unaInstruccion;
+}
+
+
+tipoMensaje* serializarInstruccionPosta(tipoInstruccion* unaInstruccion){
+
+	int offset = 0;
+	tipoMensaje* unMensaje = crearMensaje(sizeof(char) + 2*sizeof(int) + string_length(unaInstruccion->texto) + 1);
+
+	memcpy(unMensaje->datos + offset, unaInstruccion, sizeof(char) + 2*sizeof(int));
+	offset += sizeof(char) + 2*sizeof(int);
+
+	memcpy(unMensaje->datos + offset, unaInstruccion->texto, string_length(unaInstruccion->texto) + 1);
+
+
+	return unMensaje;
+}
+
+tipoInstruccion* deserializarInstruccionPosta(tipoMensaje* unMensaje){
+
+	int offset = 0;
+	tipoInstruccion* unaInstruccion = malloc(sizeof(tipoInstruccion));
+
+	memcpy(unaInstruccion + offset, unMensaje->datos, sizeof(char) + 2*sizeof(int));
+	offset += sizeof(char) + 2*sizeof(int);
+
+	unaInstruccion->texto = string_duplicate(unMensaje->datos + offset);
+
+
+	return unaInstruccion;
+}
+
+
+
+tipoMensaje* serializarRespuesta(tipoRespuesta* unaRespuesta){
+
+	int offset = 0;
+	tipoMensaje* unMensaje = crearMensaje(sizeof(char) + string_length(unaRespuesta->informacion) + 1);
+
+	memcpy(unMensaje->datos + offset, &unaRespuesta->respuesta, sizeof(char));
+	offset += sizeof(char);
+
+	memcpy(unMensaje->datos + offset, unaRespuesta->informacion, string_length(unaRespuesta->informacion) + 1);
+
+	return unMensaje;
+}
+
+tipoRespuesta* deserializarRespuesta(tipoMensaje* unMensaje){
+
+	int offset = 0;
+	tipoRespuesta* unaRespuesta = malloc(sizeof(tipoRespuesta));
+
+	memcpy(&unaRespuesta->respuesta, unMensaje->datos + offset, sizeof(char));
+	offset += sizeof(char);
+
+	unaRespuesta->informacion = string_duplicate(unMensaje->datos + offset);
+
+	return unaRespuesta;
+}
+
+
+
+tipoMensaje* serializarPCB(tipoPCB* unPCB){
+
+	int offset = 0;
+	tipoMensaje* unMensaje = crearMensaje(sizeof(char) + 2*sizeof(int) + string_length(unPCB->ruta) + 1);
+
+	memcpy(unMensaje->datos + offset, unPCB, sizeof(char) + 2*sizeof(int));
+	offset += sizeof(char) + 2*sizeof(int);
+
+	memcpy(unMensaje->datos + offset, unPCB->ruta, string_length(unPCB->ruta) + 1);
+
+
+	return unMensaje;
+}
+
+tipoPCB* deserializarPCB(tipoMensaje* unMensaje){
+
+	int offset = 0;
+	tipoPCB* unPCB = malloc(sizeof(tipoPCB));
+
+	memcpy(unPCB + offset, unMensaje->datos, sizeof(char) + 2*sizeof(int));
+	offset += sizeof(char) + 2*sizeof(int);
+
+	unPCB->ruta = string_duplicate(unMensaje->datos + offset);
+
+	return unPCB;
 }
 
 
