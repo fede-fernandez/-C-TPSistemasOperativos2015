@@ -28,11 +28,11 @@
 #define FINALIZAR_PROCESO 'h'//Esto lo agrego para que los procesos terminen de forma ordenada
 
 typedef struct{
+	char estado;
 	int pid;
 	int insPointer;
-	char estado;
 	char* ruta;
-} tipoPCB;
+}__attribute__((packed)) tipoPCB;
 
 typedef struct{
 	char instruccion;
@@ -45,6 +45,11 @@ typedef struct{
 	char respuesta;
 	char* informacion;
 }__attribute__((packed))tipoRespuesta;
+
+typedef struct{
+	int tamanio;
+	char* datos;
+}__attribute__((packed))tipoMensaje;
 
 
 
@@ -74,6 +79,29 @@ tipoRespuesta* crearTipoRespuesta(char respuesta, char* informacion);
 void destruirTipoRespuesta(tipoRespuesta* respuesta);
 
 void destruirTipoInstruccion(tipoInstruccion* instruccion);
+
+
+//------------------Serializacion-------------------//
+
+tipoMensaje* crearMensaje(int unTamanio);
+void destruirMensaje(tipoMensaje* unMensaje);
+
+
+tipoMensaje* serializarInstruccion(tipoInstruccion* unaInstruccion);
+tipoInstruccion* deserializarInstruccion(tipoMensaje* unMensaje);
+
+
+tipoMensaje* serializarInstruccionPosta(tipoInstruccion* unaInstruccion);
+tipoInstruccion* deserializarInstruccionPosta(tipoMensaje* unMensaje);
+
+
+tipoMensaje* serializarRespuesta(tipoRespuesta* unaRespuesta);
+tipoRespuesta* deserializarRespuesta(tipoMensaje* unMensaje);
+
+tipoMensaje* serializarPCB(tipoPCB* unPCB);
+tipoPCB* deserializarPCB(tipoMensaje* unMensaje);
+
+
 
 
 #endif /* COMMONSDEASEDIO_ESTRUCTURAS_H_ */
