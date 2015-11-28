@@ -18,6 +18,7 @@
 
 
 //EN CASO DE EMERGENCIA ROMPA EL VIDRIO CON EL MARTILLO
+#define SEG_A_MICROSEG 1000000
 //#include <time.h>
 //time_t inicioDeProceso;
 //time_t finDeProceso;
