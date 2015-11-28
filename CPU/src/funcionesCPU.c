@@ -84,10 +84,10 @@ void ejecutarPrograma(tipoPCB *PCB, int quantum, t_datosCPU* datosCPU)
 	{
 		while(instructionPointer <= longitudDeStringArray(instrucciones))
 		{
+			aumentarCantidadDeInstruccionesEjecutadasEnUno(datosCPU->idCPU);
 			respuestaInstruccion = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			string_append(&respuestasAcumuladas, respuestaInstruccion.respuesta);
 			usleep(datosCPU->configuracionCPU->retardo);
-			aumentarCantidadDeInstruccionesEjecutadasEnUno(datosCPU->idCPU);
 			if(respuestaInstruccion.tipoDeSalida == SALIDA_BLOQUEANTE_POR_ERROR)
 			{
 				break;
@@ -652,6 +652,34 @@ void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configur
 	}
 }
 
+
+//EN CASO DE EMERGENCIA ROMPA EL VIDRIO CON EL MARTILLO
+//void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configuracionCPU)
+//{
+//	int i;
+//	int* instruccionesEjecutadas;
+//	int porcentajeDeUso;
+//	finDeProceso = time(0);
+//	double tiempoFuncionando = difftime(finDeProceso, inicioDeProceso);
+//
+//	for(i = 0; i < configuracionCPU->cantidadDeHilos; i++)
+//	{
+//		instruccionesEjecutadas = list_get(cantidadDeInstruccionesEjecutadasPorCPUs, i);
+//		porcentajeDeUso = *instruccionesEjecutadas * 100 / tiempoFuncionando;
+//		if(porcentajeDeUso > 100)
+//		{
+//			porcentajeDeUso = 100;
+//		}
+//
+//		enviarMensaje(socketMasterPlanificador, &porcentajeDeUso, sizeof(porcentajeDeUso));
+//
+//		if(DEBUG == 1)
+//		{
+//			printf("PORCENTAJE DE USO DE CPU: %i = %i%% ENVIADO A PLANIFICADOR\n", i + 1, porcentajeDeUso);
+//		}
+//	}
+//}
+//EN CASO DE EMERGENCIA ROMPA EL VIDRIO CON EL MARTILLO
 
 
 

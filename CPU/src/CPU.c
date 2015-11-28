@@ -54,6 +54,11 @@ int main(void)
 	//Crea tantos "CPUs" (hilos), especificado en el archivo de configuracion
 	pthread_t hiloCPU[hilosCPU.configuracionCPU->cantidadDeHilos];
 
+//EN CASO DE EMERGENCIA ROMPA EL VIDRIO CON EL MARTILLO
+//inicioDeProceso = time(0);
+//EN CASO DE EMERGENCIA ROMPA EL VIDRIO CON EL MARTILLO
+
+
 	int i;
 	for(i = 0; i < hilosCPU.configuracionCPU->cantidadDeHilos; i++)
 	{
