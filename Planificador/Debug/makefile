@@ -23,26 +23,26 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: PlanificadorNew
+all: Planificador
 
 dependents:
-	-cd /home/alexis/git/TPSORespaldo/commonsDeAsedio/Debug && $(MAKE) clean all
+	-cd /home/utnso/git/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug && $(MAKE) all
 
 # Tool invocations
-PlanificadorNew: $(OBJS) $(USER_OBJS) /home/alexis/git/TPSORespaldo/commonsDeAsedio/Debug/libcommonsDeAsedio.so
+Planificador: $(OBJS) $(USER_OBJS) /home/utnso/git/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug/libcommonsDeAsedio.so
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/home/alexis/git/TPSORespaldo/commonsDeAsedio/Debug" -o "PlanificadorNew" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L"/home/utnso/git/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug" -o "Planificador" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) PlanificadorNew
+	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) Planificador
 	-@echo ' '
 
 .PHONY: all clean dependents
 .SECONDARY:
-/home/alexis/git/TPSORespaldo/commonsDeAsedio/Debug/libcommonsDeAsedio.so:
+/home/utnso/git/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug/libcommonsDeAsedio.so:
 
 -include ../makefile.targets

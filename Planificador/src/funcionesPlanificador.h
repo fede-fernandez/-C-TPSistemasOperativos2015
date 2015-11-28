@@ -5,8 +5,8 @@
  *      Author: utnso
  */
 
-#ifndef FUNCIONESPLANIFICADOR_H_
-#define FUNCIONESPLANIFICADOR_H_
+#ifndef PLANIFICADOR_SRC_FUNCIONESPLANIFICADOR_H_
+#define PLANIFICADOR_SRC_FUNCIONESPLANIFICADOR_H_
 
 #include <commons/string.h>
 #include <commons/config.h>
@@ -146,4 +146,4 @@ void log_colas(int id_proceso,char path[30],char razon[40],int numero);
 void log_rafagas(int sockCpu);
 
 
-#endif /* FUNCIONESPLANIFICADOR_H_ */
+#endif /* PLANIFICADOR_SRC_FUNCIONESPLANIFICADOR_H_ */

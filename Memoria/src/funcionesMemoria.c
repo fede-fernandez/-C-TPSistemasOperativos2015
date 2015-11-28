@@ -96,11 +96,11 @@ tipoRespuesta* quitarProceso(tipoInstruccion* instruccion){
 
 	if(instruccionASwapRealizada(instruccion,&respuesta)){//Aca swap me devolvio todo ok aunque el proceso no existia!!
 
-		double pageFaults = porcentajeDePageFaults(instruccion->pid);
+		int fallosDePag = pageFaults(instruccion->pid);//porcentajeDePageFaults(instruccion->pid);
 
 		destruirProceso(instruccion->pid);
 
-		log_trace(datosMemoria->logDeMemoria,"FINALIZACION DEL PROCESO %d CON PORCENTAJE DE PAGE FAULTS DEL %.1f%%",instruccion->pid,pageFaults);
+		log_trace(datosMemoria->logDeMemoria,"FINALIZACION DEL PROCESO %d CON CANTIDAD DE PAGE FAULTS DEL %d",instruccion->pid,fallosDePag);
 	}
 
 	return respuesta;
@@ -180,9 +180,7 @@ tipoRespuesta* iniciar(tipoInstruccion* instruccion) {
 
 			}
 	else{
-		bloquearRecurso(datosMemoria->mutexDeLog);
 		log_error(datosMemoria->logDeMemoria,"INICIO DE PROCESO %d DE %d PAGINAS FALLIDO",instruccion->pid,instruccion->nroPagina);
-		liberarRecurso(datosMemoria->mutexDeLog);
 	}
 
 	return respuesta;
@@ -246,22 +244,17 @@ tipoRespuesta* leerPagina(tipoInstruccion* instruccion){
 
 	if(!procesoExiste(instruccion->pid)){
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
 			log_error(datosMemoria->logDeMemoria,"TABLA DE PAGINAS DE PROCESO NO EXISTENTE");
-		liberarRecurso(datosMemoria->mutexDeLog);
 
 			return crearTipoRespuesta(MANQUEADO,"Tabla de paginas de proceso no existente");
 		}
 
 	if(numeroDePaginaIncorrecto(instruccion->nroPagina,instruccion->pid)){
 
-		bloquearRecurso(datosMemoria->mutexDeLog);
 			log_error(datosMemoria->logDeMemoria,"NUMERO DE PAGINA EXCEDE EL MAXIMO NUMERO");
-		liberarRecurso(datosMemoria->mutexDeLog);
 
 			return crearTipoRespuesta(MANQUEADO,"Numero de pagina excede el maximo numero");
 		}
-
 
 	int posicionEnRam = buscarPagina(instruccion->nroPagina,instruccion->pid);
 
@@ -603,7 +596,6 @@ int agregarPagina(int nroPagina,int pid,char* contenido){
 			llevarPaginaASwap(nroPaginaAReemplazar,pid,posicionEnRam);
 		else
 			modificarDatosDePagina(nroPaginaAReemplazar,pid,-1,EN_SWAP,false,false);
-
 	}
 
 	else {
@@ -654,7 +646,13 @@ double porcentajeDePageFaults(int pid){
 	if(tabla->cantidadDeAccesos==0)
 		return 0;
 
-	return tabla->cantidadDePageFaults;//((double)(tabla->cantidadDePageFaults)/(double)(tabla->cantidadDeAccesos))*100;
+	return ((double)(tabla->cantidadDePageFaults)/(double)(tabla->cantidadDeAccesos))*100;
+}
+
+int pageFaults(int pid){
+
+	tipoTablaPaginas* tabla = traerTablaDePaginas(pid);
+	return tabla->cantidadDePageFaults;
 }
 
 double tasaAciertosTLB(){

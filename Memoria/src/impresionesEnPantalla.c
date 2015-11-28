@@ -185,7 +185,7 @@ void mostrarTasaTLBPeriodicamente(){
 
 			sleep(60);//Espero 1 minuto
 
-			log_trace(datosMemoria->logDeMemoria,"LA TASA DE ACIERTOS DE LA TLB ES DEL %.1f%%",tasaAciertosTLB());
+			log_trace(datosMemoria->logDeTLB,"LA TASA DE ACIERTOS DE LA TLB ES DEL %.1f%%",tasaAciertosTLB());
 
 		}
 

@@ -2,3 +2,35 @@
 
  
 [TRACE] 03:01:08:50 PLANIFICADOR/(20179:20179):               INICIO --> ID_mproc: 1 , nombre: corto.cod 
+[TRACE] 03:19:08:279 PLANIFICADOR/(2825:2825):  
+
+ 
+[TRACE] 03:19:35:693 PLANIFICADOR/(2825:2825):               INICIO --> ID_mproc: 1 , nombre: corto.cod 
+[TRACE] 03:25:27:904 PLANIFICADOR/(3113:3113):  
+
+ 
+[TRACE] 03:26:07:719 PLANIFICADOR/(3113:3113):               INICIO --> ID_mproc: 1 , nombre: MuyLargo.cod 
+[TRACE] 03:27:43:262 PLANIFICADOR/(3113:3115):               FIN --> ID_mProc: 1 , mcod: MuyLargo.cod 
+[TRACE] 03:33:21:206 PLANIFICADOR/(3556:3556):  
+
+ 
+[TRACE] 03:34:26:779 PLANIFICADOR/(3670:3670):  
+
+ 
+[TRACE] 03:35:20:22 PLANIFICADOR/(3670:3670):               INICIO --> ID_mproc: 1 , nombre: corto.cod 
+[TRACE] 03:37:16:726 PLANIFICADOR/(3802:3802):  
+
+ 
+[TRACE] 03:37:35:192 PLANIFICADOR/(3802:3802):               INICIO --> ID_mproc: 1 , nombre: corto.cod 
+[TRACE] 03:39:11:576 PLANIFICADOR/(3802:3804):               FIN --> ID_mProc: 1 , mcod: corto.cod 
+[TRACE] 03:39:46:702 PLANIFICADOR/(3891:3891):  
+
+ 
+[TRACE] 03:40:54:193 PLANIFICADOR/(4070:4070):  
+
+ 
+[TRACE] 03:42:00:16 PLANIFICADOR/(4232:4232):  
+
+ 
+[TRACE] 03:43:14:933 PLANIFICADOR/(4232:4232):               INICIO --> ID_mproc: 1 , nombre: MuyLargo.cod 
+[TRACE] 03:44:50:456 PLANIFICADOR/(4232:4234):               FIN --> ID_mProc: 1 , mcod: MuyLargo.cod 

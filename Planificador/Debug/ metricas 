@@ -1,3 +1,33 @@
 [INFO] 03:00:33:98 PLANIFICADOR/(20179:20179):      
 
    
+[INFO] 03:19:08:279 PLANIFICADOR/(2825:2825):      
+
+   
+[INFO] 03:25:27:904 PLANIFICADOR/(3113:3113):      
+
+   
+[INFO] 03:27:43:262 PLANIFICADOR/(3113:3115):         ID_mProc: 1 -> MuyLargo.cod | tiempo de respuesta: 96.000000 seg | tiempo de ejecucion: 94.000000 seg | tiempo de espera: 0.000000 seg 
+
+[INFO] 03:33:21:207 PLANIFICADOR/(3556:3556):      
+
+   
+[INFO] 03:34:26:780 PLANIFICADOR/(3670:3670):      
+
+   
+[INFO] 03:37:16:726 PLANIFICADOR/(3802:3802):      
+
+   
+[INFO] 03:39:11:576 PLANIFICADOR/(3802:3804):         ID_mProc: 1 -> corto.cod | tiempo de respuesta: 96.000000 seg | tiempo de ejecucion: 66.000000 seg | tiempo de espera: 0.000000 seg 
+
+[INFO] 03:39:46:702 PLANIFICADOR/(3891:3891):      
+
+   
+[INFO] 03:40:54:194 PLANIFICADOR/(4070:4070):      
+
+   
+[INFO] 03:42:00:17 PLANIFICADOR/(4232:4232):      
+
+   
+[INFO] 03:44:50:456 PLANIFICADOR/(4232:4234):         ID_mProc: 1 -> MuyLargo.cod | tiempo de respuesta: 96.000000 seg | tiempo de ejecucion: 94.000000 seg | tiempo de espera: 0.000000 seg 
+
