@@ -102,64 +102,64 @@ tipoInstruccion* recibirInstruccion(int socketEnviador){
 
 void enviarInstruccion(int socketCliente,tipoInstruccion* instruccion){
 
-	tipoMensaje* unMensajeAEnviar = serializarInstruccion(instruccion);
+//	tipoMensaje* unMensajeAEnviar = serializarInstruccion(instruccion);
+//
+//	enviarMensaje(socketCliente,&unMensajeAEnviar->tamanio,sizeof(int));
+//	enviarMensaje(socketCliente,unMensajeAEnviar->datos,unMensajeAEnviar->tamanio);
+//
+//	destruirMensaje(unMensajeAEnviar);
 
-	enviarMensaje(socketCliente,&unMensajeAEnviar->tamanio,sizeof(int));
-	enviarMensaje(socketCliente,unMensajeAEnviar->datos,unMensajeAEnviar->tamanio);
-
-	destruirMensaje(unMensajeAEnviar);
-
-//	size_t tamanioTexto = strlen(instruccion->texto)+sizeof(char);
-//	enviarMensaje(socketCliente,&(instruccion->pid),sizeof(int));
-//	enviarMensaje(socketCliente,&(instruccion->instruccion),sizeof(char));
-//	enviarMensaje(socketCliente,&(instruccion->nroPagina),sizeof(int));
-//	enviarMensaje(socketCliente,&tamanioTexto,sizeof(size_t));
-//	enviarMensaje(socketCliente,instruccion->texto,tamanioTexto);
+	size_t tamanioTexto = strlen(instruccion->texto)+sizeof(char);
+	enviarMensaje(socketCliente,&(instruccion->pid),sizeof(int));
+	enviarMensaje(socketCliente,&(instruccion->instruccion),sizeof(char));
+	enviarMensaje(socketCliente,&(instruccion->nroPagina),sizeof(int));
+	enviarMensaje(socketCliente,&tamanioTexto,sizeof(size_t));
+	enviarMensaje(socketCliente,instruccion->texto,tamanioTexto);
 
 }
 
 void enviarRespuesta(int socketCliente,tipoRespuesta* respuesta){
 
-	tipoMensaje* unMensajeAEnviar = serializarRespuesta(respuesta);
-
-	enviarMensaje(socketCliente,&unMensajeAEnviar->tamanio,sizeof(int));
-	enviarMensaje(socketCliente,unMensajeAEnviar->datos,unMensajeAEnviar->tamanio);
-
-	destruirMensaje(unMensajeAEnviar);
-
-
-//	size_t tamanioInfo = strlen(respuesta->informacion)+sizeof(char);
+//	tipoMensaje* unMensajeAEnviar = serializarRespuesta(respuesta);
 //
-//	enviarMensaje(socketCliente,&(respuesta->respuesta),sizeof(char));
-//	enviarMensaje(socketCliente,&tamanioInfo,sizeof(size_t));
-//	enviarMensaje(socketCliente,respuesta->informacion,tamanioInfo);
+//	enviarMensaje(socketCliente,&unMensajeAEnviar->tamanio,sizeof(int));
+//	enviarMensaje(socketCliente,unMensajeAEnviar->datos,unMensajeAEnviar->tamanio);
+//
+//	destruirMensaje(unMensajeAEnviar);
+
+
+	size_t tamanioInfo = strlen(respuesta->informacion)+sizeof(char);
+
+	enviarMensaje(socketCliente,&(respuesta->respuesta),sizeof(char));
+	enviarMensaje(socketCliente,&tamanioInfo,sizeof(size_t));
+	enviarMensaje(socketCliente,respuesta->informacion,tamanioInfo);
 }
 
 tipoRespuesta* recibirRespuesta(int socketEnviador){
-
-	tipoRespuesta* unaRespuestaRecibida;
-	tipoMensaje* unMensajeRecibido;
-
-	int tamanioDeDatos;
-	recibirMensajeCompleto(socketEnviador,&tamanioDeDatos,sizeof(int));
-
-	unMensajeRecibido = crearMensaje(tamanioDeDatos);
-	recibirMensajeCompleto(socketEnviador,unMensajeRecibido->datos,unMensajeRecibido->tamanio);
-
-	unaRespuestaRecibida = deserializarRespuesta(unMensajeRecibido);
-
-	return unaRespuestaRecibida;
-
-//	size_t tamanioInfo;
 //
-//	tipoRespuesta* respuesta = malloc(sizeof(tipoRespuesta));
+//	tipoRespuesta* unaRespuestaRecibida;
+//	tipoMensaje* unMensajeRecibido;
 //
-//	recibirMensajeCompleto(socketEnviador,&(respuesta->respuesta),sizeof(char));
-//	recibirMensajeCompleto(socketEnviador,&tamanioInfo,sizeof(size_t));
-//	respuesta->informacion = malloc(tamanioInfo);
-//	recibirMensajeCompleto(socketEnviador,respuesta->informacion,tamanioInfo);
+//	int tamanioDeDatos;
+//	recibirMensajeCompleto(socketEnviador,&tamanioDeDatos,sizeof(int));
 //
-//	return respuesta;
+//	unMensajeRecibido = crearMensaje(tamanioDeDatos);
+//	recibirMensajeCompleto(socketEnviador,unMensajeRecibido->datos,unMensajeRecibido->tamanio);
+//
+//	unaRespuestaRecibida = deserializarRespuesta(unMensajeRecibido);
+//
+//	return unaRespuestaRecibida;
+
+	size_t tamanioInfo;
+
+	tipoRespuesta* respuesta = malloc(sizeof(tipoRespuesta));
+
+	recibirMensajeCompleto(socketEnviador,&(respuesta->respuesta),sizeof(char));
+	recibirMensajeCompleto(socketEnviador,&tamanioInfo,sizeof(size_t));
+	respuesta->informacion = malloc(tamanioInfo);
+	recibirMensajeCompleto(socketEnviador,respuesta->informacion,tamanioInfo);
+
+	return respuesta;
 
 }
 
