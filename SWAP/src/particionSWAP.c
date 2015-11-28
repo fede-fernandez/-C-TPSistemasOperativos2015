@@ -25,9 +25,9 @@ void inicializarParticion(char* nombreDeParticion,int tamanioDePagina,int cantid
 	char* instruccion = string_new();
 	string_append_with_format(&instruccion,"dd if=/dev/zero of=%s bs=%d count=%d",nombreDeParticion,tamanioDePagina,cantidadDePaginas);
 
-	printf("Inicializando particion...\n\n");
+	//printf("Inicializando particion...\n\n");
 	system(instruccion);
-	printf("Particion inicializada. \n");
+	//printf("Particion inicializada. \n");
 
 	free(instruccion);
 
