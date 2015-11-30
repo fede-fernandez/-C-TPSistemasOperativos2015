@@ -29,7 +29,7 @@
 #define RUTA_DE_ARCHIVO_DE_CONFIGURACION_CPU "cfgCPU"
 #define RUTA_DE_ARCHIVO_DE_LOGS_CPU "logsCPU"
 #define LOGS_ACTIVADOS 1
-#define DEBUG 0
+#define DEBUG 1
 /**********Fin de configuracion Inicial del CPU**********/
 
 
