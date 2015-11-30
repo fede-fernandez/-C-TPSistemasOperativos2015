@@ -1,44 +1,54 @@
 #include "funcionesSeniales.h"
 #include "funcionesMemoria.h"
+#include <commonsDeAsedio/semaforos.h>
 
-extern t_list* listaSeniales;
 extern void crearHijoYPadre();
 
-void tratarSenial(){
-	int tamanioListaSeniales = list_size(listaSeniales);
-	if (tamanioListaSeniales== 0) return;
-	int* opcionSignalElegida;
+void tratarSenial(int signal){
 
-	int var;
-	for (var = 0; var < tamanioListaSeniales; ++var) {
-		opcionSignalElegida = list_get(listaSeniales,0);
+	switch(signal){
+		case SIGUSR1:
+			liberarRecurso(&mutexLimpiarTLB);
+			break;
 
-		switch(*opcionSignalElegida){
-		case 1:
-			limpiarTLB();
+		case SIGUSR2:
+			liberarRecurso(&mutexLimpiarRam);
 			break;
-		case 2:
-			limpiarRam();
-			break;
-		case 3:
-			crearHijoYPadre();
-			break;
-		}
 
-		list_remove_and_destroy_element(listaSeniales, 0, free);
+		case SIGPOLL:
+			liberarRecurso(&mutexDump);
+			break;
 	}
 }
 
-void prepararSenialLimpiarTLB(int signal){
-	agregarSenialEnLaLista(1);
+void prepararSenialLimpiarTLB(){
+	while(1){
+		bloquearRecurso(&mutexLimpiarTLB);
+
+		bloquearRecurso(&mutexTurnoSenial);
+		limpiarTLB();
+		liberarRecurso(&mutexTurnoSenial);
+	}
 }
 
-void prepararSenialLimpiarRAM(int signal){
-	agregarSenialEnLaLista(2);
+void prepararSenialLimpiarRAM(){
+	while(1){
+		bloquearRecurso(&mutexLimpiarRam);
+
+		bloquearRecurso(&mutexTurnoSenial);
+		limpiarRam();
+		liberarRecurso(&mutexTurnoSenial);
+	}
 }
 
-void prepararSenialVolcarRamALog(int signal){
-	agregarSenialEnLaLista(3);
+void prepararSenialVolcarRamALog(){
+	while(1){
+		bloquearRecurso(&mutexDump);
+
+		bloquearRecurso(&mutexTurnoSenial);
+		crearHijoYPadre();
+		liberarRecurso(&mutexTurnoSenial);
+	}
 }
 
 void agregarSenialEnLaLista(int signal){

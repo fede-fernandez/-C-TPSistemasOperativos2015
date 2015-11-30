@@ -18,9 +18,9 @@ tipoEstructuraMemoria* datosMemoria;
 void setearEstructuraMemoria(tipoEstructuraMemoria*);
 
 //SEÑALES
-t_list* listaSeniales;
-int idHijo;
-int estado;
+//pthread_mutex_t mutexSeniales;
+
+
 /*###############################FUNCIONES PRINCIPALES##########################################*/
 
 void tratarPeticion(int cpuAtendida);

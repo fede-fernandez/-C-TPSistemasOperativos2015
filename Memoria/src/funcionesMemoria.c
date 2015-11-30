@@ -735,6 +735,7 @@ void quitarPaginaDeRam(int posicion){
 
 void limpiarRam(){
 printf("\nentre a limpiar RAM\n");
+
 	int var;
 
 	log_trace(datosMemoria->logDeSeniales,"SEÑAL SIGUSR2 RECIBIDA");
@@ -762,8 +763,8 @@ printf("\nentre a limpiar RAM\n");
 
 	//limpiarTLB();
 	list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
-
 	log_trace(datosMemoria->logDeSeniales,"RAM LIMPIADA");
+
 printf("sali de limpiar RAM\n\n");
 }
 
@@ -792,13 +793,15 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 			quitarPaginaDeRam(posicionEnRam);
 	}
 }
-//señales
+
 void limpiarTLB(){
 printf("\nentre a limpiar TLB\n");
+
 	log_trace(datosMemoria->logDeSeniales,"SEÑAL SIGUSR1 RECIBIDA");
 	log_trace(datosMemoria->logDeSeniales,"TLB LIMPIADA");
 
-list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
+	list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
+
 printf("sali de limpiar TLB\n\n");
 }
 

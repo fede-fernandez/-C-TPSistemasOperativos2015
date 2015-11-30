@@ -2,14 +2,24 @@
 #define FUNCIONESSENIALES_H_
 
 #include <signal.h>
+#include<commons/collections/list.h>
 
-void tratarSenial();
+t_list* listaSeniales;
+int idHijo;
+int estado;
+
+pthread_mutex_t mutexTurnoSenial;
+pthread_mutex_t mutexLimpiarTLB;
+pthread_mutex_t mutexLimpiarRam;
+pthread_mutex_t mutexDump;
+
+void tratarSenial(int signal);
 
 void crearSeniales();
 
-void prepararSenialVolcarRamALog(int signal);
-void prepararSenialLimpiarTLB(int signal);
-void prepararSenialLimpiarRAM(int signal);
+void prepararSenialVolcarRamALog();
+void prepararSenialLimpiarTLB();
+void prepararSenialLimpiarRAM();
 
 void agregarSenialEnLaLista(int signal);
 

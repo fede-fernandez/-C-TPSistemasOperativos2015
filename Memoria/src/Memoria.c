@@ -19,16 +19,19 @@
 #define ESPERA_EN_SEGUNDOS 1//que select no sea bloqueante
 
 //SEÑALES
-void crearHijoYPadre(){
+extern pthread_mutex_t mutexTurnoSenial;
+extern pthread_mutex_t mutexLimpiarTLB;
+extern pthread_mutex_t mutexLimpiarRam;
+extern pthread_mutex_t mutexDump;
 
-	if((idHijo = fork()) == 0){
-		//hijo
+void crearHijoYPadre(){
+	idHijo = fork();
+
+	if(idHijo == 0){
 		volcarRamALog();
 		exit(0);
-	}else {
-		//padre
-		wait(&estado);
 	}
+	else wait(&estado);
 }
 
 int main(void) {
@@ -60,22 +63,18 @@ int main(void) {
 	FD_SET(socketParaCpus,&listaPrincipal);
 
 	datosMemoria = malloc(sizeof(tipoEstructuraMemoria));
-
-	datosMemoria->socketSWAP = socketParaSwap;
-
-	datosMemoria->maximoSocket = socketParaCpus;
-
-	datosMemoria->configuracion = configuracion;
-
-	datosMemoria->memoriaActiva = &memoriaActiva;
+		datosMemoria->socketSWAP = socketParaSwap;
+		datosMemoria->maximoSocket = socketParaCpus;
+		datosMemoria->configuracion = configuracion;
+		datosMemoria->memoriaActiva = &memoriaActiva;
 
 	pthread_mutex_t mutex;
-
-	inicializarMutex(&mutex);
+		inicializarMutex(&mutex);
 
 	datosMemoria->socketCpus = socketParaCpus;
 
-	listaSeniales = list_create();//Lista de señales
+	//SEÑALES
+	//staSeniales = list_create();
 
 	/*system("if [ -f logDeTLB ]; then rm logDeTLB\nfi");
 	system("if [ -f logDeSwapeo ]; then rm logDeSwapeo\nfi");
@@ -94,38 +93,42 @@ int main(void) {
 //-------------END OF FERNILANDIA-----------------------------------
 
 	asociarAPuerto(socketParaCpus,configuracion->puertoDeEscucha);
-
 	conectarAServidor(socketParaSwap,configuracion->ipSWAP,configuracion->puertoSWAP);
-
 	escucharConexiones(socketParaCpus,maxConexionesEntrantes);
 
-	pthread_t hiloTasaTLB,hiloMenu,hiloSeniales;
+	pthread_t hiloTasaTLB,hiloMenu;
 
 	crearThread(&hiloTasaTLB,mostrarTasaTLBPeriodicamente,NULL);
-
 	crearThread(&hiloMenu,funcionPrueba,datosMemoria);
 
 	//SEÑALES
-	crearThread(&hiloSeniales,crearSeniales,NULL);
+	inicializarMutex(&mutexTurnoSenial);
+
+	inicializarMutex(&mutexLimpiarTLB);
+		bloquearRecurso(&mutexLimpiarTLB);
+	inicializarMutex(&mutexLimpiarRam);
+		bloquearRecurso(&mutexLimpiarRam);
+	inicializarMutex(&mutexDump);
+		bloquearRecurso(&mutexDump);
+
+	pthread_t hiloTLB, hiloRAM, hiloDump;
+		crearThread(&hiloTLB,prepararSenialLimpiarTLB,NULL);
+		crearThread(&hiloRAM,prepararSenialLimpiarRAM,NULL);
+		crearThread(&hiloDump,prepararSenialVolcarRamALog,NULL);
+
+	signal(SIGUSR1, tratarSenial);
+	signal(SIGUSR2, tratarSenial);
+	signal(SIGPOLL, tratarSenial);
 /////////////////////////////////////////////////////////////////////////////////////
 
 	pantallaDeInicio();
 
 	while(memoriaActiva){
-
-		//SEÑALES no esoty usando el hilo
-		/*signal(SIGUSR1, prepararSenialLimpiarTLB);
-		signal(SIGUSR2, prepararSenialLimpiarRAM);
-		signal(SIGPOLL, prepararSenialVolcarRamALog);*/
-
 		listaFiltrada = listaPrincipal;
 		select(datosMemoria->maximoSocket+1,&listaFiltrada,NULL,NULL,&tiempoDeEsperaDeCpus);//NULL);
 
 		int var;
 		for (var = 0; var <= datosMemoria->maximoSocket; var++) {
-
-			//SEÑALES
-			tratarSenial();
 
 			if(FD_ISSET(var, &listaFiltrada)){
 
@@ -148,6 +151,11 @@ int main(void) {
 	destruirConfigMemoria(configuracion);
 
 	printf("Memoria finalizada");
+
+	//SEÑALES
+	destruirMutex(&mutexDump);
+	destruirMutex(&mutexLimpiarRam);
+	destruirMutex(&mutexLimpiarTLB);
 
 	return EXIT_SUCCESS;
 }
