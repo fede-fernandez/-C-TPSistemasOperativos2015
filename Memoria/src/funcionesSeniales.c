@@ -43,26 +43,34 @@ void elegirOpcion(){
 
 void tratarSenial(){
 
-	if (list_size(listaSeniales) == 0) return;
+	int tamanioListaSeniales = list_size(listaSeniales);
 
-	int* opcionSignalElegida = list_get(listaSeniales,0);
+	if (tamanioListaSeniales== 0) return;
 
-	switch(*opcionSignalElegida){
-		case 1:
-			limpiarTLB();
-			break;
+	int* opcionSignalElegida;
 
-		case 2:
-			limpiarRam();
-			break;
+	int var;
+	for (var = 0; var < tamanioListaSeniales; ++var) {
 
-		case 3:
-			crearHijoYPadre();
-			break;
+		opcionSignalElegida = list_get(listaSeniales,0);
+
+			switch(*opcionSignalElegida){
+				case 1:
+					limpiarTLB();
+					break;
+
+				case 2:
+					limpiarRam();
+					break;
+
+				case 3:
+					crearHijoYPadre();
+					break;
+			}
+
+			list_remove_and_destroy_element(listaSeniales, 0, free);
 	}
-
-	list_remove_and_destroy_element(listaSeniales, 0, free);
-	//*opcionSignalElegida = 0;
+		//*opcionSignalElegida = 0;
 }
 
 void prepararSenialLimpiarTLB(int signal){

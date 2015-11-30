@@ -122,10 +122,12 @@ int cualReemplazarRAMCLOCKM(tipoTablaPaginas* tablaDePagina){
 
 	while(noFunciono){
 
+
 	noFunciono = !ejecutarPaso1CLOCKM(tablaDePagina,&nroPaginaAReemplazar);
 
 	if(noFunciono)
 	noFunciono = !ejecutarPaso2CLOCKM(tablaDePagina,&nroPaginaAReemplazar);
+
 }
 
 	return nroPaginaAReemplazar;
@@ -147,6 +149,12 @@ bool ejecutarPaso1CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplaz
 			puntero = 0;
 
 		acceso = list_get(tablaDePagina->listaParaAlgoritmo,puntero);
+
+		if(*acceso<0){
+			puntero = 0;
+
+			break;
+		}
 
 		pagina = list_get(tablaDePagina->frames,*acceso);
 
@@ -192,6 +200,12 @@ bool ejecutarPaso2CLOCKM(tipoTablaPaginas* tablaDePagina,int* nroPaginaAReemplaz
 			puntero = 0;
 
 		acceso = list_get(tablaDePagina->listaParaAlgoritmo,puntero);
+
+		if(*acceso<0){
+			puntero = 0;
+
+			break;
+		}
 
 		pagina = list_get(tablaDePagina->frames,*acceso);
 
@@ -289,11 +303,14 @@ void inicializarPorLRU(t_list* listaParaAlgoritmo,int paginasPedidas){
 
 int ejecutarAlgoritmo(int* nroPagina,int pid,bool* estaModificada){
 
+
 	tipoTablaPaginas* tablaDePaginas = traerTablaDePaginas(pid);
 
 	int dondeEstaEnRam;
 
+
 	int nroPaginaAReemplazar = cualReemplazarRAM(tablaDePaginas);
+
 
 	*nroPagina = nroPaginaAReemplazar;
 

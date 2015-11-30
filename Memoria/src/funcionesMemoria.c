@@ -256,6 +256,14 @@ tipoRespuesta* leerPagina(tipoInstruccion* instruccion){
 			return crearTipoRespuesta(MANQUEADO,"Numero de pagina excede el maximo numero");
 		}
 
+	if(RAMLlena()&&noUsaMarcos(instruccion->pid)){//Esto hay que ver como se trata (leer issue 25)
+
+		log_error(datosMemoria->logDeMemoria,"ERROR DE LECTURA DE PAGINA, NO HAY MARCOS DISPONIBLES");
+		quitarProceso(instruccion);
+
+		return crearTipoRespuesta(MANQUEADO,"Error de lectura de pagina, proceso finalizado");
+	}
+
 	int posicionEnRam = buscarPagina(instruccion->nroPagina,instruccion->pid);
 
 	if(posicionEnRam>=0){
@@ -424,6 +432,7 @@ int traerPaginaDesdeSwap(tipoInstruccion* instruccion, tipoRespuesta** respuesta
 		char* nuevaPagina = string_duplicate((*respuesta)->informacion);
 
 		posicionEnRam = agregarPagina(instruccion->nroPagina,instruccion->pid,nuevaPagina);
+
 	}
 	else{
 		log_error(datosMemoria->logDeSwapeo,"FALLO DE LECTURA DE LA PAGINA %d DEL PROCESO %d EN SWAP",instruccion->nroPagina,instruccion->pid);
