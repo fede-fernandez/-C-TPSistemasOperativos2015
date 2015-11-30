@@ -80,7 +80,6 @@ int main(void) {
 	datosMemoria->logDeSwapeo = log_create("logDeSwapeo","Administrador de Memoria",false,LOG_LEVEL_TRACE);
 	datosMemoria->logDeSeniales = log_create("logDeSeniales","Administrador de Memoria",false,LOG_LEVEL_TRACE);
 
-
 	setearEstructuraMemoria(datosMemoria);
 
 //-------------END OF FERNILANDIA-----------------------------------
@@ -100,20 +99,26 @@ int main(void) {
 
 	//SEÑALES
 	pthread_t hiloSeniales;
-
 	crearThread(&hiloSeniales,crearSeniales,NULL);
 /////////////////////////////////////////////////////////////////////////////////////
 
+	pantallaDeInicio();
 
 	while(memoriaActiva){
 
-		tratarSenial();
+		//SEÑALES no esoty usando el hilo
+		/*signal(SIGUSR1, prepararSenialLimpiarTLB);
+		signal(SIGUSR2, prepararSenialLimpiarRAM);
+		signal(SIGPOLL, prepararSenialVolcarRamALog);*/
 
 		listaFiltrada = listaPrincipal;
 		select(datosMemoria->maximoSocket+1,&listaFiltrada,NULL,NULL,NULL);
 
 		int var;
 		for (var = 0; var <= datosMemoria->maximoSocket; var++) {
+
+			//SEÑALES
+			tratarSenial();
 
 			if(FD_ISSET(var, &listaFiltrada)){
 

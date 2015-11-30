@@ -1,10 +1,18 @@
-/*
- * funcionesSeñales.c
- *
- *  Created on: 25/10/2015
- *      Author: utnso
- */
 #include "impresionesEnPantalla.h"
+
+void pantallaDeInicio(){
+	system("clear");
+	printf("//////////////////////////////////////////////////////////////\n");
+	printf("*******************Administrador de Memoria*******************\n");
+	printf("//////////////////////////////////////////////////////////////\n\n");
+	printf("Estado: Conectado\n");
+	printf("PID: %d\n\n", getpid());
+
+	printf("Seniales: \n");
+	printf("Flush TLB: USR1 \n");
+	printf("Flush RAM: SUR2 \n");
+	printf("Dump RAM: IO \n\n");
+}
 
 void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 
@@ -16,6 +24,9 @@ void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 
 		switch (boton) {
 			case 0:
+				//SEÑALES
+				pantallaDeInicio();
+
 				mostrarTablasDePaginas(datosMemoria);
 				printf("\n\n");
 				imprimirTablas(datosMemoria->listaTablaPaginas);
@@ -23,6 +34,14 @@ void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
 				//mostrarTLB(datosMemoria);
 				mostrarRAM(datosMemoria->listaRAM);
 				printf("\n\n");
+				break;
+
+			case 9:
+				pantallaDeInicio();
+				break;
+
+			default:
+				funcionPrueba(datosMemoria);
 				break;
 /*
 			case 2:

@@ -10,6 +10,8 @@
 
 #include "funcionesMemoria.h"
 
+void pantallaDeInicio();
+
 void funcionPrueba(tipoEstructuraMemoria* datosMemoria);
 
 void mostarEstado(tipoEstructuraMemoria* datosMemoria);

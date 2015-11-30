@@ -122,12 +122,10 @@ int cualReemplazarRAMCLOCKM(tipoTablaPaginas* tablaDePagina){
 
 	while(noFunciono){
 
-
 	noFunciono = !ejecutarPaso1CLOCKM(tablaDePagina,&nroPaginaAReemplazar);
 
 	if(noFunciono)
 	noFunciono = !ejecutarPaso2CLOCKM(tablaDePagina,&nroPaginaAReemplazar);
-
 }
 
 	return nroPaginaAReemplazar;
@@ -303,14 +301,11 @@ void inicializarPorLRU(t_list* listaParaAlgoritmo,int paginasPedidas){
 
 int ejecutarAlgoritmo(int* nroPagina,int pid,bool* estaModificada){
 
-
 	tipoTablaPaginas* tablaDePaginas = traerTablaDePaginas(pid);
 
 	int dondeEstaEnRam;
 
-
 	int nroPaginaAReemplazar = cualReemplazarRAM(tablaDePaginas);
-
 
 	*nroPagina = nroPaginaAReemplazar;
 

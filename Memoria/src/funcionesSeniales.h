@@ -3,9 +3,6 @@
 
 #include <signal.h>
 
-/*void imprimirYElegirOpcionesSeniales();
-void elegirOpcion();*/
-
 void tratarSenial();
 
 void crearSeniales();
