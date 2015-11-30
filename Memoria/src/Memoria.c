@@ -11,8 +11,12 @@
 #include "impresionesEnPantalla.h"
 #include "funcionesSeniales.h"
 #include <signal.h>
+#include <sys/time.h>
 //---------------------------------------------------------------
 #define maxConexionesEntrantes 10
+
+#define ESPERA_EN_MICROSEGUNDOS 0//Esto lo agrego para
+#define ESPERA_EN_SEGUNDOS 1//que select no sea bloqueante
 
 //SEÑALES
 void crearHijoYPadre(){
@@ -41,6 +45,11 @@ int main(void) {
 
 	bool memoriaActiva = true;
 
+	struct timeval tiempoDeEsperaDeCpus;
+
+	tiempoDeEsperaDeCpus.tv_sec = ESPERA_EN_SEGUNDOS;
+
+	tiempoDeEsperaDeCpus.tv_usec = ESPERA_EN_MICROSEGUNDOS;
 //--------------ACA EMPIEZA FERNILANDIA--------------------------
 
 	fd_set listaPrincipal;
@@ -90,15 +99,13 @@ int main(void) {
 
 	escucharConexiones(socketParaCpus,maxConexionesEntrantes);
 
-	pthread_t hiloSignals,hiloTasaTLB;
+	pthread_t hiloTasaTLB,hiloMenu,hiloSeniales;
 
 	crearThread(&hiloTasaTLB,mostrarTasaTLBPeriodicamente,NULL);
 
-	crearThread(&hiloSignals,funcionPrueba,datosMemoria);
-
+	crearThread(&hiloMenu,funcionPrueba,datosMemoria);
 
 	//SEÑALES
-	pthread_t hiloSeniales;
 	crearThread(&hiloSeniales,crearSeniales,NULL);
 /////////////////////////////////////////////////////////////////////////////////////
 
@@ -112,7 +119,7 @@ int main(void) {
 		signal(SIGPOLL, prepararSenialVolcarRamALog);*/
 
 		listaFiltrada = listaPrincipal;
-		select(datosMemoria->maximoSocket+1,&listaFiltrada,NULL,NULL,NULL);
+		select(datosMemoria->maximoSocket+1,&listaFiltrada,NULL,NULL,&tiempoDeEsperaDeCpus);//NULL);
 
 		int var;
 		for (var = 0; var <= datosMemoria->maximoSocket; var++) {
@@ -139,6 +146,8 @@ int main(void) {
 	liberarSocket(socketParaCpus);
 	liberarSocket(socketParaSwap);
 	destruirConfigMemoria(configuracion);
+
+	printf("Memoria finalizada");
 
 	return EXIT_SUCCESS;
 }
