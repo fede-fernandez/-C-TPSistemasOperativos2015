@@ -10,7 +10,7 @@ void pantallaDeInicio(){
 
 	printf("Seniales: \n");
 	printf("Flush TLB: USR1 \n");
-	printf("Flush RAM: SUR2 \n");
+	printf("Flush RAM: USR2 \n");
 	printf("Dump RAM: IO \n\n");
 }
 

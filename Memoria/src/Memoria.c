@@ -12,11 +12,12 @@
 #include "funcionesSeniales.h"
 #include <signal.h>
 #include <sys/time.h>
+#include "funcionPrincipal.h"
 //---------------------------------------------------------------
 #define maxConexionesEntrantes 10
 
-#define ESPERA_EN_MICROSEGUNDOS 0//Esto lo agrego para
-#define ESPERA_EN_SEGUNDOS 1//que select no sea bloqueante
+//#define ESPERA_EN_MICROSEGUNDOS 0//Esto lo agrego para
+//#define ESPERA_EN_SEGUNDOS 1//que select no sea bloqueante
 
 //SEÑALES
 extern pthread_mutex_t mutexTurnoSenial;
@@ -34,6 +35,10 @@ void crearHijoYPadre(){
 	else wait(&estado);
 }
 
+//struct timeval tiempoDeEsperaDeCpus;
+fd_set listaPrincipal;
+fd_set listaFiltrada;
+
 int main(void) {
 
 //////////////////////////INICIALIZACION DE VARIABLES////////////////////////////////
@@ -44,19 +49,12 @@ int main(void) {
 
 	int socketParaSwap = crearSocket();
 
-	int socketCpuEntrante;
-
 	bool memoriaActiva = true;
 
-	struct timeval tiempoDeEsperaDeCpus;
+	//tiempoDeEsperaDeCpus.tv_sec = ESPERA_EN_SEGUNDOS;
 
-	tiempoDeEsperaDeCpus.tv_sec = ESPERA_EN_SEGUNDOS;
-
-	tiempoDeEsperaDeCpus.tv_usec = ESPERA_EN_MICROSEGUNDOS;
+	//tiempoDeEsperaDeCpus.tv_usec = ESPERA_EN_MICROSEGUNDOS;
 //--------------ACA EMPIEZA FERNILANDIA--------------------------
-
-	fd_set listaPrincipal;
-	fd_set listaFiltrada;
 
 	FD_ZERO(&listaPrincipal);
 	FD_ZERO(&listaFiltrada);
@@ -67,9 +65,6 @@ int main(void) {
 		datosMemoria->maximoSocket = socketParaCpus;
 		datosMemoria->configuracion = configuracion;
 		datosMemoria->memoriaActiva = &memoriaActiva;
-
-	pthread_mutex_t mutex;
-		inicializarMutex(&mutex);
 
 	datosMemoria->socketCpus = socketParaCpus;
 
@@ -116,6 +111,10 @@ int main(void) {
 		crearThread(&hiloRAM,prepararSenialLimpiarRAM,NULL);
 		crearThread(&hiloDump,prepararSenialVolcarRamALog,NULL);
 
+		pthread_t hiloPrincipal;
+
+		crearThread(&hiloPrincipal,funcionPrincipal,NULL);
+
 	signal(SIGUSR1, tratarSenial);
 	signal(SIGUSR2, tratarSenial);
 	signal(SIGPOLL, tratarSenial);
@@ -124,22 +123,6 @@ int main(void) {
 	pantallaDeInicio();
 
 	while(memoriaActiva){
-		listaFiltrada = listaPrincipal;
-		select(datosMemoria->maximoSocket+1,&listaFiltrada,NULL,NULL,&tiempoDeEsperaDeCpus);//NULL);
-
-		int var;
-		for (var = 0; var <= datosMemoria->maximoSocket; var++) {
-
-			if(FD_ISSET(var, &listaFiltrada)){
-
-				if(var==datosMemoria->socketCpus){
-					socketCpuEntrante = crearSocketParaAceptarSolicitudes(datosMemoria->socketCpus);
-					FD_SET(socketCpuEntrante,&listaPrincipal);
-					datosMemoria->maximoSocket = maximoEntre(datosMemoria->maximoSocket,socketCpuEntrante);
-				}
-				else tratarPeticion(var);
-			}
-		}
 
 	}
 
@@ -150,12 +133,13 @@ int main(void) {
 	liberarSocket(socketParaSwap);
 	destruirConfigMemoria(configuracion);
 
-	printf("Memoria finalizada");
-
 	//SEÑALES
 	destruirMutex(&mutexDump);
 	destruirMutex(&mutexLimpiarRam);
 	destruirMutex(&mutexLimpiarTLB);
+	destruirMutex(&mutexTurnoSenial);
+
+	printf("Memoria finalizada\n");
 
 	return EXIT_SUCCESS;
 }
