@@ -267,6 +267,8 @@ void agregarAccesoPorAlgoritmo(int nroPagina,int pid){
 			break;
 	}
 
+	loguearColaDeAlgoritmo(tablaDePaginas);
+
 	//if(estaHabilitadaLaTLB())
 		//agregarAccesoPorFIFO(nroPagina,pid);
 }
@@ -320,7 +322,7 @@ int ejecutarAlgoritmo(int* nroPagina,int pid,bool* estaModificada){
 	//quitarAccesoTLB(nroPaginaAReemplazar,pid);
 	}
 
-	loguearColaDeAlgoritmo(tablaDePaginas);
+	//loguearColaDeAlgoritmo(tablaDePaginas);
 
 	return dondeEstaEnRam;
 }
