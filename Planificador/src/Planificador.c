@@ -522,27 +522,27 @@ int menu(void) {
 		opcion = 0;
 
 
-		    printf(VERDE"################################################################\n");
-			printf("################################################################\n");
-			printf("##     --------> *****                  ***** <------------   ##\n");
-			printf("##   *****             "AZUL"LOS  JAVIMANCOS" VERDE "         ***** -------  ##\n");
-			printf("##------------------------------------------------------------##\n");
-			printf("##                                                            ##\n");
-			printf("##      Ingrese una opcion para continuar:                    ##\n");
-			printf("##                                                            ##\n");
-			printf("##                                                            ##\n");
-			printf("##          1) Correr Path                                    ##\n");
-			printf("##                                                            ##\n");
-			printf("##          2) Finalizar PID                                  ##\n");
-			printf("##                                                            ##\n");
-			printf("##          3) ps                                             ##\n");
-			printf("##                                                            ##\n");
-			printf("##          4) cpu                                            ##\n");
-			printf("##                                                            ##\n");
-			printf("##          5) Salir                                          ##\n");
-			printf("##                                                            ##\n");
-			printf("################################################################\n");
-			printf("################################################################\n\n\n" FINDETEXTO);
+		    printf(BLANCO"################################################################\n"FINDETEXTO);
+			printf(BLANCO"################################################################\n"FINDETEXTO);
+			printf(BLANCO"##     --------> *****                  ***** <------------   ##\n"FINDETEXTO);
+			printf(BLANCO"##   *****             LOS  JAVIMANCOS         ***** -------  ##\n"FINDETEXTO);
+			printf(BLANCO"##------------------------------------------------------------##\n"FINDETEXTO);
+			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
+			printf(BLANCO"##"  VERDE "        Ingrese una opción para continuar:" BLANCO"                  ##\n"FINDETEXTO);
+			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
+			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
+			printf(BLANCO"##"  VERDE  "           1) Correr Path"                 BLANCO "                                   ##\n"FINDETEXTO);
+			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
+			printf(BLANCO"##"  VERDE  "           2) Finalizar PID"               BLANCO "                                 ##\n"FINDETEXTO);
+			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
+			printf(BLANCO"##"  VERDE  "           3) ps"                          BLANCO "                                            ##\n"FINDETEXTO);
+			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
+			printf(BLANCO"##"  VERDE  "           4) cpu"                         BLANCO "                                           ##\n"FINDETEXTO);
+			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
+			printf(BLANCO"##"  VERDE  "           5) Salir"                       BLANCO "                                         ##\n"FINDETEXTO);
+			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
+			printf(BLANCO"################################################################\n"FINDETEXTO);
+			printf(BLANCO"################################################################\n\n\n"FINDETEXTO);
 
 			scanf("%s", opchar);
 
