@@ -50,6 +50,16 @@ tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfigura
 	return cfg;
 }
 
+//Validar existencia de archivo
+int validarExistenciaDeArchivo(char* rutaDelArchivo)
+{
+	FILE* archivo = fopen(rutaDelArchivo, "r");
+	if(archivo == NULL)
+	{
+		return 0;
+	}
+	return 1;
+}
 
 //Cargar archivo a memoria
 FILE* abrirProgramaParaLectura(char* rutaDelPrograma)
@@ -57,7 +67,7 @@ FILE* abrirProgramaParaLectura(char* rutaDelPrograma)
 	FILE* programa = fopen(rutaDelPrograma, "r");
 	if(programa == NULL)
 	{
-		perror("El programa no existe o esta vacio.");
+		perror("El programa esta vacio.");
 		return NULL;
 	}
 	return programa;
@@ -65,7 +75,7 @@ FILE* abrirProgramaParaLectura(char* rutaDelPrograma)
 
 
 //Lector de rafagas
-void ejecutarPrograma(tipoPCB *PCB, int quantum, t_datosCPU* datosCPU)
+void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 {
 	tipoRepuestaDeInstruccion respuestaInstruccion;
 	respuestaInstruccion.tipoDeSalida = 0;
@@ -80,7 +90,7 @@ void ejecutarPrograma(tipoPCB *PCB, int quantum, t_datosCPU* datosCPU)
 	char* programaEnMemoria = mmap(0, sizeof(programa), PROT_READ, MAP_SHARED, fileno(programa), 0);
 	char** instrucciones = string_split(programaEnMemoria, "\n");
 
-	if(quantum == 0) //FIFO
+	if(datosCPU->quantum == 0) //FIFO
 	{
 		while(instructionPointer <= longitudDeStringArray(instrucciones))
 		{
@@ -107,7 +117,7 @@ void ejecutarPrograma(tipoPCB *PCB, int quantum, t_datosCPU* datosCPU)
 	else //ROUND ROBIN
 	{
 		int reloj = 0;
-		while(reloj < quantum)
+		while(reloj < datosCPU->quantum)
 		{
 			respuestaInstruccion = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			string_append(&respuestasAcumuladas, respuestaInstruccion.respuesta);
@@ -597,10 +607,10 @@ int cantidadDeInstrucciones(char* rutaDelPrograma)
 
 
 //Inicializa la lista de instrucciones ejecutadas en 0, una por CPU
-void asignarCantidadDeCPUsALista(tipoConfigCPU* configuracionCPU)
+void asignarCantidadDeCPUsALista(int cantidadDeCPUs)
 {
 	int i;
-	for(i = 0; i < configuracionCPU->cantidadDeHilos; i++)
+	for(i = 0; i < cantidadDeCPUs; i++)
 	{
 		int * instruccionesEjecutadas = malloc(sizeof(int));
 		*instruccionesEjecutadas = 0;
@@ -620,11 +630,11 @@ void aumentarCantidadDeInstruccionesEjecutadasEnUno(int idCPU)
 
 
 //Reinicia todos los contadores de instrucciones ejecutadas por CPUs
-void reiniciarCantidadDeInstrucciones(tipoConfigCPU* configuracionCPU)
+void reiniciarCantidadDeInstrucciones(int cantidadDeCPUs)
 {
 	int i;
 	int* instruccionesEjecutadas;
-	for(i = 0; i < configuracionCPU->cantidadDeHilos; i++)
+	for(i = 0; i < cantidadDeCPUs; i++)
 	{
 		sem_wait(&semaforoContadorDeInstrucciones);
 		instruccionesEjecutadas = list_get(cantidadDeInstruccionesEjecutadasPorCPUs, i);
@@ -651,35 +661,6 @@ void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configur
 		}
 	}
 }
-
-
-//EN CASO DE EMERGENCIA ROMPA EL VIDRIO CON EL MARTILLO
-//void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configuracionCPU)
-//{
-//	int i;
-//	int* instruccionesEjecutadas;
-//	int porcentajeDeUso;
-//	finDeProceso = time(0);
-//	double tiempoFuncionando = difftime(finDeProceso, inicioDeProceso);
-//
-//	for(i = 0; i < configuracionCPU->cantidadDeHilos; i++)
-//	{
-//		instruccionesEjecutadas = list_get(cantidadDeInstruccionesEjecutadasPorCPUs, i);
-//		porcentajeDeUso = *instruccionesEjecutadas * 100 / tiempoFuncionando;
-//		if(porcentajeDeUso > 100)
-//		{
-//			porcentajeDeUso = 100;
-//		}
-//
-//		enviarMensaje(socketMasterPlanificador, &porcentajeDeUso, sizeof(porcentajeDeUso));
-//
-//		if(DEBUG == 1)
-//		{
-//			printf("PORCENTAJE DE USO DE CPU: %i = %i%% ENVIADO A PLANIFICADOR\n", i + 1, porcentajeDeUso);
-//		}
-//	}
-//}
-//EN CASO DE EMERGENCIA ROMPA EL VIDRIO CON EL MARTILLO
 
 
 

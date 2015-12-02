@@ -126,31 +126,45 @@ int correr_path(void){
   //limpiar pantalla
 	//system("clear");
 
-	printf("Ingresar Comando: \n");
+	printf("Ingresar nombre del mcod: \n");
 
-	scanf("%s", path); // supongo que siempre es un comando valido y path tambien
+	scanf("%s", path);
 
-	contador_de_id_procesos++; // mantengo la cuenta de todos los procesos que se crearon en el sistema
+	//FERNILANDIA
+	char mensajeParaPreguntarExistenciaDeArchivo = 'A';
+	enviarMensaje(socketMaestro, &mensajeParaPreguntarExistenciaDeArchivo, sizeof(mensajeParaPreguntarExistenciaDeArchivo));
+	size_t tamanioPath = strlen(path) + sizeof(char);
+	enviarMensaje(socketMaestro, &tamanioPath, sizeof(tamanioPath));
+	enviarMensaje(socketMaestro, path, tamanioPath);
 
-	pthread_mutex_lock(&pcbs);
-	// Agrego el elemento al final de la lista (para que quede ordenada por ID)
-	list_add(lista_de_PCB, PCB_create(contador_de_id_procesos, 1, 'R', path, time(NULL), time(NULL)));
+	char existenciaDeArchivo = 'Z';
+	recibirMensajeCompleto(socketMaestro, &existenciaDeArchivo, sizeof(char));
 
-	pthread_mutex_unlock(&pcbs);
+	if(existenciaDeArchivo == 'E'){
+		printf(ROJO "Error" BLANCO ": No existe el mcod ingresado.\n" FINDETEXTO);
+	}
+	//FIN DE FERNILANDIA
+	else{
+		contador_de_id_procesos++; // mantengo la cuenta de todos los procesos que se crearon en el sistema
 
-	pthread_mutex_lock(&ready);
-	// agrego la id a lo ultimo de la cola
-	queue_push(procesos_en_ready,id_create(contador_de_id_procesos));
+		pthread_mutex_lock(&pcbs);
+		// Agrego el elemento al final de la lista (para que quede ordenada por ID)
+		list_add(lista_de_PCB, PCB_create(contador_de_id_procesos, 1, 'R', path, time(NULL), time(NULL)));
 
-	pthread_mutex_unlock(&ready);
+		pthread_mutex_unlock(&pcbs);
 
-	printf("Proceso %s en ejecucion....\n", path);
+		pthread_mutex_lock(&ready);
+		// agrego la id a lo ultimo de la cola
+		queue_push(procesos_en_ready,id_create(contador_de_id_procesos));
 
-	log_trace(proceso, "              INICIO --> ID_mproc: %d , nombre: %s ",contador_de_id_procesos, path);
+		pthread_mutex_unlock(&ready);
 
-	sem_post(&solicitud_ejecucion);
+		printf("Proceso %s en ejecucion....\n", path);
 
+		log_trace(proceso, "              INICIO --> ID_mproc: %d , nombre: %s ",contador_de_id_procesos, path);
 
+		sem_post(&solicitud_ejecucion);
+	}
 	//sleep(1);
 
 	return 0;
