@@ -80,7 +80,7 @@ int menu(void) ;
 
 int correr_path(void);
 
-void finalizar_PID();
+int finalizar_PID();
 
 void ps();
 

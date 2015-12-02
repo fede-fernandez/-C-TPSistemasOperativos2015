@@ -113,6 +113,8 @@ tipoConfig* cargarArchivoDeConfiguracion(char* rutaDelArchivoDeConfiguracion){
  	return aux;
  }
 
+
+
  // saber si un mProc fue finalizado forsozamente
  int estas_finalizado(t_list *id_finalizados, int pidProcesoBuscado){
 

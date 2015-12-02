@@ -508,7 +508,7 @@ int menu(void) {
 		opcion = 0;
 
 
-		    printf("############################################# L ##################\n");
+		    printf("############################################# M ##################\n");
 			printf("################################################################\n");
 			printf("##     --------> *****                  ***** <------------   ##\n");
 			printf("##   *****             LOS  JAVIMANCOS         ***** -------  ##\n");
@@ -574,11 +574,12 @@ int menu(void) {
 
 }
 
-void finalizar_PID(){
+int finalizar_PID(){
 
 	char mensajito = 'C';
 	int ultima; // cantidad de instrucciones
 	int id;
+	char timer[10];
 
 	t_PCB *nodo_pcb;
 
@@ -586,10 +587,23 @@ void finalizar_PID(){
 
 	scanf("%d",&id);
 
+	pthread_mutex_lock(&pcbs);
+
+
+	if( ! (estas_finalizado(lista_de_PCB, id)) ){ // si no esta en la lista entra al if
+
+		pthread_mutex_unlock(&pcbs);
+
+		printf("\n   no se pudo encontrar el ID_mProc ingresado  :( \n\n");
+
+		scanf("%s",timer);
+
+		return 0;
+	}
+
+
 	enviarMensaje(socketMaestro,&mensajito,sizeof(char)); // le mando el quantum, que es un int
 
-
-	pthread_mutex_lock(&pcbs);
 
 	nodo_pcb = buscar_PCB(lista_de_PCB, id); //PCB=buscar_id_de_proceso (sin desarmar la lista)
 
@@ -609,7 +623,7 @@ void finalizar_PID(){
 
 	pthread_mutex_unlock(&pcbs);
 
-
+	return 0;
 }
 
 void ps(){
