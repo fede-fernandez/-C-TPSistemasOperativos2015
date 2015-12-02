@@ -281,7 +281,7 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 				sem_destroy(&semaforoContadorDeInstrucciones);
 				liberarSocket(socketMasterPlanificador);
 				liberarSocket(socketParaMemoria);
-				printf(BLANCO "Proceso CPU " ROJO "Finalizado" BLANCO ".\n" FINDETEXTO);
+				printf(BLANCO "\nProceso CPU " ROJO "Finalizado" BLANCO ".\n" FINDETEXTO);
 				exit(EXIT_SUCCESS);
 			}
 		}

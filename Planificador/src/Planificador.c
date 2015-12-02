@@ -80,7 +80,7 @@ void conectar_maestroCPU(){
 
 	asociarAPuerto(socketEscucha,puerto);
 
-	printf("\n\n    ********* Esperando a que cpu se conecte.. \n\n");
+	printf(BLANCO "\n\n             Esperando Conexion de CPU...\n\n" FINDETEXTO);
 
 	// me pongo a escuchar conexiones
 	escucharConexiones(socketEscucha,5); //se bloquea hasta q haya cpus nuevas
@@ -112,7 +112,7 @@ int main(void) {
 
 	liberar_memoria();
 
-	printf("fin =) ");
+	printf(BLANCO "Procesos " ROJO "Finalizados " AZUL "=)\n" FINDETEXTO);
 	return 0;
 }
 
@@ -141,7 +141,7 @@ int correr_path(void){
 	recibirMensajeCompleto(socketMaestro, &existenciaDeArchivo, sizeof(char));
 
 	if(existenciaDeArchivo == 'E'){
-		printf(ROJO "Error" BLANCO ": No existe el mcod ingresado.\n" FINDETEXTO);
+		printf(ROJO "ERROR" BLANCO ": No existe el mcod ingresado.\n" FINDETEXTO);
 	}
 	//FIN DE FERNILANDIA
 	else{
@@ -522,13 +522,13 @@ int menu(void) {
 		opcion = 0;
 
 
-		    printf("############################################# M ##################\n");
+		    printf(VERDE"################################################################\n");
 			printf("################################################################\n");
 			printf("##     --------> *****                  ***** <------------   ##\n");
-			printf("##   *****             LOS  JAVIMANCOS         ***** -------  ##\n");
+			printf("##   *****             "AZUL"LOS  JAVIMANCOS" VERDE "         ***** -------  ##\n");
 			printf("##------------------------------------------------------------##\n");
 			printf("##                                                            ##\n");
-			printf("##      Ingrese una opción para continuar:                    ##\n");
+			printf("##      Ingrese una opcion para continuar:                    ##\n");
 			printf("##                                                            ##\n");
 			printf("##                                                            ##\n");
 			printf("##          1) Correr Path                                    ##\n");
@@ -542,7 +542,7 @@ int menu(void) {
 			printf("##          5) Salir                                          ##\n");
 			printf("##                                                            ##\n");
 			printf("################################################################\n");
-			printf("################################################################\n\n\n");
+			printf("################################################################\n\n\n" FINDETEXTO);
 
 			scanf("%s", opchar);
 
@@ -579,7 +579,7 @@ int menu(void) {
 
 				break;
 
-			default: printf("Opción incorrecta. Por favor ingrese una opción del 1 al 4 \n \n \n"); break;
+			default: printf(ROJO "ERROR" BLANCO ": Ingrese una opcion del " VERDE "1 " BLANCO "al " VERDE "5 \n \n \n" FINDETEXTO); break;
 		  }
 
 	}
@@ -608,7 +608,7 @@ int finalizar_PID(){
 
 		pthread_mutex_unlock(&pcbs);
 
-		printf("\n   no se pudo encontrar el ID_mProc ingresado  :( \n\n");
+		printf("\n" ROJO "ERROR" BLANCO ": No se pudo encontrar el ID del proceso ingresado\n\n" FINDETEXTO);
 
 		scanf("%s",timer);
 
@@ -655,7 +655,16 @@ void ps(){
 	for(i = 0; i < tamano; i++) {
 
 		PCB =list_get(lista_de_PCB, i);
-		printf("mProc %d: %s --> %c \n", PCB->id,PCB->path,PCB->estado);
+		printf(BLANCO "mProc " AZUL "%d" BLANCO": %s --> ", PCB->id,PCB->path);
+		if(PCB->estado == 'B'){
+			printf(AMARILLO "BLOQUEADO" BLANCO ".\n" FINDETEXTO);
+		}
+		if(PCB->estado == 'R'){
+			printf(BLANCO "LISTO.\n" FINDETEXTO);
+		}
+		if(PCB->estado == 'E'){
+			printf(VERDE "EN EJECUCION" BLANCO ".\n" FINDETEXTO);
+		}
 	}
 
 	pthread_mutex_unlock(&pcbs);
@@ -691,7 +700,20 @@ void cpu(){
 
 		recibirMensajeCompleto(socketMaestro, &porcentaje, sizeof(int));// recibo los porcentajes
 
-		printf("ID_CPU: %d --> %d %% \n", contador, porcentaje);
+		printf(BLANCO "ID_CPU: " AZUL "%d " BLANCO "--> ", contador);
+
+		if(porcentaje < 40){
+			printf(VERDE "%d" BLANCO "%%\n" FINDETEXTO, porcentaje);
+		}
+		else{
+			if(porcentaje >= 40 && porcentaje < 70){
+				printf(AMARILLO "%d" BLANCO "%%\n" FINDETEXTO, porcentaje);
+			}
+			else{
+				printf(ROJO "%d" BLANCO "%%\n" FINDETEXTO, porcentaje);
+			}
+		}
+
 
 		contador++;
 
