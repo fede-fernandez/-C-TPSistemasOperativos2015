@@ -15,6 +15,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <string.h>
 
 t_list* crearListaDesdeEstructura(fd_set estructura,int maximoSocket);
 
