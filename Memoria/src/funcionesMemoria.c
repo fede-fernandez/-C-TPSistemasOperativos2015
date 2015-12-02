@@ -419,7 +419,6 @@ return posicionDeTabla;
 }
 
 int traerPaginaDesdeSwap(tipoInstruccion* instruccion, tipoRespuesta** respuesta) {
-printf("\nentre en traer desde Swap\n");
 	//instruccion.instruccion = LEER;
 
 	int posicionEnRam = -1;
@@ -436,7 +435,6 @@ printf("\nentre en traer desde Swap\n");
 	else{
 		log_error(datosMemoria->logDeSwapeo,"FALLO DE LECTURA DE LA PAGINA %d DEL PROCESO %d EN SWAP",instruccion->nroPagina,instruccion->pid);
 	}
-printf("sali\n\n");
 	return posicionEnRam;
 }
 
@@ -567,7 +565,6 @@ void agregarPaginaATLB(int nroPagina,int pid,int posicionEnRam){
 
 
 void volcarRamALog(){
-	printf("\nentre volcar RAM a log\n");
 	int var;
 
 	log_trace(datosMemoria->logDeSeniales,"SEÑAL SIGPOLL RECIBIDA");
@@ -581,7 +578,6 @@ void volcarRamALog(){
 
 		log_trace(datosMemoria->logDeSeniales,"FRAME %d : %s",var,pagina);
 	}
-printf("sali de volcar RAM a log\n\n");
 //Aca decia que hay que usar fork, pero me parece quilombo para nada
 }
 
@@ -734,8 +730,6 @@ void quitarPaginaDeRam(int posicion){
 	}
 
 void limpiarRam(){
-printf("\nentre a limpiar RAM\n");
-
 	int var;
 
 	log_trace(datosMemoria->logDeSeniales,"SEÑAL SIGUSR2 RECIBIDA");
@@ -765,7 +759,6 @@ printf("\nentre a limpiar RAM\n");
 	list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
 	log_trace(datosMemoria->logDeSeniales,"RAM LIMPIADA");
 
-printf("sali de limpiar RAM\n\n");
 }
 
 void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
@@ -795,14 +788,12 @@ void llevarPaginasASwap(tipoTablaPaginas* tablaDePaginas){
 }
 
 void limpiarTLB(){
-printf("\nentre a limpiar TLB\n");
 
 	log_trace(datosMemoria->logDeSeniales,"SEÑAL SIGUSR1 RECIBIDA");
 	log_trace(datosMemoria->logDeSeniales,"TLB LIMPIADA");
 
 	list_clean_and_destroy_elements(datosMemoria->listaTLB,free);
 
-printf("sali de limpiar TLB\n\n");
 }
 
 void destruirProceso(int pid){
