@@ -99,7 +99,7 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 			respuestaInstruccion = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			string_append(&respuestasAcumuladas, respuestaInstruccion.respuesta);
 
-			if(datosCPU->configuracionCPU->retardo > 100)
+			if(datosCPU->configuracionCPU->retardo >= 100)
 			{
 				usleep(datosCPU->configuracionCPU->retardo);
 			}
@@ -134,7 +134,7 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 			respuestaInstruccion = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			string_append(&respuestasAcumuladas, respuestaInstruccion.respuesta);
 
-			if(datosCPU->configuracionCPU->retardo > 100)
+			if(datosCPU->configuracionCPU->retardo >= 100)
 			{
 				usleep(datosCPU->configuracionCPU->retardo);
 			}
@@ -653,13 +653,20 @@ void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configur
 	{
 		instruccionesEjecutadas = list_get(cantidadDeInstruccionesEjecutadasPorCPUs, i);
 		int maximoDeInstrucciones;
-		if(configuracionCPU->retardo == 5)
+		if(configuracionCPU->retardo == 1)
 		{
-			maximoDeInstrucciones = 60 / configuracionCPU->retardo - 2;
+			maximoDeInstrucciones = 60 / configuracionCPU->retardo - 55;
 		}
 		else
 		{
-			maximoDeInstrucciones = 60 / configuracionCPU->retardo - 55;
+			if(configuracionCPU->retardo < 100)
+			{
+				maximoDeInstrucciones = 60 / configuracionCPU->retardo - 2;
+			}
+			else
+			{
+				maximoDeInstrucciones = 60 / configuracionCPU->retardo - 55;
+			}
 		}
 
 		porcentajeDeUso = *instruccionesEjecutadas * 100 / maximoDeInstrucciones;
