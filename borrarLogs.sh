@@ -14,7 +14,7 @@ if [ -f logDeSeniales ]; then rm logDeSeniales
 if [ -f logDeAlgoritmos ]; then rm logDeAlgoritmos 
 fi
 
-if [ -f logMemoria ]; then rm logMemoria 
+if [ -f logDeMemoria ]; then rm logDeMemoria 
 fi
 
 cd ..

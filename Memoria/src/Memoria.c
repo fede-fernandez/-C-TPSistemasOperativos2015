@@ -13,6 +13,7 @@
 #include <signal.h>
 #include <sys/time.h>
 #include "funcionPrincipal.h"
+#include "impresionesEnPantalla.h"
 //---------------------------------------------------------------
 #define maxConexionesEntrantes 10
 
@@ -88,6 +89,9 @@ int main(void) {
 //-------------END OF FERNILANDIA-----------------------------------
 
 	asociarAPuerto(socketParaCpus,configuracion->puertoDeEscucha);
+
+	printf(BLANCO"Proceso Administrador de Memoria "VERDE"Iniciado.\n"FINDETEXTO);
+
 	conectarAServidor(socketParaSwap,configuracion->ipSWAP,configuracion->puertoSWAP);
 	escucharConexiones(socketParaCpus,maxConexionesEntrantes);
 
