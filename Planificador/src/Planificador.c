@@ -522,27 +522,27 @@ int menu(void) {
 		opcion = 0;
 
 
-		    printf(BLANCO"################################################################\n"FINDETEXTO);
-			printf(BLANCO"################################################################\n"FINDETEXTO);
-			printf(BLANCO"##     --------> *****                  ***** <------------   ##\n"FINDETEXTO);
-			printf(BLANCO"##   *****             LOS  JAVIMANCOS         ***** -------  ##\n"FINDETEXTO);
-			printf(BLANCO"##------------------------------------------------------------##\n"FINDETEXTO);
-			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
-			printf(BLANCO"##"  VERDE "        Ingrese una opción para continuar:" BLANCO"                  ##\n"FINDETEXTO);
-			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
-			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
-			printf(BLANCO"##"  VERDE  "           1) Correr Path"                 BLANCO "                                   ##\n"FINDETEXTO);
-			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
-			printf(BLANCO"##"  VERDE  "           2) Finalizar PID"               BLANCO "                                 ##\n"FINDETEXTO);
-			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
-			printf(BLANCO"##"  VERDE  "           3) ps"                          BLANCO "                                            ##\n"FINDETEXTO);
-			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
-			printf(BLANCO"##"  VERDE  "           4) cpu"                         BLANCO "                                           ##\n"FINDETEXTO);
-			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
-			printf(BLANCO"##"  VERDE  "           5) Salir"                       BLANCO "                                         ##\n"FINDETEXTO);
-			printf(BLANCO"##                                                            ##\n"FINDETEXTO);
-			printf(BLANCO"################################################################\n"FINDETEXTO);
-			printf(BLANCO"################################################################\n\n\n"FINDETEXTO);
+		    printf(ROSA"################################################################\n"FINDETEXTO);
+			printf(ROSA"################################################################\n"FINDETEXTO);
+			printf(ROSA"##     --------> *****                  ***** <------------   ##\n"FINDETEXTO);
+			printf(ROSA"##   *****             LOS  JAVIMANCOS         ***** -------  ##\n"FINDETEXTO);
+			printf(ROSA"##------------------------------------------------------------##\n"FINDETEXTO);
+			printf(ROSA"##                                                            ##\n"FINDETEXTO);
+			printf(ROSA"##"  BLANCO "        Ingrese una opción para continuar:" ROSA"                  ##\n"FINDETEXTO);
+			printf(ROSA"##                                                            ##\n"FINDETEXTO);
+			printf(ROSA"##                                                            ##\n"FINDETEXTO);
+			printf(ROSA"##"  BLANCO  "           1) Correr Path"                 ROSA "                                   ##\n"FINDETEXTO);
+			printf(ROSA"##                                                            ##\n"FINDETEXTO);
+			printf(ROSA"##"  BLANCO  "           2) Finalizar PID"               ROSA "                                 ##\n"FINDETEXTO);
+			printf(ROSA"##                                                            ##\n"FINDETEXTO);
+			printf(ROSA"##"  BLANCO  "           3) ps"                          ROSA "                                            ##\n"FINDETEXTO);
+			printf(ROSA"##                                                            ##\n"FINDETEXTO);
+			printf(ROSA"##"  BLANCO  "           4) cpu"                         ROSA "                                           ##\n"FINDETEXTO);
+			printf(ROSA"##                                                            ##\n"FINDETEXTO);
+			printf(ROSA"##"  BLANCO  "           5) Salir"                       ROSA "                                         ##\n"FINDETEXTO);
+			printf(ROSA"##                                                            ##\n"FINDETEXTO);
+			printf(ROSA"################################################################\n"FINDETEXTO);
+			printf(ROSA"################################################################\n\n\n"FINDETEXTO);
 
 			scanf("%s", opchar);
 
