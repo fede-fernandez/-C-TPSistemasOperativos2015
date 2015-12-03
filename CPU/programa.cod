@@ -1,5 +1,0 @@
-iniciar 5;
-escribir 4 "Hola como te va";
-leer 4;
-entrada-salida 5;
-finalizar;

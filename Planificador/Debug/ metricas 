@@ -1,0 +1,224 @@
+[INFO] 00:50:45:145 PLANIFICADOR/(28284:28284):      
+
+   
+[INFO] 00:54:40:324 PLANIFICADOR/(29748:29748):      
+
+   
+[INFO] 01:01:17:836 PLANIFICADOR/(29865:29865):      
+
+   
+[INFO] 01:02:37:631 PLANIFICADOR/(29865:29867):         ID_mProc: 1 -> localidad.cod | tiempo de respuesta: 41.000000 seg | tiempo de ejecucion: 41.000000 seg | tiempo de espera: 0.000000 seg 
+
+[INFO] 01:04:38:2 PLANIFICADOR/(29865:29867):         ID_mProc: 5 -> localidad.cod | tiempo de respuesta: 64.000000 seg | tiempo de ejecucion: 63.000000 seg | tiempo de espera: 0.000000 seg 
+
+[INFO] 01:04:38:79 PLANIFICADOR/(29865:29867):         ID_mProc: 2 -> localidad.cod | tiempo de respuesta: 158.000000 seg | tiempo de ejecucion: 92.000000 seg | tiempo de espera: 6.000000 seg 
+
+[INFO] 14:43:51:358 PLANIFICADOR/(31750:31750):      
+
+   
+[INFO] 14:49:30:62 PLANIFICADOR/(31750:31754):         ID_mProc: 1 -> mem.cod | tiempo de respuesta: 335.000000 seg | tiempo de ejecucion: 241.000000 seg | tiempo de espera: 74.000000 seg 
+
+[INFO] 14:50:12:119 PLANIFICADOR/(31750:31754):         ID_mProc: 2 -> localidad.cod | tiempo de respuesta: 373.000000 seg | tiempo de ejecucion: 249.000000 seg | tiempo de espera: 55.000000 seg 
+
+[INFO] 14:50:32:195 PLANIFICADOR/(31750:31754):         ID_mProc: 4 -> mem.cod | tiempo de respuesta: 385.000000 seg | tiempo de ejecucion: 258.000000 seg | tiempo de espera: 67.000000 seg 
+
+[INFO] 14:50:52:123 PLANIFICADOR/(31750:31754):         ID_mProc: 3 -> mem.cod | tiempo de respuesta: 408.000000 seg | tiempo de ejecucion: 265.000000 seg | tiempo de espera: 70.000000 seg 
+
+[INFO] 14:51:12:119 PLANIFICADOR/(31750:31754):         ID_mProc: 5 -> mem.cod | tiempo de respuesta: 422.000000 seg | tiempo de ejecucion: 203.000000 seg | tiempo de espera: 133.000000 seg 
+
+[INFO] 14:51:32:119 PLANIFICADOR/(31750:31754):         ID_mProc: 6 -> mem.cod | tiempo de respuesta: 363.000000 seg | tiempo de ejecucion: 158.000000 seg | tiempo de espera: 114.000000 seg 
+
+[INFO] 15:10:25:984 PLANIFICADOR/(31979:31979):      
+
+   
+[INFO] 16:12:28:320 PLANIFICADOR/(32288:32288):      
+
+   
+[INFO] 16:12:50:870 PLANIFICADOR/(32365:32365):      
+
+   
+[INFO] 16:34:18:778 PLANIFICADOR/(32543:32543):      
+
+   
+[INFO] 16:43:29:904 PLANIFICADOR/(32635:32635):      
+
+   
+[INFO] 16:45:23:63 PLANIFICADOR/(32742:32742):      
+
+   
+[INFO] 16:47:41:253 PLANIFICADOR/(312:312):      
+
+   
+[INFO] 16:49:17:191 PLANIFICADOR/(413:413):      
+
+   
+[INFO] 16:53:14:969 PLANIFICADOR/(413:415):         ID_mProc: 1 -> mem.cod | tiempo de respuesta: 117.000000 seg | tiempo de ejecucion: 97.000000 seg | tiempo de espera: 0.000000 seg 
+
+[INFO] 16:53:53:135 PLANIFICADOR/(413:415):         ID_mProc: 2 -> mem.cod | tiempo de respuesta: 154.000000 seg | tiempo de ejecucion: 134.000000 seg | tiempo de espera: 0.000000 seg 
+
+[INFO] 16:54:13:215 PLANIFICADOR/(413:415):         ID_mProc: 3 -> mem.cod | tiempo de respuesta: 171.000000 seg | tiempo de ejecucion: 136.000000 seg | tiempo de espera: 0.000000 seg 
+
+[INFO] 17:01:50:307 PLANIFICADOR/(703:703):      
+
+   
+[INFO] 17:02:42:71 PLANIFICADOR/(729:729):      
+
+   
+[INFO] 17:12:28:550 PLANIFICADOR/(836:836):      
+
+   
+[INFO] 17:30:08:64 PLANIFICADOR/(1593:1593):      
+
+   
+[INFO] 17:45:24:504 PLANIFICADOR/(2609:2609):      
+
+   
+[INFO] 18:27:18:600 PLANIFICADOR/(3183:3183):      
+
+   
+[INFO] 18:59:15:568 PLANIFICADOR/(3593:3593):      
+
+   
+[INFO] 19:00:07:364 PLANIFICADOR/(3630:3630):      
+
+   
+[INFO] 19:02:31:743 PLANIFICADOR/(3737:3737):      
+
+   
+[INFO] 19:06:07:221 PLANIFICADOR/(3986:3986):      
+
+   
+[INFO] 19:07:45:57 PLANIFICADOR/(4107:4107):      
+
+   
+[INFO] 19:30:57:473 PLANIFICADOR/(4353:4353):      
+
+   
+[INFO] 19:33:10:921 PLANIFICADOR/(4508:4508):      
+
+   
+[INFO] 19:35:49:940 PLANIFICADOR/(4619:4619):      
+
+   
+[INFO] 20:46:40:630 PLANIFICADOR/(5411:5411):      
+
+   
+[INFO] 21:15:21:375 PLANIFICADOR/(6664:6664):      
+
+   
+[INFO] 21:16:36:93 PLANIFICADOR/(6664:6666):         ID_mProc: 1 -> mem.cod | tiempo de respuesta: 54.000000 seg | tiempo de ejecucion: 34.000000 seg | tiempo de espera: 0.000000 seg 
+
+[INFO] 21:18:23:593 PLANIFICADOR/(6664:6666):         ID_mProc: 2 -> localidad.cod | tiempo de respuesta: 96.000000 seg | tiempo de ejecucion: 31.000000 seg | tiempo de espera: 5.000000 seg 
+
+[INFO] 21:19:06:661 PLANIFICADOR/(6664:6666):         ID_mProc: 3 -> mem.cod | tiempo de respuesta: 104.000000 seg | tiempo de ejecucion: 31.000000 seg | tiempo de espera: 53.000000 seg 
+
+[INFO] 21:20:06:701 PLANIFICADOR/(6664:6666):         ID_mProc: 4 -> localidad.cod | tiempo de respuesta: 161.000000 seg | tiempo de ejecucion: 31.000000 seg | tiempo de espera: 55.000000 seg 
+
+[INFO] 21:26:38:626 PLANIFICADOR/(6871:6871):      
+
+   
+[INFO] 21:32:57:582 PLANIFICADOR/(6972:6972):      
+
+   
+[INFO] 21:35:45:49 PLANIFICADOR/(6972:6974):         ID_mProc: 1 -> mem.cod | tiempo de respuesta: 125.000000 seg | tiempo de ejecucion: 32.000000 seg | tiempo de espera: 73.000000 seg 
+
+[INFO] 21:36:44:89 PLANIFICADOR/(6972:6974):         ID_mProc: 2 -> localidad.cod | tiempo de respuesta: 179.000000 seg | tiempo de ejecucion: 31.000000 seg | tiempo de espera: 88.000000 seg 
+
+[INFO] 21:37:04:9 PLANIFICADOR/(6972:6974):         ID_mProc: 3 -> mem.cod | tiempo de respuesta: 197.000000 seg | tiempo de ejecucion: 35.000000 seg | tiempo de espera: 84.000000 seg 
+
+[INFO] 21:37:24:9 PLANIFICADOR/(6972:6974):         ID_mProc: 4 -> mem.cod | tiempo de respuesta: 214.000000 seg | tiempo de ejecucion: 35.000000 seg | tiempo de espera: 84.000000 seg 
+
+[INFO] 21:44:06:101 PLANIFICADOR/(7483:7483):      
+
+   
+[INFO] 21:47:14:108 PLANIFICADOR/(7483:7485):         ID_mProc: 1 -> mem.cod | tiempo de respuesta: 152.000000 seg | tiempo de ejecucion: 35.000000 seg | tiempo de espera: 97.000000 seg 
+
+[INFO] 21:47:28:549 PLANIFICADOR/(7483:7485):         ID_mProc: 2 -> mem.cod | tiempo de respuesta: 162.000000 seg | tiempo de ejecucion: 31.000000 seg | tiempo de espera: 111.000000 seg 
+
+[INFO] 21:47:47:985 PLANIFICADOR/(7483:7485):         ID_mProc: 3 -> mem.cod | tiempo de respuesta: 178.000000 seg | tiempo de ejecucion: 34.000000 seg | tiempo de espera: 115.000000 seg 
+
+[INFO] 21:48:47:985 PLANIFICADOR/(7483:7485):         ID_mProc: 4 -> localidad.cod | tiempo de respuesta: 234.000000 seg | tiempo de ejecucion: 39.000000 seg | tiempo de espera: 111.000000 seg 
+
+[INFO] 21:49:07:945 PLANIFICADOR/(7483:7485):         ID_mProc: 5 -> mem.cod | tiempo de respuesta: 216.000000 seg | tiempo de ejecucion: 34.000000 seg | tiempo de espera: 88.000000 seg 
+
+[INFO] 23:14:01:227 PLANIFICADOR/(8094:8094):      
+
+   
+[INFO] 23:16:09:805 PLANIFICADOR/(8094:8096):         ID_mProc: 7 -> mem.cod | tiempo de respuesta: 27.000000 seg | tiempo de ejecucion: 3.000000 seg | tiempo de espera: 24.000000 seg 
+
+[INFO] 23:16:16:5 PLANIFICADOR/(8094:8096):         ID_mProc: 8 -> mem.cod | tiempo de respuesta: 32.000000 seg | tiempo de ejecucion: 3.000000 seg | tiempo de espera: 29.000000 seg 
+
+[INFO] 23:16:27:245 PLANIFICADOR/(8094:8096):         ID_mProc: 9 -> localidad.cod | tiempo de respuesta: 39.000000 seg | tiempo de ejecucion: 3.000000 seg | tiempo de espera: 36.000000 seg 
+
+[INFO] 23:19:21:813 PLANIFICADOR/(8094:8096):         ID_mProc: 1 -> mem.cod | tiempo de respuesta: 239.000000 seg | tiempo de ejecucion: 31.000000 seg | tiempo de espera: 188.000000 seg 
+
+[INFO] 23:20:28:53 PLANIFICADOR/(8094:8096):         ID_mProc: 2 -> localidad.cod | tiempo de respuesta: 302.000000 seg | tiempo de ejecucion: 41.000000 seg | tiempo de espera: 201.000000 seg 
+
+[INFO] 23:20:48:135 PLANIFICADOR/(8094:8096):         ID_mProc: 3 -> mem.cod | tiempo de respuesta: 319.000000 seg | tiempo de ejecucion: 36.000000 seg | tiempo de espera: 217.000000 seg 
+
+[INFO] 23:21:08:53 PLANIFICADOR/(8094:8096):         ID_mProc: 4 -> mem.cod | tiempo de respuesta: 337.000000 seg | tiempo de ejecucion: 35.000000 seg | tiempo de espera: 220.000000 seg 
+
+[INFO] 15:10:23:857 PLANIFICADOR/(2755:2755):      
+
+   
+[INFO] 15:11:24:40 PLANIFICADOR/(2830:2830):      
+
+   
+[INFO] 15:14:40:115 PLANIFICADOR/(2830:2832):         ID_mProc: 4 -> localidad.cod | tiempo de respuesta: 180.000000 seg | tiempo de ejecucion: 28.000000 seg | tiempo de espera: 152.000000 seg 
+
+[INFO] 15:22:13:491 PLANIFICADOR/(2830:2832):         ID_mProc: 1 -> localidad.cod | tiempo de respuesta: 637.000000 seg | tiempo de ejecucion: 88.000000 seg | tiempo de espera: 489.000000 seg 
+
+[INFO] 15:23:13:571 PLANIFICADOR/(2830:2832):         ID_mProc: 2 -> localidad.cod | tiempo de respuesta: 696.000000 seg | tiempo de ejecucion: 174.000000 seg | tiempo de espera: 429.000000 seg 
+
+[INFO] 15:24:13:491 PLANIFICADOR/(2830:2832):         ID_mProc: 3 -> localidad.cod | tiempo de respuesta: 754.000000 seg | tiempo de ejecucion: 317.000000 seg | tiempo de espera: 285.000000 seg 
+
+[INFO] 20:18:04:467 PLANIFICADOR/(3571:3571):      
+
+   
+[INFO] 22:54:45:270 PLANIFICADOR/(4039:4039):      
+
+   
+[INFO] 22:57:10:515 PLANIFICADOR/(4039:4041):         ID_mProc: 1 -> dfiesta.cod | tiempo de respuesta: 136.000000 seg | tiempo de ejecucion: 41.000000 seg | tiempo de espera: 95.000000 seg 
+
+[INFO] 22:59:29:763 PLANIFICADOR/(4039:4041):         ID_mProc: 2 -> dfiesta.cod | tiempo de respuesta: 274.000000 seg | tiempo de ejecucion: 61.000000 seg | tiempo de espera: 153.000000 seg 
+
+[INFO] 23:00:29:867 PLANIFICADOR/(4039:4041):         ID_mProc: 3 -> dfiesta.cod | tiempo de respuesta: 332.000000 seg | tiempo de ejecucion: 61.000000 seg | tiempo de espera: 156.000000 seg 
+
+[INFO] 23:01:29:763 PLANIFICADOR/(4039:4041):         ID_mProc: 4 -> dfiesta.cod | tiempo de respuesta: 391.000000 seg | tiempo de ejecucion: 60.000000 seg | tiempo de espera: 157.000000 seg 
+
+[INFO] 20:50:12:911 PLANIFICADOR/(2741:2741):      
+
+   
+[INFO] 20:55:44:495 PLANIFICADOR/(2866:2866):      
+
+   
+[INFO] 21:31:37:824 PLANIFICADOR/(4258:4258):      
+
+   
+[INFO] 21:32:11:298 PLANIFICADOR/(4331:4331):      
+
+   
+[INFO] 21:36:24:611 PLANIFICADOR/(4546:4546):      
+
+   
+[INFO] 21:40:47:981 PLANIFICADOR/(4621:4621):      
+
+   
+[INFO] 21:45:20:400 PLANIFICADOR/(4684:4684):      
+
+   
+[INFO] 21:46:02:232 PLANIFICADOR/(4710:4710):      
+
+   
+[INFO] 21:53:12:775 PLANIFICADOR/(4915:4915):      
+
+   
+[INFO] 22:07:14:429 PLANIFICADOR/(4969:4969):      
+
+   
+[INFO] 22:09:06:534 PLANIFICADOR/(4994:4994):      
+
+   
+[INFO] 00:05:37:130 PLANIFICADOR/(5229:5229):      
+
+   
