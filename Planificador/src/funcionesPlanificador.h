@@ -43,17 +43,6 @@ typedef struct{
 	int tiempo;// tiempo que se va a dormir el procesos
 } t_bloqueados;
 
-//FERNILANDIAX
-#define NEGRO "\033[1m\033[30m"
-#define ROJO "\033[1m\033[31m"
-#define VERDE "\033[1m\033[32m"
-#define AMARILLO "\033[1m\033[33m"
-#define AZUL "\033[1m\033[34m"
-#define CELESTE "\033[1m\033[36m"
-#define BLANCO "\033[1m\033[37m"
-#define FINDETEXTO "\033[0m"
-//FIN DE FERNILANDIA
-#define ROSA "\033[1m\033[35m"//rosa
 
 // funciones basicas -------------------------------------
 
