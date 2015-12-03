@@ -139,7 +139,7 @@ int main(void) {
 	destruirMutex(&mutexLimpiarTLB);
 	destruirMutex(&mutexTurnoSenial);
 
-	printf("Memoria finalizada\n");
+	printf(BLANCO"Proceso Administrador de Memoria "ROJO"finalizado"BLANCO".\n\n"FINDETEXTO);
 
 	return EXIT_SUCCESS;
 }
