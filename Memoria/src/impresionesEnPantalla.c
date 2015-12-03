@@ -1,17 +1,18 @@
 #include "impresionesEnPantalla.h"
+#include <commonsDeAsedio/estructuras.h>
 
 void pantallaDeInicio(){
 	system("clear");
-	printf("//////////////////////////////////////////////////////////////\n");
+	printf(BLANCO"//////////////////////////////////////////////////////////////\n");
 	printf("*******************Administrador de Memoria*******************\n");
-	printf("//////////////////////////////////////////////////////////////\n\n");
-	printf("Estado: Conectado\n");
-	printf("PID: %d\n\n", getpid());
+	printf("//////////////////////////////////////////////////////////////\n\n"FINDETEXTO);
+	printf(AZUL"Estado: "VERDE"Conectado\n");
+	printf(AZUL"PID: "VERDE"%d\n\n"FINDETEXTO, getpid());
 
-	printf("Seniales: \n");
-	printf("Flush TLB: USR1 \n");
-	printf("Flush RAM: USR2 \n");
-	printf("Dump RAM: IO \n\n");
+	printf(ROJO"Seniales: \n"FINDETEXTO);
+	printf(AMARILLO"Flush TLB: "BLANCO "USR1 \n"FINDETEXTO);
+	printf(AMARILLO"Flush RAM: "BLANCO"USR2 \n"FINDETEXTO);
+	printf(AMARILLO"Dump RAM: "BLANCO"IO \n\n"FINDETEXTO);
 }
 
 void funcionPrueba(tipoEstructuraMemoria* datosMemoria){
