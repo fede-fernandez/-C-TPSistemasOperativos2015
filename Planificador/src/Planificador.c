@@ -126,7 +126,8 @@ int correr_path(void){
   //limpiar pantalla
 	//system("clear");
 
-	printf("Ingresar nombre del mcod: \n");
+
+	printf(BLANCO "Ingresar nombre del mcod: \n" FINDETEXTO);
 
 	scanf("%s", path);
 
@@ -597,7 +598,7 @@ int finalizar_PID(){
 
 	t_PCB *nodo_pcb;
 
-	printf("\n   Ingrese el ID_mProc que desea finalizar: \n\n");
+	printf(BLANCO "\n   Ingrese el ID_mProc que desea finalizar: \n\n" FINDETEXTO);
 
 	scanf("%d",&id);
 
@@ -669,7 +670,7 @@ void ps(){
 
 	pthread_mutex_unlock(&pcbs);
 
-	printf("\n   Ingrese un caracter y presione enter para volver al menu \n\n");
+	printf(BLANCO "\n   Ingrese un caracter y presione enter para volver al menu \n\n" FINDETEXTO);
 
 	scanf("%s",timer);
 }
