@@ -50,7 +50,7 @@ fi
 if [ -f "cola de ready"   ]; then rm "cola de ready"
 fi
 
-if [ -f metricas ]; then rm metricas          
+if [ -f " metricas " ]; then rm " metricas "
 fi
 
 if [ -f "resultado de Ráfagas" ]; then rm "resultado de Ráfagas"
