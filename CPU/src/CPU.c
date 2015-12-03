@@ -1,18 +1,7 @@
 #include "funcionesCPU.h"
 
-
-#define NEGRO "\033[1m\033[30m"
-#define ROJO "\033[1m\033[31m"
-#define VERDE "\033[1m\033[32m"
-#define AMARILLO "\033[1m\033[33m"
-#define AZUL "\033[1m\033[34m"
-#define BLANCO "\033[1m\033[37m"
-#define FINDETEXTO "\033[0m"
-
 int main(void)
 {
-	printf(BLANCO "Proceso CPU " VERDE "Iniciado" BLANCO ".\n\n" FINDETEXTO);
-
 	//Inicializo semaforo para esperar a que se cree el socket master para planificador antes de que se comiencen a crear hilos de CPU
 	sem_init(&semaforoConexionMasterPlanificador, 0, 0);
 
@@ -33,6 +22,11 @@ int main(void)
 
 	//Carga de archivo de configuracion
 	tipoConfigCPU* configuracionCPU = cargarArchivoDeConfiguracionDeCPU(RUTA_DE_ARCHIVO_DE_CONFIGURACION_CPU);
+
+	//Imprime en pantalla informacion importante
+	printf(BLANCO "Proceso CPU " VERDE "Iniciado" BLANCO ".\n" FINDETEXTO);
+	printf(BLANCO "Cantidad de Hilos: " AZUL "%i" BLANCO ".\n" FINDETEXTO, configuracionCPU->cantidadDeHilos);
+	printf(AMARILLO "Esperando procesos Planificador y Administrador de Memoria.\n\n" FINDETEXTO);
 
 	//Creacion archivo de log
 	t_log* logCPU = log_create(RUTA_DE_ARCHIVO_DE_LOGS_CPU, "CPU", 0, LOG_LEVEL_TRACE);
@@ -90,7 +84,6 @@ int main(void)
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | idCPU: %i\n", datosCPU->idCPU, datosCPU->idCPU);
 		}
 
-
 		recibirMensajeCompleto(datosCPU->socketParaPlanificador, &(datosCPU->quantum), sizeof(int));
 
 		if(DEBUG == 1)
@@ -98,16 +91,13 @@ int main(void)
 			printf("idCPU: %i | QUANTUM RECIBIDO (0 = FIFO): %i\n", datosCPU->idCPU, datosCPU->quantum);
 		}
 
-		printf(BLANCO "CPU ID: " AMARILLO "%i " VERDE "Iniciado\n" FINDETEXTO, datosCPU->idCPU);
-
+		printf(BLANCO "CPU id: " AZUL "%i " VERDE "Iniciado" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU);
 
 		sem_wait(&semaforoLogs);
 		log_trace(datosCPU->logCPU, "CPU ID: %i CREADA Y CONECTADA A MEMORIA", datosCPU->idCPU);
 		sem_post(&semaforoLogs);
 
-
 		pthread_create(&hiloCPU, NULL, (void*)unCPU, datosCPU);
-
 	}
 
 	for(i = 0; i < configuracionCPU->cantidadDeHilos; i++)
@@ -147,20 +137,9 @@ void* unCPU(t_datosCPU* datosCPU)
 			sem_post(&semaforoLogs);
 		}
 
-
 		//Funcion principal que va a ejecutar el programa
-
-		if(validarExistenciaDeArchivo(PCB->ruta))
-		{
-			ejecutarPrograma(PCB, datosCPU);
-		}
-		else
-		{
-			char error = 'E';
-			enviarMensaje(datosCPU->socketParaPlanificador, &error, sizeof(error));
-		}
+		ejecutarPrograma(PCB, datosCPU);
 	}
-
 	return 0;
 }
 
@@ -177,7 +156,7 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 		printf("PROCESO CPU MASTER CONECTADO A PLANIFICADOR\n");
 	}
 
-	char instruccionDePlanificador;
+	char instruccionDePlanificador = '0';
 
 	int cantidadDeInstruccionesDeUnProceso = 0;
 	size_t tamanioDeRutaDePrograma;
@@ -189,7 +168,7 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 
 	char mensajeDeValidacionDeArchivo;
 
-	while(true)
+	while(instruccionDePlanificador != FINALIZAR_PROCESO)
 	{
 		recibirMensajeCompleto(socketMasterPlanificador, &instruccionDePlanificador, sizeof(char));
 
@@ -286,17 +265,20 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 			}
 		}
 	}
+	return 0;
 }
 
 
 //Hilo que reinicia el contador de instrucciones a 0 cada un minuto
 void* resetearInstruccionesDeCPUs(int* cantidadDeCPUs)
 {
+	sleep(10);
 	sem_wait(&semaforoCPUTrabajando);
 	while(true)
 	{
 		sleep(60);
 		reiniciarCantidadDeInstrucciones(*cantidadDeCPUs);
 	}
+	return 0;
 }
 

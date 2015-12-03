@@ -95,9 +95,19 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 		while(instructionPointer <= longitudDeStringArray(instrucciones))
 		{
 			aumentarCantidadDeInstruccionesEjecutadasEnUno(datosCPU->idCPU);
+
 			respuestaInstruccion = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			string_append(&respuestasAcumuladas, respuestaInstruccion.respuesta);
-			usleep(datosCPU->configuracionCPU->retardo);
+
+			if(datosCPU->configuracionCPU->retardo > 100)
+			{
+				usleep(datosCPU->configuracionCPU->retardo);
+			}
+			else
+			{
+				sleep(datosCPU->configuracionCPU->retardo);
+			}
+
 			if(respuestaInstruccion.tipoDeSalida == SALIDA_BLOQUEANTE_POR_ERROR)
 			{
 				break;
@@ -119,10 +129,21 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 		int reloj = 0;
 		while(reloj < datosCPU->quantum)
 		{
+			aumentarCantidadDeInstruccionesEjecutadasEnUno(datosCPU->idCPU);
+
 			respuestaInstruccion = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			string_append(&respuestasAcumuladas, respuestaInstruccion.respuesta);
-			usleep(datosCPU->configuracionCPU->retardo);
-			aumentarCantidadDeInstruccionesEjecutadasEnUno(datosCPU->idCPU);
+
+			if(datosCPU->configuracionCPU->retardo > 100)
+			{
+				usleep(datosCPU->configuracionCPU->retardo);
+			}
+			else
+			{
+				sleep(datosCPU->configuracionCPU->retardo);
+			}
+
+
 			reloj++;
 
 			if(respuestaInstruccion.tipoDeSalida == SALIDA_BLOQUEANTE_POR_ERROR)
@@ -165,12 +186,10 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 		imprimirPCB(&PCBRespuesta);
 	}
 
-	if(LOGS_ACTIVADOS == 1)
-	{
-		sem_wait(&semaforoLogs);
-		log_trace(datosCPU->logCPU, "CPU ID: %i | RAFAGA TERMINADA | PID: %i", datosCPU->idCPU, PCB->pid);
-		sem_post(&semaforoLogs);
-	}
+	sem_wait(&semaforoLogs);
+	log_trace(datosCPU->logCPU, "CPU ID: %i | RAFAGA TERMINADA | PID: %i", datosCPU->idCPU, PCB->pid);
+	sem_post(&semaforoLogs);
+
 
 	//Salida a Planificador de resultados de rafaga
 	size_t tamanioDeRespuestasAcumuladas = string_length(respuestasAcumuladas)+sizeof(char);
@@ -365,12 +384,9 @@ tipoRepuestaDeInstruccion instruccionIniciar(int cantidadDePaginas, int idDeProc
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		if(LOGS_ACTIVADOS == 1)
-		{
-			sem_wait(&semaforoLogs);
-			log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION INICIAR FALLO | PID: %i | CANTIDAD DE PAGINAS: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, cantidadDePaginas, respuestaDeMemoria->informacion);
-			sem_post(&semaforoLogs);
-		}
+		sem_wait(&semaforoLogs);
+		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION INICIAR FALLO | PID: %i | CANTIDAD DE PAGINAS: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, cantidadDePaginas, respuestaDeMemoria->informacion);
+		sem_post(&semaforoLogs);
 
 		respuestaDeInstruccion.tipoDeSalida = SALIDA_BLOQUEANTE_POR_ERROR;
 		respuestaDeInstruccion.respuesta = string_from_format("mProc %i - Fallo, causa: %s\n", idDeProceso, respuestaDeMemoria->informacion);
@@ -382,12 +398,9 @@ tipoRepuestaDeInstruccion instruccionIniciar(int cantidadDePaginas, int idDeProc
 		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
 	}
 
-	if(LOGS_ACTIVADOS == 1)
-	{
-		sem_wait(&semaforoLogs);
-		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION INICIAR EJECUTADA | PID: %i | CANTIDAD DE PAGINAS: %i", datosCPU->idCPU, idDeProceso, cantidadDePaginas);
-		sem_post(&semaforoLogs);
-	}
+	sem_wait(&semaforoLogs);
+	log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION INICIAR EJECUTADA | PID: %i | CANTIDAD DE PAGINAS: %i", datosCPU->idCPU, idDeProceso, cantidadDePaginas);
+	sem_post(&semaforoLogs);
 
 	respuestaDeInstruccion.tipoDeSalida = CONTINUA_EJECUCION;
 	respuestaDeInstruccion.respuesta = string_from_format("mProc %i - Iniciado\n", idDeProceso);
@@ -414,12 +427,9 @@ tipoRepuestaDeInstruccion instruccionLeer(int numeroDePagina, int idDeProceso, t
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		if(LOGS_ACTIVADOS == 1)
-		{
-			sem_wait(&semaforoLogs);
-			log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION LEER FALLO | PID: %i | NUMERO DE PAGINA: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
-			sem_post(&semaforoLogs);
-		}
+		sem_wait(&semaforoLogs);
+		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION LEER FALLO | PID: %i | NUMERO DE PAGINA: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
+		sem_post(&semaforoLogs);
 
 		respuestaDeInstruccion.tipoDeSalida = SALIDA_BLOQUEANTE_POR_ERROR;
 		respuestaDeInstruccion.respuesta = string_from_format("mProc %i - Fallo lectura de Pagina %i, causa: %s\n", idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
@@ -431,12 +441,11 @@ tipoRepuestaDeInstruccion instruccionLeer(int numeroDePagina, int idDeProceso, t
 		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
 	}
 
-	if(LOGS_ACTIVADOS == 1)
-	{
-		sem_wait(&semaforoLogs);
-		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION LEER EJECUTADA | PID: %i | NUMERO DE PAGINA: %i | CONTENIDO: %s", datosCPU->idCPU, idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
-		sem_post(&semaforoLogs);
-	}
+
+	sem_wait(&semaforoLogs);
+	log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION LEER EJECUTADA | PID: %i | NUMERO DE PAGINA: %i | CONTENIDO: %s", datosCPU->idCPU, idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
+	sem_post(&semaforoLogs);
+
 
 	respuestaDeInstruccion.tipoDeSalida = CONTINUA_EJECUCION;
 	respuestaDeInstruccion.respuesta = string_from_format("mProc %i - Pagina %i leida: %s\n", idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
@@ -463,12 +472,9 @@ tipoRepuestaDeInstruccion instruccionEscribir(int numeroDePagina, char* textoAEs
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		if(LOGS_ACTIVADOS == 1)
-		{
-			sem_wait(&semaforoLogs);
-			log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION ESCRIBIR FALLO | PID: %i | NUMERO DE PAGINA: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
-			sem_post(&semaforoLogs);
-		}
+		sem_wait(&semaforoLogs);
+		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION ESCRIBIR FALLO | PID: %i | NUMERO DE PAGINA: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
+		sem_post(&semaforoLogs);
 
 		respuestaDeInstruccion.tipoDeSalida = SALIDA_BLOQUEANTE_POR_ERROR;
 		respuestaDeInstruccion.respuesta = string_from_format("mProc %i - Fallo escritura de Pagina %i, causa: %s\n", idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
@@ -480,10 +486,9 @@ tipoRepuestaDeInstruccion instruccionEscribir(int numeroDePagina, char* textoAEs
 		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
 	}
 
-	if(LOGS_ACTIVADOS == 1)
-	{
-		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION ESCRIBIR EJECUTADA | PID: %i | NUMERO DE PAGINA: %i | CONTENIDO: %s", datosCPU->idCPU, idDeProceso, numeroDePagina, textoAEscribir);
-	}
+	sem_wait(&semaforoLogs);
+	log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION ESCRIBIR EJECUTADA | PID: %i | NUMERO DE PAGINA: %i | CONTENIDO: %s", datosCPU->idCPU, idDeProceso, numeroDePagina, textoAEscribir);
+	sem_post(&semaforoLogs);
 
 	respuestaDeInstruccion.tipoDeSalida = CONTINUA_EJECUCION;
 	respuestaDeInstruccion.respuesta = string_from_format("mProc %i - Pagina %i escrita: %s\n", idDeProceso, numeroDePagina, textoAEscribir);
@@ -507,12 +512,11 @@ tipoRepuestaDeInstruccion instruccionEntradaSalida(int tiempoDeEspera, int idDeP
 		printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c | tiempoDeEspera: %i\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador, tiempoDeEspera);
 	}
 
-	if(LOGS_ACTIVADOS == 1)
-	{
-		sem_wait(&semaforoLogs);
-		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION ENTRADA-SALIDA EJECUTADA | PID: %i | TIEMPO DE ESPERA: %i", datosCPU->idCPU, idDeProceso, tiempoDeEspera);
-		sem_post(&semaforoLogs);
-	}
+	sem_wait(&semaforoLogs);
+	log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION ENTRADA-SALIDA EJECUTADA | PID: %i | TIEMPO DE ESPERA: %i", datosCPU->idCPU, idDeProceso, tiempoDeEspera);
+	sem_post(&semaforoLogs);
+
+	printf(BLANCO "CPU id: " AZUL "%i " BLANCO "sale por " AMARILLO "entrada-salida " BLANCO "por " AZUL "%i " BLANCO "segundos.\n", datosCPU->idCPU, tiempoDeEspera);
 
 	respuestaDeInstruccion.tipoDeSalida = SALIDA_BLOQUEANTE;
 	respuestaDeInstruccion.respuesta = string_from_format("mProc %i en entrada-salida de tiempo %i\n", idDeProceso, tiempoDeEspera);
@@ -539,12 +543,9 @@ tipoRepuestaDeInstruccion instruccionFinalizar(int idDeProceso, t_datosCPU* dato
 			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
 
-		if(LOGS_ACTIVADOS == 1)
-		{
-			sem_wait(&semaforoLogs);
-			log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION FINALIZAR FALLO | PID: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->informacion);
-			sem_post(&semaforoLogs);
-		}
+		sem_wait(&semaforoLogs);
+		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION FINALIZAR FALLO | PID: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->informacion);
+		sem_post(&semaforoLogs);
 
 		respuestaDeInstruccion.tipoDeSalida = SALIDA_BLOQUEANTE_POR_ERROR;
 		respuestaDeInstruccion.respuesta = string_from_format("mProc %i no se pudo finalizar, causa: %s\n", idDeProceso, respuestaDeMemoria->informacion);;
@@ -560,15 +561,13 @@ tipoRepuestaDeInstruccion instruccionFinalizar(int idDeProceso, t_datosCPU* dato
 		printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 	}
 
-	if(LOGS_ACTIVADOS == 1)
-	{
-		sem_wait(&semaforoLogs);
-		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION FINALIZAR EJECUTADA | PID: %i", datosCPU->idCPU, idDeProceso);
-		sem_post(&semaforoLogs);
-	}
+	sem_wait(&semaforoLogs);
+	log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION FINALIZAR EJECUTADA | PID: %i", datosCPU->idCPU, idDeProceso);
+	sem_post(&semaforoLogs);
 
 	respuestaDeInstruccion.tipoDeSalida = SALIDA_BLOQUEANTE;
 	respuestaDeInstruccion.respuesta = string_from_format("mProc %i finalizado\n", idDeProceso);
+	printf(BLANCO "CPU id: " AZUL "%i " BLANCO "mProc: %i " ROJO "finalizado" BLANCO".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso);
 	return respuestaDeInstruccion;
 }
 
@@ -653,12 +652,25 @@ void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configur
 	for(i = 0; i < configuracionCPU->cantidadDeHilos; i++)
 	{
 		instruccionesEjecutadas = list_get(cantidadDeInstruccionesEjecutadasPorCPUs, i);
-		porcentajeDeUso = *instruccionesEjecutadas * 100 / (60 * SEG_A_MICROSEG / configuracionCPU->retardo);
+		int maximoDeInstrucciones;
+		if(configuracionCPU->retardo == 5)
+		{
+			maximoDeInstrucciones = 60 / configuracionCPU->retardo - 2;
+		}
+		else
+		{
+			maximoDeInstrucciones = 60 / configuracionCPU->retardo - 55;
+		}
+
+		porcentajeDeUso = *instruccionesEjecutadas * 100 / maximoDeInstrucciones;
+
 		if(porcentajeDeUso > 100)
 		{
 			porcentajeDeUso = 100;
 		}
+
 		enviarMensaje(socketMasterPlanificador, &porcentajeDeUso, sizeof(porcentajeDeUso));
+
 		if(DEBUG == 1)
 		{
 			printf("PORCENTAJE DE USO DE CPU: %i = %i%% ENVIADO A PLANIFICADOR\n", i + 1, porcentajeDeUso);
