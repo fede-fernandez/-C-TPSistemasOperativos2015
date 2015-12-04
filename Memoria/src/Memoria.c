@@ -13,7 +13,7 @@
 #include <signal.h>
 #include <sys/time.h>
 #include "funcionPrincipal.h"
-#include "impresionesEnPantalla.h"
+
 //---------------------------------------------------------------
 #define maxConexionesEntrantes 10
 
