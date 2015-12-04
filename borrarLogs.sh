@@ -41,19 +41,19 @@ cd ..
 
 cd Planificador/Debug
 
-if [ -f "actividad CPUs" ]; then rm "actividad CPUs"
+if [ -f "logActividadDeCPUs" ]; then rm "logActividadDeCPUs"
 fi
 
-if [ -f "comienzo y fin de mproc" ]; then rm "comienzo y fin de mproc"
+if [ -f "logComienzoYFinDeMproc" ]; then rm "logComienzoYFinDeMproc"
 fi
 
-if [ -f "cola de ready"   ]; then rm "cola de ready"
+if [ -f "logColaDeReady"   ]; then rm "logColaDeReady"
 fi
 
-if [ -f " metricas " ]; then rm " metricas "
+if [ -f "logMetricas" ]; then rm "logMetricas"
 fi
 
-if [ -f "resultado de Ráfagas" ]; then rm "resultado de Ráfagas"
+if [ -f "logResultadosDeRafagas" ]; then rm "logResultadosDeRafagas"
 fi
 
 exit
