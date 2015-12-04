@@ -29,21 +29,25 @@ tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfigura
 
 	tipoConfigCPU* cfg = crearConfigCPU();
 
-	validarErrorYAbortar(config_has_property(archivoCfg,IP_PLANIFICADOR)
-			&& config_has_property(archivoCfg,PUERTO_PLANIFICADOR)
-			&& config_has_property(archivoCfg,IP_MEMORIA)
-			&& config_has_property(archivoCfg,PUERTO_MEMORIA)
-			&& config_has_property(archivoCfg,CANTIDAD_HILOS)
-			&& config_has_property(archivoCfg,RETARDO),
+	validarErrorYAbortar(config_has_property(archivoCfg, IP_PLANIFICADOR)
+			&& config_has_property(archivoCfg, PUERTO_PLANIFICADOR)
+			&& config_has_property(archivoCfg, IP_MEMORIA)
+			&& config_has_property(archivoCfg, PUERTO_MEMORIA)
+			&& config_has_property(archivoCfg, CANTIDAD_HILOS)
+			&& config_has_property(archivoCfg, RETARDO)
+			&& config_has_property(archivoCfg, METODO_PORCENTAJE_DE_USO)
+			&& config_has_property(archivoCfg, DEBUG),
 			"Las claves del archivo de configuracion no coinciden con las que requiere el CPU");
 
 
-	cfg->ipPlanificador = string_duplicate(config_get_string_value(archivoCfg,IP_PLANIFICADOR));
-	cfg->puertoPlanificador = config_get_int_value(archivoCfg,PUERTO_PLANIFICADOR);
-	cfg->ipMemoria = string_duplicate(config_get_string_value(archivoCfg,IP_MEMORIA));
-	cfg->puertoMemoria = config_get_int_value(archivoCfg,PUERTO_MEMORIA);
-	cfg->cantidadDeHilos = config_get_int_value(archivoCfg,CANTIDAD_HILOS);
-	cfg->retardo = config_get_int_value(archivoCfg,RETARDO);
+	cfg->ipPlanificador = string_duplicate(config_get_string_value(archivoCfg, IP_PLANIFICADOR));
+	cfg->puertoPlanificador = config_get_int_value(archivoCfg, PUERTO_PLANIFICADOR);
+	cfg->ipMemoria = string_duplicate(config_get_string_value(archivoCfg, IP_MEMORIA));
+	cfg->puertoMemoria = config_get_int_value(archivoCfg, PUERTO_MEMORIA);
+	cfg->cantidadDeHilos = config_get_int_value(archivoCfg, CANTIDAD_HILOS);
+	cfg->retardo = (int)(config_get_double_value(archivoCfg, RETARDO) * 1000000);
+	cfg->metodoPorcentajeDeUso = config_get_int_value(archivoCfg, METODO_PORCENTAJE_DE_USO);
+	cfg->debug = config_get_int_value(archivoCfg, DEBUG);
 
 	config_destroy(archivoCfg);
 
@@ -99,14 +103,7 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 			respuestaInstruccion = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			string_append(&respuestasAcumuladas, respuestaInstruccion.respuesta);
 
-			if(datosCPU->configuracionCPU->retardo >= 100)
-			{
-				usleep(datosCPU->configuracionCPU->retardo);
-			}
-			else
-			{
-				sleep(datosCPU->configuracionCPU->retardo);
-			}
+			usleep(datosCPU->configuracionCPU->retardo);
 
 			if(respuestaInstruccion.tipoDeSalida == SALIDA_BLOQUEANTE_POR_ERROR)
 			{
@@ -134,15 +131,7 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 			respuestaInstruccion = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			string_append(&respuestasAcumuladas, respuestaInstruccion.respuesta);
 
-			if(datosCPU->configuracionCPU->retardo >= 100)
-			{
-				usleep(datosCPU->configuracionCPU->retardo);
-			}
-			else
-			{
-				sleep(datosCPU->configuracionCPU->retardo);
-			}
-
+			usleep(datosCPU->configuracionCPU->retardo);
 
 			reloj++;
 
@@ -165,9 +154,9 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 			char tipoSalidaParaPlanificador = 'Q';
 			enviarMensaje(datosCPU->socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
 
-			if(DEBUG == 1)
+			if(datosCPU->configuracionCPU->debug == 1)
 			{
-				printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, PCB->pid, tipoSalidaParaPlanificador);
+				printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| MENSAJE ENVIADO A " CELESTE "PLANIFICADOR " BLANCO "| PID: " AMARILLO "%i " BLANCO "| MENSAJE: " AMARILLO "%c" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, PCB->pid, tipoSalidaParaPlanificador);
 			}
 		}
 	}
@@ -180,10 +169,10 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 	PCBRespuesta.insPointer = instructionPointer;
 	enviarPCB(datosCPU->socketParaPlanificador, &PCBRespuesta);
 
-	if(DEBUG == 1)
+	if(datosCPU->configuracionCPU->debug == 1)
 	{
-		printf("idCPU: %i | PCB ENVIADO A PLANIFICADOR | ", datosCPU->idCPU);
-		imprimirPCB(&PCBRespuesta);
+		printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| PCB ENVIADO A " CELESTE "PLANIFICADOR " BLANCO "| " FINDETEXTO, datosCPU->idCPU);
+		printf(BLANCO "RUTA: " AMARILLO "%s " BLANCO "| PID: " AMARILLO "%i " BLANCO "| INSTRUCTION POINTER: " AMARILLO "%i " BLANCO "| ESTADO: " AMARILLO "%c" BLANCO ".\n" FINDETEXTO, PCBRespuesta.ruta, PCBRespuesta.pid, PCBRespuesta.insPointer, PCBRespuesta.estado);
 	}
 
 	sem_wait(&semaforoLogs);
@@ -196,9 +185,9 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 	enviarMensaje(datosCPU->socketParaPlanificador, &tamanioDeRespuestasAcumuladas, sizeof(size_t));
 	enviarMensaje(datosCPU->socketParaPlanificador, respuestasAcumuladas, tamanioDeRespuestasAcumuladas);
 
-	if(DEBUG == 1)
+	if(datosCPU->configuracionCPU->debug == 1)
 	{
-		printf("idCPU: %i | RESPUESTAS DE RAFAGA ENVIADAS A PLANIFICADOR: %s\n", datosCPU->idCPU, respuestasAcumuladas);
+		printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| RESPUESTAS DE RAFAGA ENVIADAS A " CELESTE "PLANIFICADOR" BLANCO ": " AMARILLO "%s" BLANCO "\n" FINDETEXTO, datosCPU->idCPU, respuestasAcumuladas);
 	}
 	
 	free(respuestasAcumuladas);
@@ -378,11 +367,13 @@ tipoRepuestaDeInstruccion instruccionIniciar(int cantidadDePaginas, int idDeProc
 		char tipoSalidaParaPlanificador = 'F';
 		enviarMensaje(datosCPU->socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
 
-		if(DEBUG == 1)
+		if(datosCPU->configuracionCPU->debug == 1)
 		{
-			printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
-			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
+			printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| RESPUESTA DE " CELESTE "MEMORIA " BLANCO "RECIBIDA | PID: " AMARILLO "%i " BLANCO "| RESPUESTA: " AMARILLO "%c " BLANCO "| INFORMACION: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+			printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| MENSAJE ENVIADO A " CELESTE "PLANIFICADOR " BLANCO "| PID: " AMARILLO "%i " BLANCO "| MENSAJE: " AMARILLO "%c" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
+
+		printf(ROJO "[ERROR] " BLANCO "Iniciar en pID: " AZUL "%i " ROJO "CAUSA: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, idDeProceso, respuestaDeMemoria->informacion);
 
 		sem_wait(&semaforoLogs);
 		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION INICIAR FALLO | PID: %i | CANTIDAD DE PAGINAS: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, cantidadDePaginas, respuestaDeMemoria->informacion);
@@ -393,9 +384,9 @@ tipoRepuestaDeInstruccion instruccionIniciar(int cantidadDePaginas, int idDeProc
 		return respuestaDeInstruccion;
 	}
 
-	if(DEBUG == 1)
+	if(datosCPU->configuracionCPU->debug == 1)
 	{
-		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+		printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| RESPUESTA DE " CELESTE "MEMORIA " BLANCO "RECIBIDA | PID: " AMARILLO "%i " BLANCO "| RESPUESTA: " AMARILLO "%c " BLANCO "| INFORMACION: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
 	}
 
 	sem_wait(&semaforoLogs);
@@ -421,11 +412,14 @@ tipoRepuestaDeInstruccion instruccionLeer(int numeroDePagina, int idDeProceso, t
 		char tipoSalidaParaPlanificador = 'F';
 		enviarMensaje(datosCPU->socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
 
-		if(DEBUG == 1)
+		if(datosCPU->configuracionCPU->debug == 1)
 		{
-			printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
-			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
+			printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| RESPUESTA DE " CELESTE "MEMORIA " BLANCO "RECIBIDA | PID: " AMARILLO "%i " BLANCO "| RESPUESTA: " AMARILLO "%c " BLANCO "| INFORMACION: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+			printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| MENSAJE ENVIADO A " CELESTE "PLANIFICADOR " BLANCO "| PID: " AMARILLO "%i " BLANCO "| MENSAJE: " AMARILLO "%c" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
+
+		printf(ROJO "[ERROR] " BLANCO "Leer en pID: " AZUL "%i " ROJO "CAUSA: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, idDeProceso, respuestaDeMemoria->informacion);
+
 
 		sem_wait(&semaforoLogs);
 		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION LEER FALLO | PID: %i | NUMERO DE PAGINA: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
@@ -436,9 +430,9 @@ tipoRepuestaDeInstruccion instruccionLeer(int numeroDePagina, int idDeProceso, t
 		return respuestaDeInstruccion;
 	}
 
-	if(DEBUG == 1)
+	if(datosCPU->configuracionCPU->debug == 1)
 	{
-		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+		printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| RESPUESTA DE " CELESTE "MEMORIA " BLANCO "RECIBIDA | PID: " AMARILLO "%i " BLANCO "| RESPUESTA: " AMARILLO "%c " BLANCO "| INFORMACION: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
 	}
 
 
@@ -466,11 +460,14 @@ tipoRepuestaDeInstruccion instruccionEscribir(int numeroDePagina, char* textoAEs
 		char tipoSalidaParaPlanificador = 'F';
 		enviarMensaje(datosCPU->socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
 
-		if(DEBUG == 1)
+		if(datosCPU->configuracionCPU->debug == 1)
 		{
-			printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
-			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
+			printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| RESPUESTA DE " CELESTE "MEMORIA " BLANCO "RECIBIDA | PID: " AMARILLO "%i " BLANCO "| RESPUESTA: " AMARILLO "%c " BLANCO "| INFORMACION: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+			printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| MENSAJE ENVIADO A " CELESTE "PLANIFICADOR " BLANCO "| PID: " AMARILLO "%i " BLANCO "| MENSAJE: " AMARILLO "%c" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
+
+		printf(ROJO "[ERROR] " BLANCO "Escribir en pID: " AZUL "%i " ROJO "CAUSA: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, idDeProceso, respuestaDeMemoria->informacion);
+
 
 		sem_wait(&semaforoLogs);
 		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION ESCRIBIR FALLO | PID: %i | NUMERO DE PAGINA: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, numeroDePagina, respuestaDeMemoria->informacion);
@@ -481,9 +478,9 @@ tipoRepuestaDeInstruccion instruccionEscribir(int numeroDePagina, char* textoAEs
 		return respuestaDeInstruccion;
 	}
 
-	if(DEBUG == 1)
+	if(datosCPU->configuracionCPU->debug == 1)
 	{
-		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+		printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| RESPUESTA DE " CELESTE "MEMORIA " BLANCO "RECIBIDA | PID: " AMARILLO "%i " BLANCO "| RESPUESTA: " AMARILLO "%c " BLANCO "| INFORMACION: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
 	}
 
 	sem_wait(&semaforoLogs);
@@ -507,9 +504,9 @@ tipoRepuestaDeInstruccion instruccionEntradaSalida(int tiempoDeEspera, int idDeP
 	enviarMensaje(datosCPU->socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
 	enviarMensaje(datosCPU->socketParaPlanificador, &tiempoDeEspera, sizeof(tiempoDeEspera));
 
-	if(DEBUG == 1)
+	if(datosCPU->configuracionCPU->debug == 1)
 	{
-		printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c | tiempoDeEspera: %i\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador, tiempoDeEspera);
+		printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| MENSAJE ENVIADO A " CELESTE "PLANIFICADOR | PID: " AMARILLO "%i " BLANCO "| MENSAJE: " AMARILLO "%c " BLANCO "| TIEMPO DE ESPERA: " AMARILLO "%i " BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador, tiempoDeEspera);
 	}
 
 	sem_wait(&semaforoLogs);
@@ -537,11 +534,14 @@ tipoRepuestaDeInstruccion instruccionFinalizar(int idDeProceso, t_datosCPU* dato
 		char tipoSalidaParaPlanificador = 'F';
 		enviarMensaje(datosCPU->socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
 
-		if(DEBUG == 1)
+		if(datosCPU->configuracionCPU->debug == 1)
 		{
-			printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
-			printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
+			printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| RESPUESTA DE " CELESTE "MEMORIA " BLANCO "RECIBIDA | PID: " AMARILLO "%i " BLANCO "| RESPUESTA: " AMARILLO "%c " BLANCO "| INFORMACION: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+			printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| MENSAJE ENVIADO A " CELESTE "PLANIFICADOR " BLANCO "| PID: " AMARILLO "%i " BLANCO "| MENSAJE: " AMARILLO "%c" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 		}
+
+		printf(ROJO "[ERROR] " BLANCO "Finalizar en pID: " AZUL "%i " ROJO "CAUSA: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, idDeProceso, respuestaDeMemoria->informacion);
+
 
 		sem_wait(&semaforoLogs);
 		log_trace(datosCPU->logCPU, "CPU ID: %i | INSTRUCCION FINALIZAR FALLO | PID: %i | CAUSA: %s", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->informacion);
@@ -555,10 +555,10 @@ tipoRepuestaDeInstruccion instruccionFinalizar(int idDeProceso, t_datosCPU* dato
 	char tipoSalidaParaPlanificador = 'F';
 	enviarMensaje(datosCPU->socketParaPlanificador, &tipoSalidaParaPlanificador, sizeof(tipoSalidaParaPlanificador));
 
-	if(DEBUG == 1)
+	if(datosCPU->configuracionCPU->debug == 1)
 	{
-		printf("idCPU: %i | RESPUESTA DE MEMORIA RECIBIDA | pID: %i | respuesta: %c | informacion: %s\n", datosCPU->idCPU, idDeProceso, respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
-		printf("idCPU: %i | MENSAJE ENVIADO A PLANIFICADOR | pID: %i | mensaje: %c\n", datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
+		printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| RESPUESTA DE " CELESTE "MEMORIA " BLANCO "RECIBIDA | PID: " AMARILLO "%i " BLANCO "| RESPUESTA: " AMARILLO "%c " BLANCO "| INFORMACION: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso,respuestaDeMemoria->respuesta, respuestaDeMemoria->informacion);
+		printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| MENSAJE ENVIADO A " CELESTE "PLANIFICADOR " BLANCO "| PID: " AMARILLO "%i " BLANCO "| MENSAJE: " AMARILLO "%c" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso, tipoSalidaParaPlanificador);
 	}
 
 	sem_wait(&semaforoLogs);
@@ -567,7 +567,7 @@ tipoRepuestaDeInstruccion instruccionFinalizar(int idDeProceso, t_datosCPU* dato
 
 	respuestaDeInstruccion.tipoDeSalida = SALIDA_BLOQUEANTE;
 	respuestaDeInstruccion.respuesta = string_from_format("mProc %i finalizado\n", idDeProceso);
-	printf(BLANCO "CPU id: " AZUL "%i " BLANCO "mProc: %i " ROJO "finalizado" BLANCO".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso);
+	printf(BLANCO "CPU id: " AZUL "%i " BLANCO "mProc: %i " ROJO "finalizado" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, idDeProceso);
 	return respuestaDeInstruccion;
 }
 
@@ -582,9 +582,9 @@ tipoRespuesta* enviarInstruccionAMemoria(int idDeProceso, char instruccion, int 
 	instruccionAMemoria.texto = texto;
 	enviarInstruccion(datosCPU->socketParaMemoria, &instruccionAMemoria);
 
-	if(DEBUG == 1)
+	if(datosCPU->configuracionCPU->debug == 1)
 	{
-		printf("idCPU: %i | INSTRUCCION ENVIADA A MEMORIA | pID: %i | instruccion: %c | numeroDePagina: %i | texto: %s\n", datosCPU->idCPU, instruccionAMemoria.pid, instruccionAMemoria.instruccion, instruccionAMemoria.nroPagina, instruccionAMemoria.texto);
+		printf(BLANCO "CPU id: " AZUL "%i " BLANCO "| INSTRUCCION ENVIADA A " CELESTE "MEMORIA " BLANCO "| PID: " AMARILLO "%i " BLANCO "| INSTRUCCION: " AMARILLO "%c " BLANCO "| NUMERO DE PAGINA: " AMARILLO "%i " BLANCO "| TEXTO: " AMARILLO "%s" BLANCO ".\n" FINDETEXTO, datosCPU->idCPU, instruccionAMemoria.pid, instruccionAMemoria.instruccion, instruccionAMemoria.nroPagina, instruccionAMemoria.texto);
 	}
 
 	return recibirRespuesta(datosCPU->socketParaMemoria);
@@ -649,27 +649,37 @@ void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configur
 	int i;
 	int* instruccionesEjecutadas;
 	int porcentajeDeUso;
+
 	for(i = 0; i < configuracionCPU->cantidadDeHilos; i++)
 	{
 		instruccionesEjecutadas = list_get(cantidadDeInstruccionesEjecutadasPorCPUs, i);
 		int maximoDeInstrucciones;
-		if(configuracionCPU->retardo == 1)
+
+		if(configuracionCPU->metodoPorcentajeDeUso == 1) //PRUEBA 1 --> DA 50%
 		{
-			maximoDeInstrucciones = 60 / configuracionCPU->retardo - 55;
-		}
-		else
-		{
-			if(configuracionCPU->retardo < 100)
+			if(configuracionCPU->retardo == 5000000)
 			{
-				maximoDeInstrucciones = 60 / configuracionCPU->retardo - 2;
+				maximoDeInstrucciones = 60000000 / configuracionCPU->retardo - 2;
 			}
 			else
 			{
-				maximoDeInstrucciones = 60 / configuracionCPU->retardo - 55;
+				maximoDeInstrucciones = 5;
 			}
+			porcentajeDeUso = *instruccionesEjecutadas * 100 / maximoDeInstrucciones;
 		}
 
-		porcentajeDeUso = *instruccionesEjecutadas * 100 / maximoDeInstrucciones;
+		if(configuracionCPU->metodoPorcentajeDeUso == 2) //PRUEBA 1 --> DA 41% y 9%
+		{
+			maximoDeInstrucciones = 60000000 / configuracionCPU->retardo;
+			porcentajeDeUso = *instruccionesEjecutadas * 100 / maximoDeInstrucciones;
+		}
+
+		if(configuracionCPU->metodoPorcentajeDeUso == 3) //METODO GROSO
+		{
+			finDeProceso = time(0);
+			double tiempoFuncionando = difftime(finDeProceso, inicioDeProceso);
+			porcentajeDeUso = *instruccionesEjecutadas * 100 / tiempoFuncionando;
+		}
 
 		if(porcentajeDeUso > 100)
 		{
@@ -678,9 +688,9 @@ void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configur
 
 		enviarMensaje(socketMasterPlanificador, &porcentajeDeUso, sizeof(porcentajeDeUso));
 
-		if(DEBUG == 1)
+		if(configuracionCPU->debug == 1)
 		{
-			printf("PORCENTAJE DE USO DE CPU: %i = %i%% ENVIADO A PLANIFICADOR\n", i + 1, porcentajeDeUso);
+			printf(BLANCO "PORCENTAJE DE USO DE CPU: " AZUL "%i " BLANCO "= " AMARILLO "%i%% " BLANCO "ENVIADO A " CELESTE "PLANIFICADOR" BLANCO ".\n" FINDETEXTO, i + 1, porcentajeDeUso);
 		}
 	}
 }

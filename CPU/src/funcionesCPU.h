@@ -15,12 +15,12 @@
 #include <commonsDeAsedio/configuracion.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <time.h>
 
 
 /**********Configuracion Inicial del CPU**********/
 #define RUTA_DE_ARCHIVO_DE_CONFIGURACION_CPU "cfgCPU"
 #define RUTA_DE_ARCHIVO_DE_LOGS_CPU "logsCPU"
-#define DEBUG 0
 /**********Fin de configuracion Inicial del CPU**********/
 
 
@@ -45,6 +45,8 @@
 #define PUERTO_MEMORIA "PUERTO_MEMORIA"
 #define CANTIDAD_HILOS "CANTIDAD_HILOS"
 #define RETARDO "RETARDO"
+#define METODO_PORCENTAJE_DE_USO "METODO_PORCENTAJE_DE_USO"
+#define DEBUG "DEBUG"
 
 typedef struct{
 	char* ipPlanificador;
@@ -53,6 +55,8 @@ typedef struct{
 	int puertoMemoria;
 	int cantidadDeHilos;
 	int retardo;
+	int metodoPorcentajeDeUso;
+	int debug;
 }tipoConfigCPU;
 
 tipoConfigCPU* cargarArchivoDeConfiguracionDeCPU(char* rutaDelArchivoDeConfiguracionDelCPU);
@@ -74,6 +78,11 @@ sem_t semaforoContadorDeInstrucciones;
 /**********Lista de Instrucciones finalizadas de cada CPU**********/
 t_list* cantidadDeInstruccionesEjecutadasPorCPUs;
 /**********Fin de Lista de Instrucciones finalizadas de cada CPU**********/
+
+/**********Timers de CPU**********/
+time_t inicioDeProceso;
+time_t finDeProceso;
+/**********Fin de Timers de CPU**********/
 
 
 /**********Estructuras del CPU**********/
