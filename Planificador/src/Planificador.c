@@ -526,7 +526,7 @@ int menu(void) {
 		    printf(ROSA"################################################################\n"FINDETEXTO);
 			printf(ROSA"################################################################\n"FINDETEXTO);
 			printf(ROSA"##     --------> *****                  ***** <------------   ##\n"FINDETEXTO);
-			printf(ROSA"##   *****             LOS  JAVIMANCOS         ***** -------  ##\n"FINDETEXTO);
+			printf(ROSA"##   *****             CELESTE "LOS  JAVIMANCOS" ROSA         ***** -------  ##\n"FINDETEXTO);
 			printf(ROSA"##------------------------------------------------------------##\n"FINDETEXTO);
 			printf(ROSA"##                                                            ##\n"FINDETEXTO);
 			printf(ROSA"##"  BLANCO "        Ingrese una opción para continuar:" ROSA"                  ##\n"FINDETEXTO);
