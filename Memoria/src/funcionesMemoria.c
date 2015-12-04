@@ -261,7 +261,7 @@ tipoRespuesta* leerPagina(tipoInstruccion* instruccion){
 		log_error(datosMemoria->logDeMemoria,"ERROR DE LECTURA DE PAGINA, NO HAY MARCOS DISPONIBLES");
 		quitarProceso(instruccion);
 
-		return crearTipoRespuesta(MANQUEADO,"Error de lectura de pagina, proceso finalizado");
+		return crearTipoRespuesta(MANQUEADO,"Error de lectura de pagina, no hay marcos disponibles");
 	}
 
 	int posicionEnRam = buscarPagina(instruccion->nroPagina,instruccion->pid);
@@ -472,7 +472,7 @@ tipoRespuesta* escribirPagina(tipoInstruccion* instruccion){
 		log_error(datosMemoria->logDeMemoria,"ERROR DE ESCRITURA DE PAGINAS, NO HAY MARCOS DISPONIBLES");
 		quitarProceso(instruccion);
 
-		return crearTipoRespuesta(MANQUEADO,"Error de escritura de pagina, proceso finalizado");
+		return crearTipoRespuesta(MANQUEADO,"Error de escritura de pagina, no hay marcos disponibles");
 	}
 
 	int posicionDePag = buscarPagina(instruccion->nroPagina,instruccion->pid);
