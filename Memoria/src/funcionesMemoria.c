@@ -668,7 +668,7 @@ double tasaAciertosTLB(){
 }
 
 void dormirPorAccesoARAM(){
-	sleep(datosMemoria->configuracion->retardoDeMemoria);
+	sleep(1000000*datosMemoria->configuracion->retardoDeMemoria);
 }
 
 void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam){

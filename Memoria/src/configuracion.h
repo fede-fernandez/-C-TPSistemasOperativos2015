@@ -40,7 +40,7 @@ typedef struct{
 	int tamanioDeMarco;
 	int entradasDeTLB;
 	char* TLBHabilitada;
-	int retardoDeMemoria;
+	double retardoDeMemoria;
 	char* algoritmoRAM;
 }tipoConfigMemoria;
 
