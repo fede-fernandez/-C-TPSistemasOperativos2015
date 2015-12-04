@@ -883,7 +883,7 @@ void logueo(){
 	log_info(rafagas, "\n\n");
 
 
-	metricas = log_create("logMetricas ", "PLANIFICADOR", 0, LOG_LEVEL_INFO);
+	metricas = log_create("logMetricas", "PLANIFICADOR", 0, LOG_LEVEL_INFO);
 	log_info(metricas, "     \n\n   ");
 
 
