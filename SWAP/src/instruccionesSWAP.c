@@ -104,7 +104,7 @@ tipoRespuesta* liberarEspacio(t_list* listaDeHuecosUtilizados,t_list* listaDeHue
 
 tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dirLogicaDePagina,int tamanioDePagina,char* particion, t_log* logger, int retardoDeLectura){
 
-	sleep(retardoDeLectura);
+	usleep(retardoDeLectura);
 
 	tipoRespuesta* respuestaASolicitudDeLectura;
 
@@ -148,7 +148,7 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 }
 
 tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,char* contenidoAEscribir,int dirLogicaDePagina,int tamanioDePagina, char* particion, t_log* logger, int retardoDeEscritura){
-	sleep(retardoDeEscritura);
+	usleep(retardoDeEscritura);
 
 	tipoRespuesta* respuestaASolicitudDeEscritura;
 	char* textoALogear = string_new();

@@ -17,6 +17,7 @@
 #include <commonsDeAsedio/mmap.h>
 #include <commons/collections/list.h>
 #include <commonsDeAsedio/configuracion.h>
+#include <unistd.h>
 
 #include "estructurasSWAP.h"
 

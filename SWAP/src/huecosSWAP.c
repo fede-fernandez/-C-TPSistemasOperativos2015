@@ -218,7 +218,7 @@ void compactacionAlpha(t_list* listaDeHuecosUtilizados,t_list* listaDeHuecosLibr
 
 	logearSeguimiento("Compactacion iniciada por fragmentacion externa",logger);
 
-	sleep(retardoDeCompactacion);
+	usleep(retardoDeCompactacion);
 
 	int i;
 	for (i = 0; i < list_size(listaDeHuecosUtilizados); ++i) {

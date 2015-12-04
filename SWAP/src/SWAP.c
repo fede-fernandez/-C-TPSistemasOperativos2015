@@ -93,7 +93,7 @@ int main(void) {
 	
 	destruirLogger(logger);
 
-		printf(BLANCO "Proceso SWAP " ROJO "Finalizado" BLANCO ".\n" FINDETEXTO);
+		printf(BLANCO "\nProceso SWAP " ROJO "Finalizado" BLANCO ".\n" FINDETEXTO);
 
 
 	return EXIT_SUCCESS;
