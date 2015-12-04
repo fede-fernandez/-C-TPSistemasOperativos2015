@@ -29,9 +29,7 @@ int main(void) {
 	tipoConfigSWAP* configuracion = cargarArchivoDeConfiguracionDeSWAP("cfgSWAP");
 	t_list* listaDeHuecosUtilizados = inicializarListaDeHuecosUtilizados();
 	t_list* listaDeHuecosLibres = inicializarListaDeHuecosLibres(configuracion->cantidadDePaginas);
-	printf(AMARILLO);
 	inicializarParticion(configuracion->nombreDeSWAP,configuracion->tamanioDePagina,configuracion->cantidadDePaginas);
-	printf(FINDETEXTO);
 
 	tipoInstruccion* instruccionAEjecutar;
 	tipoRespuesta* respuestaParaMemoria;
@@ -95,7 +93,7 @@ int main(void) {
 	
 	destruirLogger(logger);
 
-		printf(BLANCO "Proceso SWAP " ROJO "FINALIZADO" BLANCO ".\n" FINDETEXTO);
+		printf(BLANCO "Proceso SWAP " ROJO "Finalizado" BLANCO ".\n" FINDETEXTO);
 
 
 	return EXIT_SUCCESS;
