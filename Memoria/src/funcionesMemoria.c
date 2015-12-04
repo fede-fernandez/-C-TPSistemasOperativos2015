@@ -2,7 +2,7 @@
 #include <commonsDeAsedio/estructuras.h>
 #include <commons/string.h>
 #include "funcionesSeniales.h"
-
+#include <unistd.h>
 
 void setearEstructuraMemoria(tipoEstructuraMemoria* datos) {
 
@@ -668,7 +668,7 @@ double tasaAciertosTLB(){
 }
 
 void dormirPorAccesoARAM(){
-	sleep(1000000*datosMemoria->configuracion->retardoDeMemoria);
+	usleep(1000000*datosMemoria->configuracion->retardoDeMemoria);
 }
 
 void llevarPaginaASwap(int nroPaginaAReemplazar,int pid,int posicionEnRam){
