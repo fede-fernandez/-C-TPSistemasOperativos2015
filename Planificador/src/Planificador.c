@@ -868,22 +868,22 @@ void configurar(){
 
 void logueo(){
 
-	colita = log_create("cola de ready", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+	colita = log_create("logColaDeReady", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
 	log_trace(colita, "         \n\n       ");
 
-	proceso = log_create("comienzo y fin de mproc", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+	proceso = log_create("logComienzoYFinDeMproc", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
 	log_trace(proceso, " \n\n ");
 
 
-	conexiones = log_create("actividad CPUs", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
+	conexiones = log_create("logActividadDeCPUs", "PLANIFICADOR", 0, LOG_LEVEL_TRACE);
 	log_trace(conexiones, "        \n\n      ");
 
 
-	rafagas = log_create("resultado de Ráfagas", "PLANIFICADOR", 0, LOG_LEVEL_INFO);
+	rafagas = log_create("logResultadosDeRafagas", "PLANIFICADOR", 0, LOG_LEVEL_INFO);
 	log_info(rafagas, "\n\n");
 
 
-	metricas = log_create(" metricas ", "PLANIFICADOR", 0, LOG_LEVEL_INFO);
+	metricas = log_create("logMetricas ", "PLANIFICADOR", 0, LOG_LEVEL_INFO);
 	log_info(metricas, "     \n\n   ");
 
 
