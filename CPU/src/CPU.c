@@ -265,11 +265,13 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 				enviarRespuesta(socketMasterPlanificador, respuestaDeMemoria);
 				destruirTipoRespuesta(respuestaDeMemoria);
 				list_destroy(cantidadDeInstruccionesEjecutadasPorCPUs);
+				list_destroy(listaTiemposCPU);
 				sem_destroy(&semaforoConexionMasterPlanificador);
 				sem_destroy(&semaforoLogs);
 				sem_destroy(&semaforoInstruccionesCPU);
 				sem_destroy(&semaforoCPUTrabajando);
 				sem_destroy(&semaforoContadorDeInstrucciones);
+				sem_destroy(&semaforoTiemposDeUso);
 				liberarSocket(socketMasterPlanificador);
 				liberarSocket(socketParaMemoria);
 				printf(BLANCO "\nProceso CPU " ROJO "Finalizado" BLANCO ".\n" FINDETEXTO);
