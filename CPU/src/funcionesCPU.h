@@ -73,11 +73,16 @@ sem_t semaforoLogs;
 sem_t semaforoInstruccionesCPU;
 sem_t semaforoCPUTrabajando;
 sem_t semaforoContadorDeInstrucciones;
+sem_t semaforoTiemposDeUso;
 /**********Fin de Semaforos Inicial del CPU**********/
 
 /**********Lista de Instrucciones finalizadas de cada CPU**********/
 t_list* cantidadDeInstruccionesEjecutadasPorCPUs;
 /**********Fin de Lista de Instrucciones finalizadas de cada CPU**********/
+
+/**********Lista de Tiempos de Instrucciones de cada CPU**********/
+t_list* listaTiemposCPU;
+/**********Fin de Lista de Tiempos de Instrucciones de cada CPU**********/
 
 /**********Timers de CPU**********/
 time_t inicioDeProceso;
@@ -108,6 +113,13 @@ typedef struct respuestaDeInstruccion{
 	int tipoDeSalida; //(0 = continua ejecucion | 1 = termina ejecucion mantiene insPointer | 2 = termina ejecucion aumenta insPointer)
 	char* respuesta;
 }tipoRepuestaDeInstruccion;
+
+/*Estructura de tiempos de uso de CPU*/
+typedef struct{
+	time_t inicio;
+	time_t fin;
+	double tiempoEjecutando;
+}tipoTiempoCPU;
 /**********Fin de Estructuras del CPU**********/
 
 /**********Funciones del CPU**********/
@@ -152,6 +164,10 @@ void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configur
 void asignarCantidadDeCPUsALista(int cantidadDeCPUs);
 void aumentarCantidadDeInstruccionesEjecutadasEnUno(int idCPU);
 void reiniciarCantidadDeInstrucciones(int cantidadDeCPUS);
+
+void asignarCantidadTiemposALista(int cantidadDeCPUs);
+void actualizarTiempoInicio(int idCPU);
+void actualizarTiempoFin(int idCPU);
 /**********Fin de Funciones del CPU**********/
 
 #endif /* FUNCIONESCPU_H_ */

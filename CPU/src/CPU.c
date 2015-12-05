@@ -17,8 +17,14 @@ int main(void)
 	//Inicializo semaforo para variable compartida
 	sem_init(&semaforoContadorDeInstrucciones, 0, 1);
 
+	//Inicializo semaforo para variable compartida
+	sem_init(&semaforoTiemposDeUso, 0, 1);
+
 	//Creo el contador de instrucciones ejecutados por cada CPU
 	cantidadDeInstruccionesEjecutadasPorCPUs = list_create();
+
+	//Creo la lista de tiempos de ejecucion de CPUs
+	listaTiemposCPU = list_create();
 
 	//Carga de archivo de configuracion
 	tipoConfigCPU* configuracionCPU = cargarArchivoDeConfiguracionDeCPU(RUTA_DE_ARCHIVO_DE_CONFIGURACION_CPU);
@@ -33,6 +39,9 @@ int main(void)
 	
 	//Inicializo contador de instrucciones ejecutados por cada CPU
 	asignarCantidadDeCPUsALista(configuracionCPU->cantidadDeHilos);
+
+	//Inicializo lista de tiempos de ejecucion de CPUs
+	asignarCantidadTiemposALista(configuracionCPU->cantidadDeHilos);
 
 	//Creo hilo de conexion master Planificador y continuo con el programa
 	pthread_t hiloConexionMasterPlanificador;

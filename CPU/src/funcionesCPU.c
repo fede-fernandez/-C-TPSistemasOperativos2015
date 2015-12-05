@@ -1,6 +1,5 @@
 #include "funcionesCPU.h"
 
-
 //Crear archivo de configuracion
 tipoConfigCPU* crearConfigCPU()
 {
@@ -99,11 +98,14 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 		while(instructionPointer <= longitudDeStringArray(instrucciones))
 		{
 			aumentarCantidadDeInstruccionesEjecutadasEnUno(datosCPU->idCPU);
+			actualizarTiempoInicio(datosCPU->idCPU);
 
 			respuestaInstruccion = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			string_append(&respuestasAcumuladas, respuestaInstruccion.respuesta);
 
 			usleep(datosCPU->configuracionCPU->retardo);
+
+			actualizarTiempoFin(datosCPU->idCPU);
 
 			if(respuestaInstruccion.tipoDeSalida == SALIDA_BLOQUEANTE_POR_ERROR)
 			{
@@ -127,11 +129,14 @@ void ejecutarPrograma(tipoPCB *PCB, t_datosCPU* datosCPU)
 		while(reloj < datosCPU->quantum)
 		{
 			aumentarCantidadDeInstruccionesEjecutadasEnUno(datosCPU->idCPU);
+			actualizarTiempoInicio(datosCPU->idCPU);
 
 			respuestaInstruccion = ejecutarInstruccion(instrucciones[instructionPointer-1], PCB->pid, datosCPU);
 			string_append(&respuestasAcumuladas, respuestaInstruccion.respuesta);
 
 			usleep(datosCPU->configuracionCPU->retardo);
+
+			actualizarTiempoFin(datosCPU->idCPU);
 
 			reloj++;
 
@@ -611,7 +616,7 @@ void asignarCantidadDeCPUsALista(int cantidadDeCPUs)
 	int i;
 	for(i = 0; i < cantidadDeCPUs; i++)
 	{
-		int * instruccionesEjecutadas = malloc(sizeof(int));
+		int* instruccionesEjecutadas = malloc(sizeof(int));
 		*instruccionesEjecutadas = 0;
 		list_add(cantidadDeInstruccionesEjecutadasPorCPUs, instruccionesEjecutadas);
 	}
@@ -633,13 +638,54 @@ void reiniciarCantidadDeInstrucciones(int cantidadDeCPUs)
 {
 	int i;
 	int* instruccionesEjecutadas;
+	tipoTiempoCPU* tiemposCPUs;
 	for(i = 0; i < cantidadDeCPUs; i++)
 	{
 		sem_wait(&semaforoContadorDeInstrucciones);
 		instruccionesEjecutadas = list_get(cantidadDeInstruccionesEjecutadasPorCPUs, i);
 		*instruccionesEjecutadas = 0;
 		sem_post(&semaforoContadorDeInstrucciones);
+		sem_wait(&semaforoTiemposDeUso);
+		tiemposCPUs = list_get(listaTiemposCPU, i);
+		(*tiemposCPUs).tiempoEjecutando = 0;
+		sem_post(&semaforoTiemposDeUso);
 	}
+}
+
+
+//Inicializa la lista con la cantidad de CPUs
+void asignarCantidadTiemposALista(int cantidadDeCPUs)
+{
+	int i;
+	for(i = 0; i < cantidadDeCPUs; i++)
+	{
+		tipoTiempoCPU* tiemposCPUs = malloc(sizeof(tipoTiempoCPU));
+		(*tiemposCPUs).inicio = time(0);
+		(*tiemposCPUs).fin = time(0);
+		(*tiemposCPUs).tiempoEjecutando = 0;
+		list_add(listaTiemposCPU, tiemposCPUs);
+	}
+}
+
+
+//Actualiza el tiempo en que una cpu comenzo a ejecutar
+void actualizarTiempoInicio(int idCPU)
+{
+	sem_wait(&semaforoTiemposDeUso);
+	tipoTiempoCPU* tiemposCPUs = list_get(listaTiemposCPU, idCPU - 1);
+	(*tiemposCPUs).inicio = time(0);
+	sem_post(&semaforoTiemposDeUso);
+}
+
+
+//Actualiza el tiempo en que una cpu termino de ejecutar
+void actualizarTiempoFin(int idCPU)
+{
+	sem_wait(&semaforoTiemposDeUso);
+	tipoTiempoCPU* tiemposCPUs = list_get(listaTiemposCPU, idCPU - 1);
+	(*tiemposCPUs).fin = time(0);
+	(*tiemposCPUs).tiempoEjecutando = (*tiemposCPUs).tiempoEjecutando + difftime((*tiemposCPUs).fin, (*tiemposCPUs).inicio);
+	sem_post(&semaforoTiemposDeUso);
 }
 
 
@@ -676,10 +722,10 @@ void enviarPorcentajeDeUso(int socketMasterPlanificador, tipoConfigCPU* configur
 
 		if(configuracionCPU->metodoPorcentajeDeUso == 3) //METODO GROSO
 		{
-			finDeProceso = time(0);
-			double tiempoFuncionando = difftime(finDeProceso, inicioDeProceso);
-			porcentajeDeUso = *instruccionesEjecutadas * 100 / tiempoFuncionando;
+			tipoTiempoCPU* tiemposCPUs = list_get(listaTiemposCPU, i);
+			porcentajeDeUso = (*tiemposCPUs).tiempoEjecutando * 100 / 60;
 		}
+
 
 		if(porcentajeDeUso > 100)
 		{
