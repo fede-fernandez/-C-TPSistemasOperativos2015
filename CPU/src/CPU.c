@@ -264,8 +264,8 @@ void* conexionMasterPlanificador(tipoConfigCPU* configuracionCPU)
 			{
 				enviarRespuesta(socketMasterPlanificador, respuestaDeMemoria);
 				destruirTipoRespuesta(respuestaDeMemoria);
-				list_destroy(cantidadDeInstruccionesEjecutadasPorCPUs);
-				list_destroy(listaTiemposCPU);
+				list_destroy_and_destroy_elements(cantidadDeInstruccionesEjecutadasPorCPUs, free);
+				list_destroy_and_destroy_elements(listaTiemposCPU, free);
 				sem_destroy(&semaforoConexionMasterPlanificador);
 				sem_destroy(&semaforoLogs);
 				sem_destroy(&semaforoInstruccionesCPU);
