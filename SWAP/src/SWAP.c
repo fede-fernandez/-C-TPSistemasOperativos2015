@@ -42,49 +42,47 @@ int main(void) {
 	int socketParaAdministrador = crearSocket();
 	asociarAPuerto(socketParaAdministrador,configuracion->puertoDeEscucha);
 
-//	printf("Escuchando conexiones...\n");
+	printf("Escuchando conexiones...\n");
 	escucharConexiones(socketParaAdministrador,MAXIMAS_CONEXIONES_ENTRANTES);
 	int socketParaRecibirInstrucciones = crearSocketParaAceptarSolicitudes(socketParaAdministrador);
-//	printf("Conexion establecida\n\n");
+	printf("Conexion establecida\n\n");
 
 
-	//int i = 1;
+
 /***********Recibir instrucciones y ejecutarlas***********/
 	while(!finalizarProceso){
 
-		//printf("Esperando instruccion\n");
+		printf("Esperando instruccion\n");
 		instruccionAEjecutar = recibirInstruccion(socketParaRecibirInstrucciones);
-		//printf("Instruccion recibida\n");
+		printf("Instruccion recibida\n");
 
 
 		respuestaParaMemoria = ejecutarInstruccion(instruccionAEjecutar,listaDeHuecosUtilizados,listaDeHuecosLibres,configuracion,logger, &finalizarProceso);
 
 		enviarRespuesta(socketParaRecibirInstrucciones,respuestaParaMemoria);
-		//printf("Respuesta enviada\n\n");
+		printf("Respuesta enviada\n\n");
 
 		//printf("Lista de huecos utilizados:\n");
 		//imprimirListaDeHuecosUtilizados(listaDeHuecosUtilizados);
 
-	//	printf("Lista de huecos libres:\n");
+		//printf("Lista de huecos libres:\n");
 		//imprimirListaDeHuecosLibres(listaDeHuecosLibres);
 
 		destruirTipoRespuesta(respuestaParaMemoria);
 		destruirTipoInstruccion(instruccionAEjecutar);
 
-	//	i++;
+
 	}
-
-
 
 
 /********Liberar memoria*************/
 
 
-//	printf("Libero sockets\n");
+	printf("Libero sockets\n");
 	liberarSocket(socketParaRecibirInstrucciones);
 	liberarSocket(socketParaAdministrador);
 
-//	printf("Libero estructuras\n");
+	printf("Libero estructuras\n");
 	list_destroy_and_destroy_elements(listaDeHuecosUtilizados,(void*)destruirHuecoUtilizado);
 	list_destroy_and_destroy_elements(listaDeHuecosLibres,(void*)destruirHuecoLibre);
 	destruirConfigSWAP(configuracion);
@@ -93,8 +91,7 @@ int main(void) {
 	
 	destruirLogger(logger);
 
-		printf(BLANCO "\nProceso SWAP " ROJO "Finalizado" BLANCO ".\n" FINDETEXTO);
-
+	printf(BLANCO "\nProceso SWAP " ROJO "Finalizado" BLANCO ".\n" FINDETEXTO);
 
 	return EXIT_SUCCESS;
 }

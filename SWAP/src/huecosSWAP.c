@@ -26,7 +26,6 @@ tipoHuecoUtilizado* buscarHuecoUtilizadoPorPID(t_list* listaDeHuecosUtilizados,i
 		if(aux->pid == pidProcesoBuscado)
 			break;
 	}
-
 	return aux;
 }
 
@@ -254,7 +253,6 @@ void moverHueco(tipoHuecoUtilizado* hueco,char* particion, int ultimaPaginaEscri
 
 	hueco->baseDeMProc = ultimaPaginaEscrita;
 
-
 }
 
 void moverPagina(char* particion, int dirFisVieja, int dirFisNueva,int tamanioDePagina){
@@ -299,28 +297,14 @@ void actualizarListaDeHuecosLibres(t_list* listaDeHuecosLibres, int base, int ca
 		if (sonContiguosAIzquierda(huecoLibreNuevo,aux)) {
 			unirHuecosLibresAIzquierda(huecoLibreNuevo,aux);
 			indiceAnterior = var;
-
-			//eliminarPaginas(aux);
-//			printf("Union a izquierda");
-//			imprimirHuecoLibre(huecoLibreNuevo);
-//			puts("\n");
 		}
 
 		if(sonContiguosADerecha(huecoLibreNuevo,aux)){
 			unirHuecosLibresADerecha(huecoLibreNuevo,aux);
 			indicePosterior = var;
-			//eliminarPaginas(aux);
-//			printf("Union a derecha");
-//			imprimirHuecoLibre(huecoLibreNuevo);
-//			puts("\n");
 			break;
 		}
 	}
-
-//	actualizarListaDeLibres(listaDeHuecosLibres);
-
-//	printf("Lista post-union\n");
-//	imprimirListaDeHuecosLibres(listaDeHuecosLibres);
 
 	if (indiceAnterior != -1) {
 		list_remove_and_destroy_element(listaDeHuecosLibres,indiceAnterior,(void*)destruirHuecoLibre);
@@ -336,7 +320,6 @@ void actualizarListaDeHuecosLibres(t_list* listaDeHuecosLibres, int base, int ca
 
 	list_add(listaDeHuecosLibres,huecoLibreNuevo);
 	list_sort(listaDeHuecosLibres,(void*)baseMenorDeHuecoLibre);
-
 }
 
 

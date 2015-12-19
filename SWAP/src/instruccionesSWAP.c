@@ -123,23 +123,11 @@ tipoRespuesta* leerPagina(t_list* listaDeHuecosUtilizados,int pidProceso,int dir
 
 	//retornarContenidoDePagina
 
-	//respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
-
 	respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,contenidoDePagina);
-
-	//respuesta hardcodeada
-	//respuestaASolicitudDeLectura = crearTipoRespuesta(PERFECTO,"tuvieja");
-
-
-
 
 	string_append_with_format(&textoALogear,"Lectura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length(contenidoDePagina),contenidoDePagina);
 	logearSeguimiento(textoALogear,logger);
 
-
-//	loggeo hardcodeado
-//	string_append_with_format(&textoALogear,"Lectura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length("tuvieja"),"tuvieja");
-//	logearSeguimiento(textoALogear,logger);
 
 	free(textoALogear);
 	//free(contenidoDePagina);
@@ -162,9 +150,7 @@ tipoRespuesta* escribirPagina(t_list* listaDeHuecosUtilizados,int pidProceso,cha
 	//escribirEnParticion
 	escribirBloqueMapeado(particion,contenidoAEscribir,direccionFisicaEnParticion,tamanioDePagina);
 
-
 	respuestaASolicitudDeEscritura = crearTipoRespuesta(PERFECTO,OK_PAGINA_ESCRITA);
-
 
 
 	string_append_with_format(&textoALogear,"Escritura realizada  |  PID: %d  |  Byte inicial: %d  | Tamanio: %d  |  Contenido: %s",pidProceso,dirLogicaDePagina*tamanioDePagina,string_length(contenidoAEscribir),contenidoAEscribir);
