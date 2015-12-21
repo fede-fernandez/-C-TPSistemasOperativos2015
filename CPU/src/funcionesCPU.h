@@ -149,11 +149,7 @@ tipoRepuestaDeInstruccion instruccionFinalizar(int idDeProceso, t_datosCPU* dato
 
 
 /*Funciones de control de lineas de codigo mAnsisOp*/
-bool esInstruccionIniciar(char* instruccion);
-bool esInstruccionLeer(char* instruccion);
-bool esInstruccionEscribir(char* instruccion);
-bool esInstruccionEntradaSalida(char* instruccion);
-bool esInstruccionFinalizar(char* instruccion);
+bool esInstruccion(char* instruccion, char* nombreDeInstruccion);
 char* sacarComillas(char* frase);
 
 /*Funciones de Instrucciones de Planificador*/

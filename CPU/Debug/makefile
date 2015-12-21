@@ -29,7 +29,7 @@ all: CPU
 CPU: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/root/git/tp-2015-2c-los-javimancos/commonsDeAsedio/Debug" -o "CPU" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L"/home/utnso/git/-C-TPSistemasOperativos2015/commonsDeAsedio/Debug" -o "CPU" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

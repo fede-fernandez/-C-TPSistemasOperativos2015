@@ -216,23 +216,23 @@ tipoRepuestaDeInstruccion ejecutarInstruccion(char* lineaDeInstruccion, int idDe
 
 	t_instruccion instruccion = extraerInstruccion(lineaDeInstruccion);
 
-	if(esInstruccionIniciar(instruccion.nombreDeInstruccion))
+	if(esInstruccion(instruccion.nombreDeInstruccion, "iniciar"))
 	{
 		respuestaDeInstruccion =  instruccionIniciar(atoi(instruccion.valorDeInstruccion1), idDeProceso, datosCPU);
 	}
-	if(esInstruccionLeer(instruccion.nombreDeInstruccion))
+	if(esInstruccion(instruccion.nombreDeInstruccion, "leer"))
 	{
 		respuestaDeInstruccion =  instruccionLeer(atoi(instruccion.valorDeInstruccion1), idDeProceso, datosCPU);
 	}
-	if(esInstruccionEscribir(instruccion.nombreDeInstruccion))
+	if(esInstruccion(instruccion.nombreDeInstruccion, "escribir"))
 	{
 		respuestaDeInstruccion =  instruccionEscribir(atoi(instruccion.valorDeInstruccion1), sacarComillas(instruccion.valorDeInstruccion2), idDeProceso, datosCPU);
 	}
-	if(esInstruccionEntradaSalida(instruccion.nombreDeInstruccion))
+	if(esInstruccion(instruccion.nombreDeInstruccion, "entrada-salida"))
 	{
 		respuestaDeInstruccion =  instruccionEntradaSalida(atoi(instruccion.valorDeInstruccion1), idDeProceso, datosCPU);
 	}
-	if(esInstruccionFinalizar(instruccion.nombreDeInstruccion))
+	if(esInstruccion(instruccion.nombreDeInstruccion, "finalizar"))
 	{
 		respuestaDeInstruccion =  instruccionFinalizar(idDeProceso, datosCPU);
 	}
@@ -258,7 +258,7 @@ t_instruccion extraerInstruccion(char* instruccion)
 			{
 				instruccionResultado.nombreDeInstruccion = string_substring_until(instruccion, contadorHastaPalabra);
 				contadorHastaPalabra = 0;
-				if(!esInstruccionFinalizar(instruccionResultado.nombreDeInstruccion))
+				if(!esInstruccion(instruccionResultado.nombreDeInstruccion, "finalizar"))
 				{
 					contadorDesdePalabra = string_length(instruccionResultado.nombreDeInstruccion) + 1;
 					estadoActual = EN_VALOR;
@@ -279,7 +279,7 @@ t_instruccion extraerInstruccion(char* instruccion)
 			{
 				instruccionResultado.valorDeInstruccion1 = string_substring(instruccion, contadorDesdePalabra, contadorHastaPalabra);
 				contadorHastaPalabra = 0;
-				if(esInstruccionEscribir(instruccionResultado.nombreDeInstruccion))
+				if(esInstruccion(instruccionResultado.nombreDeInstruccion, "escribir"))
 				{
 					contadorDesdePalabra = string_length(instruccionResultado.nombreDeInstruccion) + 1 + string_length(instruccionResultado.valorDeInstruccion1) + 1;
 					estadoActual = EN_ORACION;
@@ -323,29 +323,9 @@ int longitudDeStringArray(char** stringArray){
 }
 
 
-bool esInstruccionIniciar(char* instruccion)
+bool esInstruccion(char* instruccion, char* nombreDeInstruccion)
 {
-	return string_equals_ignore_case(instruccion, "iniciar");
-}
-
-bool esInstruccionLeer(char* instruccion)
-{
-	return string_equals_ignore_case(instruccion, "leer");
-}
-
-bool esInstruccionEscribir(char* instruccion)
-{
-	return string_equals_ignore_case(instruccion, "escribir");
-}
-
-bool esInstruccionEntradaSalida(char* instruccion)
-{
-	return string_equals_ignore_case(instruccion, "entrada-salida");
-}
-
-bool esInstruccionFinalizar(char* instruccion)
-{
-	return string_equals_ignore_case(instruccion, "finalizar");
+	return string_equals_ignore_case(instruccion, nombreDeInstruccion);
 }
 
 
